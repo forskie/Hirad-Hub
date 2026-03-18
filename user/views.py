@@ -1,3 +1,52 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
+from django.contrib.auth import login, authenticate, logout
+from .models import CustomUser
+from .forms import CustomUserCreationForm, CustomUserLoginForm, CustomUserUpdateForm
+from django.contrib.auth.decorators import login_required
 
-# Create your views here.
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return render(request, 'user/register_success.html')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'user/register.html', {'form': form})
+
+def login_view(request):
+    if request.method == 'POST':
+        form = CustomUserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user, backend='user.contrib.auth.backends.ModelBackend')
+            return redirect('user:profile')
+    else:   
+        form = CustomUserLoginForm()
+    return render(request, 'user/login.html', {'form' : form})
+
+@login_required
+def profile_view(request):
+    return render(request, 'user/profile.html', {'user': request.user})
+
+@login_required
+def edit_profile(request):
+    form = CustomUserUpdateForm(instance=request.user)
+    return render(request, 'user/edit_profile.html', {'user': request.user, 'form': form})
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        form = CustomUserUpdateForm(request.POST, instance=request.user)
+        if not form.is_valid():
+            return render(request, 'user/edit_profile.html', {'user': request.user, 'form': form})
+        user = form.save(commit=False)
+        user.clean()
+        user.save()
+        return render(request, 'user/profile.html', {'user': user})
+    return render(request, 'user/profile.html', {'user': request.user})
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
