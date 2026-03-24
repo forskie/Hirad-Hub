@@ -1,3 +1,20 @@
 from django.db import models
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 
-# Create your models here.
+
+class Note(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    is_public = models.BooleanField(default=False)
+    topics = models.ManyToManyField('library.Topic', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    img = models.ImageField(upload_to='notes/', blank=True, null=True)
+    
+    likes = GenericRelation('library.Like')
+    comments = GenericRelation('library.Comment')
+
+    def __str__(self):
+        return self.title

@@ -1,6 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
-from django.utils.html import strip_tags
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 
 class CustomUser(AbstractUser):
@@ -18,8 +17,8 @@ class CustomUser(AbstractUser):
     is_verified = models.BooleanField(default=False)
     role = models.CharField(max_length=20, default='student', 
     choices=[('student', 'Student'), ('teacher', 'Teacher'), ('director', 'Director'), ('admin', 'Admin'  )])
-    school = models.ForeignKey('school.School', on_delete=models.SET_NULL, 
-    blank=True, null=True, related_name='users')
+    # school = models.ForeignKey('school.School', on_delete=models.SET_NULL, 
+    # blank=True, null=True, related_name='users')
     username = models.CharField(max_length=150, unique=True, blank=True, null=True)
     groups = models.ManyToManyField(
         'auth.Group',
