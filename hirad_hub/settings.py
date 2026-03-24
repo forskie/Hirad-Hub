@@ -30,8 +30,9 @@ INSTALLED_APPS = [
     'user.apps.UserConfig',
     'post.apps.PostConfig',
     'note.apps.NoteConfig',
-    'book.apps.BookConfig',
     'main.apps.MainConfig',
+    'library.apps.LibraryConfig',
+    'gamification.apps.GamificationConfig',
 ]
 
 MIDDLEWARE = [
