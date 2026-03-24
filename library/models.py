@@ -6,60 +6,68 @@ from django.conf import settings
 
 class Topic(models.Model):
     name = models.CharField(max_length=122, unique=True)
+    slug = models.SlugField(max_length=122, unique=True)
     def __str__(self):
         return self.name
     
-
-class LibraryItem(models.Model):
-    TYPE_CHOICES = (
-        ('book', 'Book'),
-        ('podcast', 'Podcast'),
-        ('video', 'Video'),
-        ('note', 'Note'),
-    )
-    
-    LEVEL_CHOICES = (
-        ('beginner', 'Beginner'),
-        ('intermediate', 'Intermediate'),
-        ('advanced', 'Advanced'),
-    )
-
+class BaseMaterial(models.Model):
+    LEVEL_CHOICES = [
+    ('beginner', 'Beginner'),
+    ('intermediate', 'Intermediate'),
+    ('advanced', 'Advanced'),
+    ]
     title = models.CharField(max_length=255)
-    author = models.CharField(max_length=255, blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    material_type = models.CharField(max_length=20, choices=TYPE_CHOICES)
-    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, blank=True, null=True)
-    topics = models.ManyToManyField(Topic, blank=True)
-    note = models.ForeignKey('note.Note', on_delete=models.SET_NULL,
-                            blank=True, null=True)
-    file = models.FileField(upload_to='library/', blank=True, null=True)
+    description = models.TextField(blank=True)
+    level = models.CharField(max_length=50, choices=LEVEL_CHOICES, blank=True, db_index=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    likes = GenericRelation('Like', related_query_name='materials')
+    comments = GenericRelation('Comment', related_query_name='materials')
     date_added = models.DateTimeField(auto_now_add=True)
+    @property
+    def count_likes(self):
+        return self.likes.count()  
     
-    likes = GenericRelation('library.Like')
-    comments = GenericRelation('library.Comment')
+    @property
+    def count_comments(self):
+        return self.comments.count()
     
+    
+    class Meta:
+        abstract = True
     def __str__(self):
-        return f"{self.title} ({self.material_type})"
+        return f"{self.title} ({self.get_level_display()})"
     
-    def content_type(self):
-        if self.material_type == 'book':
-            if self.file:
-                return self.file.name.split('.')[-1]
-            return 'no_file'
-        elif self.material_type == 'podcast':
-            return 'audio'
-        elif self.material_type == 'video':
-            return 'video'
-        elif self.material_type == 'note':
-            return 'note'
-        return 'unknown'
-    
+class Book(BaseMaterial):
+    file = models.FileField(upload_to='library/books/')
+    pages = models.PositiveIntegerField(null=True, blank=True)
+    author = models.CharField(max_length=255, blank=True, db_index=True)
+    topics = models.ManyToManyField(Topic, related_name='books', blank=True)
+class Video(BaseMaterial):
+    video_file = models.FileField(upload_to='library/videos/')
+    duration = models.DurationField(null=True, blank=True)
+    thumbnail = models.ImageField(upload_to='library/videos/thumbnails/', null=True, blank=True)
+    author = models.CharField(max_length=255, blank=True, db_index=True)
+    topics = models.ManyToManyField(Topic, related_name='videos', blank=True)
+class Podcast(BaseMaterial):
+    audio_file = models.FileField(upload_to='library/podcasts/')
+    duration = models.DurationField(null=True, blank=True)
+    author = models.CharField(max_length=255, blank=True, db_index=True)
+    thumbnail = models.ImageField(upload_to='library/podcasts/thumbnails/', null=True, blank=True)
+    topics = models.ManyToManyField(Topic, related_name='podcasts', blank=True)
+
 class LibraryInteraction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    item = models.ForeignKey(LibraryItem, on_delete=models.CASCADE)
+    item = GenericForeignKey('content_type', 'object_id')   
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    
+    progress = models.FloatField(default=0.0)
     rating = models.PositiveSmallIntegerField(null=True, blank=True)
     completed = models.BooleanField(default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')
     
     def __str__(self):
         return f"{self.user} - {self.item}"
@@ -74,7 +82,9 @@ class Like(models.Model):
     
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
-    
+        indexes = [
+            models.indexes.Index(fields=['content_type', 'object_id']),
+        ]
     
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -83,9 +93,14 @@ class Comment(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-    
+    is_edited = models.BooleanField(default=False)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.indexes.Index(fields=['content_type', 'object_id']),
+        ]
     def __str__(self):
         return f"Comment by {self.user} at {self.created_at}"
 
