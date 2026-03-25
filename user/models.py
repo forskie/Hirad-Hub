@@ -4,20 +4,6 @@ from django.core.validators import RegexValidator
 
 
 class CustomUser(AbstractUser):
-
-    LEVELS = [
-        (1000,   1, 'Newcomer'),   
-        (5000,   2, 'Reader'),
-        (10000,  3, 'Curious'),
-        (20000,  4, 'Connoisseur'),
-        (35000,  5, 'Researcher'),
-        (45000,  6, 'Analyst'),
-        (55000,  7, 'Erudite'),
-        (70000,  8, 'Intellectual'),
-        (85000,  9, 'Thinker'),
-        (100000, 10, 'Hiradcore'),
-    ]
-
     phone_regex = RegexValidator(
         regex=r'^\+?1?\d{9,15}$',
         message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed."
@@ -58,45 +44,6 @@ class CustomUser(AbstractUser):
         related_query_name='user',
     )
     
-    
-    def update_level_and_title(self):
-        score = int(self.score)
-        new_level = self.LEVELS[0][1]       
-        new_title = self.LEVELS[0][2]
-        
-
-        for points, level, title in self.LEVELS:
-            if score >= points:
-                new_level = level
-                new_title = title
-            else:
-                break   
-        self.level = new_level
-        self.title = new_title
-        
-        return new_level, new_title
-        
-    def add_score(self, points: int):
-        if not isinstance(points, int):
-            raise ValueError("Points must be an integer.")
-        if points <= 0:
-            return
-        self.score += points
-        old_level = self.level
-        old_title = self.title
-        new_level, new_title =  self.update_level_and_title()
-
-        update_fields = ['score']
-        
-        if old_level != new_level:
-            update_fields.append('level')
-        if old_title != new_title:
-            update_fields.append('title')
-            
-        self.save(update_fields=update_fields)  
-
-
-
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'

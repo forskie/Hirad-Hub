@@ -15,7 +15,9 @@ class Note(models.Model):
     
     likes = GenericRelation('library.Like')
     comments = GenericRelation('library.Comment')
-
+    
+    
+    @staticmethod
     def can_view(user, note):
         return note.is_public or note.author == user
     
