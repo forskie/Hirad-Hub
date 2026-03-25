@@ -16,5 +16,10 @@ class Note(models.Model):
     likes = GenericRelation('library.Like')
     comments = GenericRelation('library.Comment')
 
+    def can_view(user, note):
+        return note.is_public or note.author == user
+    
+    materials = models.ManyToManyField('library.Book', blank=True)
+    
     def __str__(self):
         return self.title
