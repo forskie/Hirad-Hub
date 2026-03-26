@@ -8,13 +8,13 @@ from .utils import add_score
 @receiver(post_save, sender=Note)
 def reward_note(sender, instance, created, **kwargs):
     if created:
-        add_score(NOTE_CREATE_POINTS)
+        add_score(instance.author, NOTE_CREATE_POINTS)
     
     
 @receiver(post_save, sender=Post)
 def reward_post(sender, instance, created, **kwargs):
     if created:
-        add_score(POST_CREATE_POINTS)
+        add_score(instance.author, POST_CREATE_POINTS)
 
 
 @receiver(post_save, sender=Like)
