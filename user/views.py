@@ -26,6 +26,10 @@ def login_view(request):
         form = CustomUserLoginForm()
     return render(request, 'user/login.html', {'form' : form})
 
+def profile_view_others(request):
+    return render(request, 'user/others_profile.html', {'user' : request.user})
+
+
 @login_required
 def profile_view(request):
     return render(request, 'user/profile.html', {'user': request.user})
