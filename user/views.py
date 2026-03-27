@@ -1,8 +1,9 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from .models import CustomUser
 from .forms import CustomUserCreationForm, CustomUserLoginForm, CustomUserUpdateForm
 from django.contrib.auth.decorators import login_required
+
 
 def register(request):
     if request.method == 'POST':
@@ -20,14 +21,15 @@ def login_view(request):
         form = CustomUserLoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user, backend='user.contrib.auth.backends.ModelBackend')
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('user:profile')
     else:   
         form = CustomUserLoginForm()
     return render(request, 'user/login.html', {'form' : form})
 
 def profile_view_others(request):
-    return render(request, 'user/others_profile.html', {'user' : request.user})
+    other_user = get_object_or_404(CustomUser, username=username)
+    return render(request, 'user/others_profile.html', {'user' : other_user})
 
 
 @login_required

@@ -22,7 +22,7 @@ def note_create(request):
         is_public = request.POST.get('is_public', '') == 'on'
         topics_ids = request.POST.getlist('topics')
         img = request.FILES.get('img')
-        if not title or content:
+        if not title or not content:
             return render(request, 'note/create.html', {'error': 'Title and content are required.'})
         note = Note.objects.create(
             author=request.user, title=title,
@@ -40,7 +40,7 @@ def note_edit(request, pk):
     if request.method == 'POST':
         note.title = request.POST.get('title', note.title).strip()
         note.content = request.POST.get('content', note.content).strip()
-        note.is_public = request.POST.get('is_public', note.title) == 'on'
+        note.is_public = request.POST.get('is_public', '') == 'on'
         topics_ids = request.POST.getlist('topics')
         if request.FILES.get('img'):
             note.img = request.FILES.get('img')

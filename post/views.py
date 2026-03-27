@@ -45,7 +45,7 @@ def toggle_like(request, pk):
     like, created = Like.objects.get_or_create(user=request.user, content_type=ct, object_id=post.pk)
     if not created:
         like.delete()
-    return redirect(request.Meta.get('HTTP_REFERER', 'post:list'))
+    return redirect(request.META.get('HTTP_REFERER', 'post:list'))
 
 @login_required
 def toggle_favorite(request, pk):
@@ -54,7 +54,7 @@ def toggle_favorite(request, pk):
     fav, created = Favorite.objects.get_or_create(user=request.user, content_type=ct, object_id=post.pk)
     if not created:
         fav.delete()
-    return redirect(request.Meta.get('HTTP_REFERER', 'post:list'))
+    return redirect(request.META.get('HTTP_REFERER', 'post:list'))
 
 
 @login_required

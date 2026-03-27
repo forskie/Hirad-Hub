@@ -141,7 +141,7 @@ def upload_podcast(request):
         )
         podcast.topics.set(topics_ids)
         return redirect('library:podcast_detail', pk=podcast.pk)
-    return render(request, 'library/upload_podcast.html', pk=podcast.pk)
+    return render(request, 'library/upload_podcast.html')
     
 @teacher_required
 def edit_added_podcast(request, pk):
@@ -179,7 +179,7 @@ def upload_video(request):
         )
         video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)
-    return render(request, 'library/upload_video.html', pk=video.pk)
+    return render(request, 'library/upload_video.html')
 
 
 @teacher_required
