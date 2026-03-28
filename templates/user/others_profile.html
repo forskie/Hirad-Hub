@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}{{ user.get_full_name|default:user.username }} — HiradHub{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<div
+    style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:1.25rem;">
+    <div style="display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap;">
+
+        <div
+            style="width:64px; height:64px; border-radius:50%; background:#1e1d3a; border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:500; color:#a5b4fc; overflow:hidden; flex-shrink:0;">
+            {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;" alt="avatar" />
+            {% else %}
+            {{ user.username|first|upper }}
+            {% endif %}
+        </div>
+
+        <div style="flex:1; min-width:0;">
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;">
+                <p style="font-size:17px; font-weight:600; color:var(--text);">{{
+                    user.get_full_name|default:user.username }}</p>
+                <span
+                    style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv.{{
+                    user.level }}</span>
+                <span
+                    style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{
+                    user.title }}</span>
+                {% if user.role == 'teacher' %}
+                <span
+                    style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;">Teacher</span>
+                {% endif %}
+            </div>
+            <p style="font-size:13px; color:var(--muted);">@{{ user.username }}</p>
+            {% if user.bio %}
+            <p style="font-size:13px; color:var(--text); margin-top:8px; line-height:1.6;">{{ user.bio }}</p>
+            {% endif %}
+        </div>
+
+        <div style="display:flex; gap:1.5rem; text-align:center; flex-shrink:0;">
+            <div>
+                <p style="font-size:16px; font-weight:500; color:var(--accent);">{{ user.score }}</p>
+                <p style="font-size:11px; color:var(--muted);">Score</p>
+            </div>
+            <div>
+                <p style="font-size:16px; font-weight:500; color:var(--text);">{{ user.posts.count }}</p>
+                <p style="font-size:11px; color:var(--muted);">Posts</p>
+            </div>
+            <div>
+                <p style="font-size:16px; font-weight:500; color:var(--text);">{{ user.note_set.count }}</p>
+                <p style="font-size:11px; color:var(--muted);">Notes</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs -->
+<div style="display:flex; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem;">
+    <button onclick="showTab('posts')" id="tab-posts"
+        style="font-size:13px; padding:8px 16px; color:var(--accent); border:none; border-bottom:2px solid var(--accent); background:none; cursor:pointer; font-family:'Sora',sans-serif;">
+        Posts
+    </button>
+    <button onclick="showTab('notes')" id="tab-notes"
+        style="font-size:13px; padding:8px 16px; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; cursor:pointer; font-family:'Sora',sans-serif;">
+        Notes
+    </button>
+</div>
+
+<!-- Posts -->
+<div id="panel-posts">
+    {% if user.posts.all %}
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        {% for post in user.posts.all|slice:":10" %}
+        <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
+            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s;"
+                onmouseover="this.style.borderColor='var(--accent)'"
+                onmouseout="this.style.borderColor='var(--border)'">
+                <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:8px;">{{
+                    post.text|truncatechars:120 }}</p>
+                <div style="display:flex; gap:12px;">
+                    <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} ago</span>
+                    <span style="font-size:11px; color:var(--muted);">{{ post.likes.count }} likes</span>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="text-align:center; font-size:13px; color:var(--muted); padding:3rem 0;">No posts yet.</p>
+    {% endif %}
+</div>
+
+<!-- Public notes -->
+<div id="panel-notes" style="display:none;">
+    {% with public_notes=user.note_set.all %}
+    {% if public_notes %}
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;">
+        {% for note in public_notes %}
+        {% if note.is_public %}
+        <a href="{% url 'note:detail' note.pk %}" style="text-decoration:none;">
+            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s;"
+                onmouseover="this.style.borderColor='var(--accent)'"
+                onmouseout="this.style.borderColor='var(--border)'">
+                <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:6px;">{{
+                    note.title|truncatechars:40 }}</p>
+                <p style="font-size:12px; color:var(--muted); line-height:1.5;">{{
+                    note.content|striptags|truncatechars:80 }}</p>
+                <p style="font-size:11px; color:var(--muted); margin-top:8px;">{{ note.created_at|timesince }} ago</p>
+            </div>
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p style="text-align:center; font-size:13px; color:var(--muted); padding:3rem 0;">No public notes.</p>
+    {% endif %}
+    {% endwith %}
+</div>
+
+<script>
+    function showTab(name) {
+        ['posts', 'notes'].forEach(t => {
+            document.getElementById('panel-' + t).style.display = t === name ? 'block' : 'none';
+            const btn = document.getElementById('tab-' + t);
+            btn.style.color = t === name ? 'var(--accent)' : 'var(--muted)';
+            btn.style.borderBottomColor = t === name ? 'var(--accent)' : 'transparent';
+        });
+    }
+</script>
+{% endblock %}

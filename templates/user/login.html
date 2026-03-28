@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}Login — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:400px; margin:3rem auto;">
+
+    <div style="text-align:center; margin-bottom:2rem;">
+        <p style="font-size:22px; font-weight:600; color:var(--text);">Welcome back</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:6px;">Sign in to your HiradHub account</p>
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div
+                style="background:#fef2f2; border:0.5px solid #fecaca; border-radius:8px; padding:10px 14px; margin-bottom:1rem;">
+                <p style="font-size:13px; color:#b91c1c;">{{ form.non_field_errors|join:", " }}</p>
+            </div>
+            {% endif %}
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Email</label>
+                <input type="text" name="username" value="{{ form.username.value|default:'' }}"
+                    placeholder="your@email.com"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+                {% if form.username.errors %}
+                <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.username.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Password</label>
+                <input type="password" name="password" placeholder="••••••••"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+                {% if form.password.errors %}
+                <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.password.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit"
+                style="width:100%; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                onmouseover="this.style.background='var(--accent-h)'"
+                onmouseout="this.style.background='var(--accent)'">
+                Sign in
+            </button>
+        </form>
+    </div>
+
+    <p style="text-align:center; font-size:13px; color:var(--muted); margin-top:1.25rem;">
+        Don't have an account?
+        <a href="{% url 'user:register' %}"
+            style="color:var(--accent); text-decoration:none; font-weight:500;">Register</a>
+    </p>
+</div>
+{% endblock %}

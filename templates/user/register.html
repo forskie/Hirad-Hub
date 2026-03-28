@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Register — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:440px; margin:3rem auto;">
+
+    <div style="text-align:center; margin-bottom:2rem;">
+        <p style="font-size:22px; font-weight:600; color:var(--text);">Create account</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:6px;">Join HiradHub and start learning</p>
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
+        <form method="POST" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div
+                style="background:#fef2f2; border:0.5px solid #fecaca; border-radius:8px; padding:10px 14px; margin-bottom:1rem;">
+                <p style="font-size:13px; color:#b91c1c;">{{ form.non_field_errors|join:", " }}</p>
+            </div>
+            {% endif %}
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1rem;">
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">First
+                        name</label>
+                    <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}"
+                        placeholder="Bilol"
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'" />
+                    {% if form.first_name.errors %}
+                    <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.first_name.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Last
+                        name</label>
+                    <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}"
+                        placeholder="Force"
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'" />
+                    {% if form.last_name.errors %}
+                    <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.last_name.errors|join:", " }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Email</label>
+                <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="your@email.com"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+                {% if form.email.errors %}
+                <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.email.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Role</label>
+                <select name="role"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Password</label>
+                <input type="password" name="password1" placeholder="••••••••"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+                {% if form.password1.errors %}
+                <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.password1.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Confirm
+                    password</label>
+                <input type="password" name="password2" placeholder="••••••••"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+                {% if form.password2.errors %}
+                <p style="font-size:12px; color:#ef4444; margin-top:4px;">{{ form.password2.errors|join:", " }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit"
+                style="width:100%; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                onmouseover="this.style.background='var(--accent-h)'"
+                onmouseout="this.style.background='var(--accent)'">
+                Create account
+            </button>
+        </form>
+    </div>
+
+    <p style="text-align:center; font-size:13px; color:var(--muted); margin-top:1.25rem;">
+        Already have an account?
+        <a href="{% url 'user:login' %}" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign in</a>
+    </p>
+</div>
+{% endblock %}
