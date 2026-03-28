@@ -11,19 +11,19 @@
         </svg>
     </div>
 
-    <p style="font-size:20px; font-weight:600; color:var(--text); margin-bottom:8px;">You're in, {{
-        user.first_name|default:user.username }}!</p>
+    <p style="font-size:20px; font-weight:600; color:var(--text); margin-bottom:8px;">You're in,
+        {{ user.first_name|default:user.username }}!</p>
     <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:2rem;">
-        Your account has been created. You start as <strong style="color:var(--text); font-weight:500;">{{ user.title
-            }}</strong> — keep reading, posting, and taking notes to level up.
+        Your account has been created. You start as <strong style="color:var(--text); font-weight:500;">
+            {{ user.title }}</strong> — keep reading, posting, and taking notes to level up.
     </p>
 
     <div
         style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; text-align:left;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <span style="font-size:12px; color:var(--muted);">Level</span>
-            <span style="font-size:13px; font-weight:500; color:var(--accent);">{{ user.level }} · {{ user.title
-                }}</span>
+            <span style="font-size:13px; font-weight:500; color:var(--accent);">{{ user.level }} ·
+                {{ user.title}}</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:12px; color:var(--muted);">Score</span>

@@ -70,6 +70,24 @@ def update_progress(request, model_name, pk):
         interaction.save()
     return redirect(request.META.get('HTTP_REFERER', 'library:home'))    
 
+@login_required
+def add_comment(request, pk):
+    model_map = {'book': Book, 'video': Video, 'podcast': Podcast}
+    model = model_map.get(request.POST.get('model_name'))
+    if not model:
+        return redirect('library:home')
+    if request.method == 'POST':
+        text = request.POST.get('text', '').strip()
+        parent_id = request.POST.get('parent_id')
+        if text:
+            Comment.objects.create(
+                user=request.user,
+                text=text,
+                parent_id=parent_id or None
+            )
+    return redirect('post:detail', pk=pk)
+
+
 
 @login_required
 def toggle_like(request, model_name, pk):

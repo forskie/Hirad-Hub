@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block title %}Posts — HiradHub{% endblock %}
+{% block nav_posts %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:640px; margin:0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
+        <p style="font-size:16px; font-weight:500; color:var(--text);">Community feed</p>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'post:create' %}"
+            style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New post
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Posts -->
+    {% if posts %}
+    <div style="display:flex; flex-direction:column; gap:10px;">
+        {% for post in posts %}
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
+
+            <!-- Author row -->
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                <a href="{% url 'user:profile_others' post.author.username %}"
+                    style="display:flex; align-items:center; gap:8px; text-decoration:none;">
+                    <div
+                        style="width:30px; height:30px; border-radius:50%; background:#1e1d3a; border:1.5px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; color:#a5b4fc; overflow:hidden; flex-shrink:0;">
+                        {% if post.author.profile_picture %}
+                        <img src="{{ post.author.profile_picture.url }}"
+                            style="width:100%;height:100%;object-fit:cover;" />
+                        {% else %}
+                        {{ post.author.username|first|upper }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p style="font-size:13px; font-weight:500; color:var(--text);">
+                            {{ post.author.get_full_name|default:post.author.username }}</p>
+                        <p style="font-size:11px; color:var(--muted);">{{ post.author.title }} ·
+                            {{ post.created_at|timesince }} ago</p>
+                    </div>
+                </a>
+                {% if post.author == request.user %}
+                <a href="{% url 'post:delete' post.pk %}"
+                    style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; background:none; border:0.5px solid transparent; color:var(--muted); text-decoration:none; transition:all 0.15s;"
+                    onmouseover="this.style.background='#fef2f2';this.style.color='#ef4444';this.style.borderColor='#fecaca'"
+                    onmouseout="this.style.background='none';this.style.color='var(--muted)';this.style.borderColor='transparent'">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14H6L5 6" />
+                        <path d="M10 11v6M14 11v6" />
+                    </svg>
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Text -->
+            {% if post.text %}
+            <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
+                <p style="font-size:13px; color:var(--text); line-height:1.7; margin-bottom:10px;">
+                    {{ post.text|truncatechars:200 }}</p>
+            </a>
+            {% endif %}
+
+            <!-- Image -->
+            {% if post.image %}
+            <a href="{% url 'post:detail' post.pk %}">
+                <img src="{{ post.image.url }}"
+                    style="width:100%; border-radius:8px; margin-bottom:10px; max-height:320px; object-fit:cover;" />
+            </a>
+            {% endif %}
+
+            <!-- Topics -->
+            {% if post.topics.all %}
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+                {% for topic in post.topics.all %}
+                <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">
+                    {{ topic.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div
+                style="display:flex; align-items:center; gap:14px; padding-top:8px; border-top:0.5px solid var(--border);">
+                {% if request.user.is_authenticated %}
+                <form method="POST" action="{% url 'post:toggle_like' post.pk %}" style="margin:0;">
+                    {% csrf_token %}
+                    <button type="submit"
+                        style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
+                        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                        {{ post.count_likes }}
+                    </button>
+                </form>
+                {% else %}
+                <span style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    {{ post.count_likes }}
+                </span>
+                {% endif %}
+
+                <a href="{% url 'post:detail' post.pk %}"
+                    style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); text-decoration:none; transition:color 0.15s;"
+                    onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                    {{ post.count_comments }}
+                </a>
+
+                {% if request.user.is_authenticated %}
+                <form method="POST" action="{% url 'post:toggle_favorite' post.pk %}"
+                    style="margin:0; margin-left:auto;">
+                    {% csrf_token %}
+                    <button type="submit"
+                        style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
+                        onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--muted)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                        </svg>
+                        Save
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:5rem 0;">
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">No posts yet.</p>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'post:create' %}"
+            style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">Be
+            the first to post</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

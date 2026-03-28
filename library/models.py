@@ -6,7 +6,7 @@ from django.conf import settings
 
 class Topic(models.Model):
     name = models.CharField(max_length=122, unique=True)
-    slug = models.SlugField(max_length=122, unique=True)
+    slug = models.SlugField(max_length=122, unique=True, auto_created=True)
     def __str__(self):
         return self.name
     

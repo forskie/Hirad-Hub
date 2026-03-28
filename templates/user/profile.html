@@ -21,14 +21,14 @@
         <!-- Info -->
         <div style="flex:1; min-width:0;">
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;">
-                <p style="font-size:17px; font-weight:600; color:var(--text);">{{
-                    user.get_full_name|default:user.username }}</p>
+                <p style="font-size:17px; font-weight:600; color:var(--text);">
+                    {{ user.get_full_name|default:user.username }}</p>
                 <span
-                    style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv.{{
-                    user.level }}</span>
+                    style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv.
+                    {{ user.level }}</span>
                 <span
-                    style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{
-                    user.title }}</span>
+                    style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">
+                    {{ user.title }}</span>
                 {% if user.role == 'teacher' %}
                 <span
                     style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;">Teacher</span>
@@ -102,8 +102,8 @@
             <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s;"
                 onmouseover="this.style.borderColor='var(--accent)'"
                 onmouseout="this.style.borderColor='var(--border)'">
-                <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:8px;">{{
-                    post.text|truncatechars:120 }}</p>
+                <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:8px;">
+                    {{ post.text|truncatechars:120 }}</p>
                 <div style="display:flex; align-items:center; gap:12px;">
                     <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} ago</span>
                     <span style="font-size:11px; color:var(--muted);">{{ post.likes.count }} likes</span>

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% block title %}New Post — HiradHub{% endblock %}
+{% block nav_posts %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:600px; margin:0 auto;">
+
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+        <a href="{% url 'post:list' %}"
+            style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; text-decoration:none; color:var(--muted); transition:color 0.15s;"
+            onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+        </a>
+        <p style="font-size:16px; font-weight:500; color:var(--text);">New post</p>
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if error %}
+            <div
+                style="background:#fef2f2; border:0.5px solid #fecaca; border-radius:8px; padding:10px 14px; margin-bottom:1rem;">
+                <p style="font-size:13px; color:#b91c1c;">{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Text -->
+            <div style="margin-bottom:1rem;">
+                <textarea name="text" rows="5" placeholder="What's on your mind?"
+                    style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:14px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.7;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'"></textarea>
+            </div>
+
+            <!-- Media upload row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1rem;">
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Image
+                        (optional)</label>
+                    <label for="id_image"
+                        style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
+                        onmouseover="this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.borderColor='var(--border)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span id="image-label">Choose image</span>
+                    </label>
+                    <input type="file" name="image" id="id_image" accept="image/*" style="display:none;"
+                        onchange="updateLabel(this,'image-label')" />
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Video
+                        (optional)</label>
+                    <label for="id_video"
+                        style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
+                        onmouseover="this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.borderColor='var(--border)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" />
+                        </svg>
+                        <span id="video-label">Choose video</span>
+                    </label>
+                    <input type="file" name="video" id="id_video" accept="video/*" style="display:none;"
+                        onchange="updateLabel(this,'video-label')" />
+                </div>
+            </div>
+
+            <!-- Image preview -->
+            <div id="image-preview" style="display:none; margin-bottom:1rem;">
+                <img id="preview-img" style="width:100%; max-height:280px; object-fit:cover; border-radius:8px;" />
+            </div>
+
+            <!-- Topics -->
+            <div style="margin-bottom:1.5rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:8px;">Topics
+                    (optional)</label>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    {% for topic in topics %}
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" name="topics" value="{{ topic.pk }}"
+                            style="accent-color:var(--accent); width:13px; height:13px;" />
+                        <span style="font-size:12px; color:var(--muted);">{{ topic.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="submit"
+                    style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                    onmouseover="this.style.background='var(--accent-h)'"
+                    onmouseout="this.style.background='var(--accent)'">
+                    Publish
+                </button>
+                <a href="{% url 'post:list' %}"
+                    style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateLabel(input, labelId) {
+        const label = document.getElementById(labelId);
+        label.textContent = input.files[0] ? input.files[0].name : 'Choose file';
+        if (labelId === 'image-label' && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('image-preview').style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+{% endblock %}

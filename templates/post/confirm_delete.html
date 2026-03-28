@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Delete Post — HiradHub{% endblock %}
+{% block nav_posts %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:420px; margin:4rem auto; text-align:center;">
+
+    <div
+        style="width:48px; height:48px; background:#fef2f2; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14H6L5 6" />
+            <path d="M10 11v6M14 11v6" />
+        </svg>
+    </div>
+
+    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;">Delete this post?</p>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;">This action cannot be undone.
+        The post and all its comments will be permanently removed.</p>
+
+    {% if post.text %}
+    <div
+        style="background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:1rem; margin-bottom:1.75rem; text-align:left;">
+        <p style="font-size:13px; color:var(--muted); line-height:1.6;">{{ post.text|truncatechars:120 }}</p>
+    </div>
+    {% endif %}
+
+    <div style="display:flex; gap:10px; justify-content:center;">
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit"
+                style="padding:9px 20px; background:#ef4444; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+                Yes, delete
+            </button>
+        </form>
+        <a href="{% url 'post:list' %}"
+            style="padding:9px 20px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:background 0.15s;"
+            onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
+            Cancel
+        </a>
+    </div>
+
+</div>
+{% endblock %}

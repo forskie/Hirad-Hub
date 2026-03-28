@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% block title %}Upload Podcast — HiradHub{% endblock %}
+{% block nav_library %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:560px; margin:0 auto;">
+
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+        <a href="{% url 'library:home' %}"
+            style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; text-decoration:none; color:var(--muted);"
+            onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+        </a>
+        <p style="font-size:16px; font-weight:500; color:var(--text);">Upload podcast</p>
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if error %}
+            <div
+                style="background:#fef2f2; border:0.5px solid #fecaca; border-radius:8px; padding:10px 14px; margin-bottom:1rem;">
+                <p style="font-size:13px; color:#b91c1c;">{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Title</label>
+                <input type="text" name="title" placeholder="Podcast title"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Author</label>
+                <input type="text" name="author" placeholder="Author or channel name"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description
+                    (optional)</label>
+                <textarea name="description" rows="3" placeholder="Short description..."
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.6;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'"></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1rem;">
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Level</label>
+                    <select name="level"
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;">
+                        <option value="">— select —</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Duration
+                        (HH:MM:SS)</label>
+                    <input type="text" name="duration" placeholder="00:45:00"
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'" />
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Topics
+                    (optional)</label>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    {% for topic in topics %}
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" name="topics" value="{{ topic.pk }}"
+                            style="accent-color:var(--accent); width:13px; height:13px;" />
+                        <span style="font-size:12px; color:var(--muted);">{{ topic.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1.5rem;">
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Audio
+                        file</label>
+                    <label for="id_audio_file"
+                        style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
+                        onmouseover="this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.borderColor='var(--border)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M9 18V5l12-2v13" />
+                            <circle cx="6" cy="18" r="3" />
+                            <circle cx="18" cy="16" r="3" />
+                        </svg>
+                        <span id="audio-label"
+                            style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Choose audio</span>
+                    </label>
+                    <input type="file" name="audio_file" id="id_audio_file" accept="audio/*" style="display:none;"
+                        onchange="document.getElementById('audio-label').textContent=this.files[0]?this.files[0].name:'Choose audio'" />
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Thumbnail
+                        (optional)</label>
+                    <label for="id_thumbnail"
+                        style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
+                        onmouseover="this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.borderColor='var(--border)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span id="thumb-label"
+                            style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Choose image</span>
+                    </label>
+                    <input type="file" name="thumbnail" id="id_thumbnail" accept="image/*" style="display:none;"
+                        onchange="document.getElementById('thumb-label').textContent=this.files[0]?this.files[0].name:'Choose image'" />
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="submit"
+                    style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                    onmouseover="this.style.background='var(--accent-h)'"
+                    onmouseout="this.style.background='var(--accent)'">
+                    Upload podcast
+                </button>
+                <a href="{% url 'library:home' %}"
+                    style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

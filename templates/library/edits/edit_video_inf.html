@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block title %}Edit Video — HiradHub{% endblock %}
+{% block nav_library %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:560px; margin:0 auto;">
+
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+        <a href="{% url 'library:video_detail' video.pk %}"
+            style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; text-decoration:none; color:var(--muted);"
+            onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+        </a>
+        <p style="font-size:16px; font-weight:500; color:var(--text);">Edit video</p>
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
+        <form method="POST" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Title</label>
+                <input type="text" name="title" value="{{ video.title }}"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Author</label>
+                <input type="text" name="author" value="{{ video.author }}"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description</label>
+                <textarea name="description" rows="3"
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.6;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'">{{ video.description }}</textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1rem;">
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Level</label>
+                    <select name="level"
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;">
+                        <option value="">— select —</option>
+                        <option value="beginner" {% if video.level=='beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="intermediate" {% if video.level=='intermediate' %}selected{% endif %}>
+                            Intermediate</option>
+                        <option value="advanced" {% if video.level=='advanced' %}selected{% endif %}>Advanced</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Duration
+                        (HH:MM:SS)</label>
+                    <input type="text" name="duration" value="{{ video.duration|default:'' }}" placeholder="01:30:00"
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'" />
+                </div>
+            </div>
+
+            <div style="margin-bottom:1rem;">
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Topics</label>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                    {% for topic in topics %}
+                    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+                        <input type="checkbox" name="topics" value="{{ topic.pk }}"
+                            style="accent-color:var(--accent); width:13px; height:13px;" {% if topic in video.topics.all
+                            %}checked{% endif %} />
+                        <span style="font-size:12px; color:var(--muted);">{{ topic.name }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1.5rem;">
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Replace video
+                        (optional)</label>
+                    <label for="id_video_file"
+                        style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
+                        onmouseover="this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.borderColor='var(--border)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" />
+                        </svg>
+                        <span id="video-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choose
+                            new video</span>
+                    </label>
+                    <input type="file" name="video_file" id="id_video_file" accept="video/*" style="display:none;"
+                        onchange="document.getElementById('video-label').textContent=this.files[0]?this.files[0].name:'Choose new video'" />
+                </div>
+                <div>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Replace
+                        thumbnail (optional)</label>
+                    <label for="id_thumbnail"
+                        style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
+                        onmouseover="this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.borderColor='var(--border)'">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span id="thumb-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choose
+                            image</span>
+                    </label>
+                    <input type="file" name="thumbnail" id="id_thumbnail" accept="image/*" style="display:none;"
+                        onchange="document.getElementById('thumb-label').textContent=this.files[0]?this.files[0].name:'Choose image'" />
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button type="submit"
+                    style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                    onmouseover="this.style.background='var(--accent-h)'"
+                    onmouseout="this.style.background='var(--accent)'">
+                    Save changes
+                </button>
+                <a href="{% url 'library:video_detail' video.pk %}"
+                    style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
