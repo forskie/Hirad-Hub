@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — HiradHub{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:900px; margin:0 auto;">
+
+    <!-- Welcome row -->
+    <div
+        style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:1.5rem;">
+        <div>
+            <p style="font-size:18px; font-weight:500; color:var(--text);">Good day,
+                {{ request.user.first_name|default:request.user.username }}</p>
+            <p style="font-size:13px; color:var(--muted); margin-top:2px;">{{ request.user.title }} · Level
+                {{request.user.level }}</p>
+        </div>
+        <span
+            style="font-size:12px; padding:4px 12px; background:#1e1d3a; color:#a5b4fc; border-radius:20px; font-weight:500;">Rank
+            #{{ rank }}</span>
+    </div>
+
+    <!-- Stat cards -->
+    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; margin-bottom:1.25rem;">
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+            <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Score</p>
+            <p style="font-size:22px; font-weight:500; color:var(--accent);">{{ request.user.score }}</p>
+        </div>
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+            <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Level</p>
+            <p style="font-size:22px; font-weight:500; color:var(--text);">{{ request.user.level }}</p>
+        </div>
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+            <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Posts</p>
+            <p style="font-size:22px; font-weight:500; color:var(--text);">{{ dash.post_count }}</p>
+        </div>
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+            <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Notes</p>
+            <p style="font-size:22px; font-weight:500; color:var(--text);">{{ dash.notes_count }}</p>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div
+        style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; margin-bottom:1.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <p style="font-size:13px; color:var(--text); font-weight:500;">Progress to Level
+                {{ request.user.level|add:1 }}</p>
+            <span style="font-size:12px; color:var(--accent);">{{ request.user.score }} pts</span>
+        </div>
+        {% with levels="0,1000,5000,10000,20000,35000,45000,55000,70000,85000,100000" %}
+        <div style="height:4px; background:var(--surface2); border-radius:2px; overflow:hidden;">
+            <div
+                style="height:100%; width:{% widthratio request.user.score 20000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;">
+            </div>
+        </div>
+        {% endwith %}
+        <p style="font-size:11px; color:var(--muted); margin-top:6px;">Keep reading, posting and taking notes to earn
+            more points</p>
+    </div>
+
+    <!-- Two columns -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
+
+        <!-- Recent activity -->
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
+            <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Recent activity</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                {% for post in request.user.posts.all|slice:":3" %}
+                <a href="{% url 'post:detail' post.pk %}"
+                    style="display:flex; align-items:center; gap:10px; padding:8px; background:var(--surface2); border-radius:8px; text-decoration:none; transition:background 0.15s;"
+                    onmouseover="this.style.background='var(--border)'"
+                    onmouseout="this.style.background='var(--surface2)'">
+                    <span
+                        style="font-size:10px; padding:2px 7px; background:#1e2d1e; color:#86efac; border-radius:5px; flex-shrink:0;">post</span>
+                    <span
+                        style="font-size:12px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        {{ post.text|truncatechars:40 }}</span>
+                    <span style="font-size:11px; color:var(--muted); flex-shrink:0; margin-left:auto;">
+                        {{ post.created_at|timesince|slice:":6" }}</span>
+                </a>
+                {% endfor %}
+                {% for note in request.user.note_set.all|slice:":3" %}
+                <a href="{% url 'note:detail' note.pk %}"
+                    style="display:flex; align-items:center; gap:10px; padding:8px; background:var(--surface2); border-radius:8px; text-decoration:none; transition:background 0.15s;"
+                    onmouseover="this.style.background='var(--border)'"
+                    onmouseout="this.style.background='var(--surface2)'">
+                    <span
+                        style="font-size:10px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:5px; flex-shrink:0;">note</span>
+                    <span
+                        style="font-size:12px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        {{ note.title|truncatechars:40 }}</span>
+                    <span style="font-size:11px; color:var(--muted); flex-shrink:0; margin-left:auto;">{{
+                        note.updated_at|timesince|slice:":6" }}</span>
+                </a>
+                {% empty %}
+                {% endfor %}
+                {% if not request.user.posts.all and not request.user.note_set.all %}
+                <p style="font-size:13px; color:var(--muted); text-align:center; padding:1rem 0;">No activity yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Leaderboard preview -->
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+                <p style="font-size:14px; font-weight:500; color:var(--text);">Leaderboard</p>
+                <a href="{% url 'main:leaderboard' %}"
+                    style="font-size:12px; color:var(--accent); text-decoration:none;">View all →</a>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+                {% for entry in top_users %}
+                <div style="display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px;
+            {% if entry.user == request.user %}background:#1e1d3a;{% else %}background:var(--surface2);{% endif %}">
+                    <span
+                        style="font-size:12px; font-weight:500; color:var(--muted); min-width:20px; text-align:center;">
+                        {{ forloop.counter }}</span>
+                    <div
+                        style="width:24px; height:24px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); flex-shrink:0;">
+                        {{ entry.user.username|first|upper }}</div>
+                    <span
+                        style="font-size:12px; color:{% if entry.user == request.user %}#a5b4fc{% else %}var(--text){% endif %}; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        {{ entry.user.get_full_name|default:entry.user.username }}
+                        {% if entry.user == request.user %}<span style="font-size:10px; color:#a5b4fc;"> (you)</span>
+                        {% endif %}
+                    </span>
+                    <span
+                        style="font-size:12px; font-weight:500; color:{% if entry.user == request.user %}#6366F1{% else %}#f59e0b{% endif %}; flex-shrink:0;">
+                        {{ entry.total_score }}</span>
+                </div>
+                {% empty %}
+                <p style="font-size:13px; color:var(--muted); text-align:center; padding:1rem 0;">No data yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick actions -->
+    <div style="display:flex; gap:10px; margin-top:1.25rem; flex-wrap:wrap;">
+        <a href="{% url 'note:create' %}"
+            style="flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+            </svg>
+            New note
+        </a>
+        <a href="{% url 'post:create' %}"
+            style="flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="M11 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-5m-1.414-9.414a2 2 0 1 1 2.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            New post
+        </a>
+        <a href="{% url 'library:home' %}"
+            style="flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            Browse library
+        </a>
+    </div>
+
+</div>
+{% endblock %}

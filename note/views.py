@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.contenttypes.models import ContentType
+from library.models import Comment, Like
+from post.models import Post
 from .models import Note
 
 @login_required
@@ -58,3 +61,31 @@ def note_delete(request, pk):
         note.delete()
         return redirect('note:list')
     return render(request, 'note/confirm_delete.html', {'note': note})
+
+
+
+@login_required
+def toggle_like(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    ct = ContentType.objects.get_for_model(Note)
+    like, created = Like.objects.get_or_create(user=request.user, content_type=ct, object_id=note.pk)
+    if not created:
+        like.delete()
+    return redirect(request.META.get('HTTP_REFERER', 'note:list'))
+
+
+@login_required
+def add_comment(request, pk):
+    note = get_object_or_404(Note, pk=pk)
+    if request.method == 'POST':
+        text = request.POST.get('text', '').strip()
+        parent_id = request.POST.get('parent_id')
+        if text:
+            Comment.objects.create(
+                user=request.user,  
+                content_object=note,
+                text=text,
+                parent_id=parent_id or None
+            )
+    return redirect('note:detail', pk=pk)
+    

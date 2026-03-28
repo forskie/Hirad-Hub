@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% block title %}{{ note.title }} — HiradHub{% endblock %}
+{% block nav_notes %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+    .note-content img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 8px 0;
+    }
+
+    .note-content h1,
+    .note-content h2,
+    .note-content h3 {
+        color: var(--text);
+        font-weight: 500;
+        margin: 1rem 0 0.5rem;
+    }
+
+    .note-content p {
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.8;
+        margin-bottom: 0.75rem;
+    }
+
+    .note-content ul,
+    .note-content ol {
+        padding-left: 1.25rem;
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.8;
+        margin-bottom: 0.75rem;
+    }
+
+    .note-content blockquote {
+        border-left: 3px solid var(--accent);
+        padding-left: 1rem;
+        color: var(--muted);
+        margin: 1rem 0;
+        font-style: italic;
+    }
+
+    .note-content code {
+        background: var(--surface2);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--accent);
+    }
+
+    .note-content pre {
+        background: var(--surface2);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+        overflow-x: auto;
+        margin-bottom: 0.75rem;
+    }
+
+    .note-content pre code {
+        background: none;
+        padding: 0;
+        color: var(--text);
+    }
+
+    .note-content a {
+        color: var(--accent);
+    }
+
+    .note-content strong {
+        font-weight: 500;
+        color: var(--text);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:820px; margin:0 auto;">
+
+    <a href="{% url 'note:list' %}"
+        style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); text-decoration:none; margin-bottom:1.25rem; transition:color 0.15s;"
+        onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6" />
+        </svg>
+        My notes
+    </a>
+
+    <div style="display:grid; grid-template-columns:1fr 220px; gap:1.25rem; align-items:start;">
+
+        <!-- Main content -->
+        <div>
+            <!-- Header -->
+            <div
+                style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem;">
+                <div
+                    style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px;">
+                    <p style="font-size:20px; font-weight:500; color:var(--text); line-height:1.3;">{{ note.title }}</p>
+                    <div style="display:flex; gap:6px; flex-shrink:0;">
+                        {% if note.is_public %}
+                        <span
+                            style="font-size:11px; padding:3px 8px; background:#052e16; color:#86efac; border-radius:6px;">public</span>
+                        {% else %}
+                        <span
+                            style="font-size:11px; padding:3px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">private</span>
+                        {% endif %}
+                        {% if note.author == request.user %}
+                        <a href="{% url 'note:edit' note.pk %}"
+                            style="display:flex; align-items:center; gap:5px; padding:4px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:6px; font-size:12px; color:var(--muted); text-decoration:none; transition:color 0.15s;"
+                            onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                            </svg>
+                            Edit
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <a href="{% url 'user:profile_others' note.author.username %}"
+                        style="display:flex; align-items:center; gap:6px; text-decoration:none;">
+                        <div
+                            style="width:22px; height:22px; border-radius:50%; background:#1e1d3a; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; color:#a5b4fc;">
+                            {{ note.author.username|first|upper }}</div>
+                        <span style="font-size:12px; color:var(--muted);">
+                            {{ note.author.get_full_name|default:note.author.username }}</span>
+                    </a>
+                    <span style="font-size:12px; color:var(--muted);">·</span>
+                    <span style="font-size:12px; color:var(--muted);">{{ note.updated_at|date:"M d, Y" }}</span>
+                    {% if note.topics.all %}
+                    <span style="font-size:12px; color:var(--muted);">·</span>
+                    {% for topic in note.topics.all %}
+                    <span
+                        style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">
+                        {{ topic.name }}</span>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div
+                style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.25rem;">
+                {% if note.img %}
+                <img src="{{ note.img.url }}"
+                    style="width:100%; border-radius:8px; margin-bottom:1.25rem; max-height:300px; object-fit:cover;" />
+                {% endif %}
+                <div class="note-content">{{ note.content|safe }}</div>
+            </div>
+
+            <!-- Actions -->
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:1.25rem;">
+                {% if request.user.is_authenticated %}
+                <form method="POST" action="{% url 'note:toggle_like' note.pk %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                        style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
+                        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                        {{ note.count_likes }} likes
+                    </button>
+                </form>
+                {% else %}
+                <span style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                    </svg>
+                    {{ note.count_likes }} likes
+                </span>
+                {% endif %}
+                {% if note.author == request.user %}
+                <a href="{% url 'note:delete' note.pk %}"
+                    style="display:flex; align-items:center; gap:5px; font-size:13px; color:#ef4444; text-decoration:none; margin-left:auto; transition:opacity 0.15s;"
+                    onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14H6L5 6" />
+                    </svg>
+                    Delete
+                </a>
+                {% endif %}
+            </div>
+
+            <!-- Comments -->
+            <div
+                style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
+                <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments
+                    ({{ note.count_comments }})</p>
+
+                {% if request.user.is_authenticated %}
+                <form method="POST" action="{% url 'note:add_comment' note.pk %}" style="margin-bottom:1rem;">
+                    {% csrf_token %}
+                    <textarea name="text" rows="2" placeholder="Write a comment..."
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:none; line-height:1.6; margin-bottom:6px;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'"></textarea>
+                    <div style="display:flex; justify-content:flex-end;">
+                        <button type="submit"
+                            style="padding:6px 14px; background:var(--accent); color:#fff; border:none; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif;">Post</button>
+                    </div>
+                </form>
+                {% endif %}
+
+                {% if comments %}
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    {% for comment in comments %}
+                    <div style="display:flex; gap:8px;">
+                        <div
+                            style="width:28px; height:28px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); flex-shrink:0;">
+                            {{ comment.user.username|first|upper }}</div>
+                        <div style="flex:1;">
+                            <div style="background:var(--surface2); border-radius:10px; padding:10px 12px;">
+                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
+                                        {{ comment.user.get_full_name|default:comment.user.username }}</span>
+                                    <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }}
+                                        ago</span>
+                                </div>
+                                <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ comment.text }}</p>
+                            </div>
+                            {% for reply in comment.replies.all %}
+                            <div style="display:flex; gap:8px; margin-top:6px; margin-left:1rem;">
+                                <div
+                                    style="width:24px; height:24px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); flex-shrink:0;">
+                                    {{ reply.user.username|first|upper }}</div>
+                                <div style="background:var(--surface2); border-radius:10px; padding:8px 12px; flex:1;">
+                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
+                                        {{ reply.user.get_full_name|default:reply.user.username }}</span>
+                                    <p style="font-size:13px; color:var(--text); line-height:1.6; margin-top:2px;">
+                                        {{ reply.text }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% if request.user.is_authenticated %}
+                            <form method="POST" action="{% url 'note:add_comment' note.pk %}"
+                                style="margin-top:6px; margin-left:0.5rem;">
+                                {% csrf_token %}
+                                <input type="hidden" name="parent_id" value="{{ comment.pk }}" />
+                                <div style="display:flex; gap:6px;">
+                                    <input type="text" name="text" placeholder="Reply..."
+                                        style="flex:1; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                                        onfocus="this.style.borderColor='var(--accent)'"
+                                        onblur="this.style.borderColor='var(--border)'" />
+                                    <button type="submit"
+                                        style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
+                                        onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)'"
+                                        onmouseout="this.style.background='var(--surface2)';this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
+                                        Reply
+                                    </button>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p style="font-size:13px; color:var(--muted); text-align:center; padding:1.5rem 0;">No comments yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div style="position:sticky; top:70px; display:flex; flex-direction:column; gap:10px;">
+
+            <!-- Materials -->
+            {% if note.materials.all %}
+            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+                <p
+                    style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase;">
+                    Materials</p>
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    {% for book in note.materials.all %}
+                    <a href="{% url 'library:book_detail' book.pk %}"
+                        style="display:flex; align-items:center; gap:8px; padding:7px 8px; background:var(--surface2); border-radius:7px; text-decoration:none; transition:background 0.15s;"
+                        onmouseover="this.style.background='var(--border)'"
+                        onmouseout="this.style.background='var(--surface2)'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--muted)"
+                            stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                        <span style="font-size:12px; color:var(--text);">{{ book.title|truncatechars:28 }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Details -->
+            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+                <p
+                    style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase;">
+                    Details</p>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Created</span><span style="color:var(--text);">
+                            {{ note.created_at|date:"M d, Y" }}</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Updated</span><span style="color:var(--text);">
+                            {{ note.updated_at|date:"M d, Y" }}</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Likes</span><span style="color:var(--text);">
+                            {{ note.count_likes}}</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Comments</span><span style="color:var(--text);">
+                            {{ note.count_comments }}</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

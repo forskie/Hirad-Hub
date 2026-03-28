@@ -71,12 +71,20 @@ def update_progress(request, model_name, pk):
         interaction.save()
     return redirect(request.META.get('HTTP_REFERER', 'library:home'))    
 
+
 @login_required
-def add_comment(request, pk):
+def add_comment(request, model_name, pk):
     model_map = {'book': Book, 'video': Video, 'podcast': Podcast}
-    model = model_map.get(request.POST.get('model_name'))
+    detail_view_map = {'book': 'library:book_detail',
+                        'video': 'library:video_detail',
+                        'podcast': 'library:podcast_detail'}
+    
+    model = model_map.get(model_name)
     if not model:
         return redirect('library:home')
+    
+    obj = get_object_or_404(model, pk=pk)
+    
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
         parent_id = request.POST.get('parent_id')
@@ -84,11 +92,10 @@ def add_comment(request, pk):
             Comment.objects.create(
                 user=request.user,
                 text=text,
-                parent_id=parent_id or None
+                parent_id=parent_id or None,
+                content_object=obj
             )
-    return redirect('post:detail', pk=pk)
-
-
+    return redirect(detail_view_map[model_name], pk=pk)
 
 @login_required
 def toggle_like(request, model_name, pk):

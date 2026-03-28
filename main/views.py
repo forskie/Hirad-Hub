@@ -12,9 +12,6 @@ def dashboard(request):
 def home(request):
     return render(request, 'main/home.html')
 
-def home_no_register(request):
-    return render(request, 'main/home_.html')
-
 def search(request):
     query = request.GET.get('q', '')
     return render(request, 'main/search.html', {'query': query})

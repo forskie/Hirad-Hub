@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block title %}Notes — HiradHub{% endblock %}
+{% block nav_notes %}active{% endblock %}
+
+{% block content %}
+<div style="max-width:900px; margin:0 auto;">
+
+    <div
+        style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+        <div>
+            <p style="font-size:18px; font-weight:500; color:var(--text);">My Notes</p>
+            <p style="font-size:13px; color:var(--muted); margin-top:2px;">
+                {{ notes|length }} note{{ notes|length|pluralize }}</p>
+        </div>
+        <a href="{% url 'note:create' %}"
+            style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            New note
+        </a>
+    </div>
+
+    {% if notes %}
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px;">
+        {% for note in notes %}
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:8px; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+
+            <!-- Title row -->
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+                <a href="{% url 'note:detail' note.pk %}" style="text-decoration:none; flex:1;">
+                    <p style="font-size:14px; font-weight:500; color:var(--text); line-height:1.4;">
+                        {{note.title|truncatechars:50 }}</p>
+                </a>
+                {% if note.is_public %}
+                <span
+                    style="font-size:10px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px; flex-shrink:0;">public</span>
+                {% else %}
+                <span
+                    style="font-size:10px; padding:2px 7px; background:var(--surface2); color:var(--muted); border-radius:5px; flex-shrink:0;">private</span>
+                {% endif %}
+            </div>
+
+            <!-- Preview -->
+            <p style="font-size:12px; color:var(--muted); line-height:1.6; flex:1;">
+                {{ note.content|striptags|truncatechars:100 }}</p>
+
+            <!-- Topics -->
+            {% if note.topics.all %}
+            <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                {% for topic in note.topics.all %}
+                <span style="font-size:10px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:5px;">
+                    {{ topic.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Footer -->
+            <div
+                style="display:flex; align-items:center; justify-content:space-between; padding-top:8px; border-top:0.5px solid var(--border);">
+                <span style="font-size:11px; color:var(--muted);">{{ note.updated_at|timesince }} ago</span>
+                <div style="display:flex; gap:8px;">
+                    <a href="{% url 'note:edit' note.pk %}"
+                        style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); text-decoration:none; transition:all 0.15s;"
+                        onmouseover="this.style.color='var(--text)';this.style.background='var(--border)'"
+                        onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    </a>
+                    <a href="{% url 'note:delete' note.pk %}"
+                        style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); text-decoration:none; transition:all 0.15s;"
+                        onmouseover="this.style.color='#ef4444';this.style.background='#fef2f2'"
+                        onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:5rem 0;">
+        <div
+            style="width:48px; height:48px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+        </div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">No notes yet.</p>
+        <a href="{% url 'note:create' %}"
+            style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">Create
+            first note</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

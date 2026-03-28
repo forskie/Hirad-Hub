@@ -6,8 +6,10 @@ app_name = 'note'
 urlpatterns = [
     path('', views.note_list, name='list'),
     path('create', views.note_create, name='create'),
-    path('<str:note>/edit', views.note_edit, name='note_edit'),
-    path('<str:note>/delete', views.note_delete, name='note_delete'),
-    path('<str:note>', views.note_detail, name='note_detail'),
+    path('<int:pk>/edit', views.note_edit, name='edit'),
+    path('<int:pk>/delete', views.note_delete, name='delete'),
+    path('<int:pk>', views.note_detail, name='detail'),
+    path('toggle_like/<int:pk>', views.toggle_like, name='toggle_like'),
+    path('<int:pk>/add_comment', views.add_comment, name='add_comment'),
 ]
 
