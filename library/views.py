@@ -23,7 +23,7 @@ def book_detail(request, pk):
         interaction, _ = LibraryInteraction.objects.get_or_create(
             user=request.user, content_type=ct, object_id=book.pk
         ) 
-    return render(request, 'library/book_detail.html', {'book': book, 'comments': comments, 'interaction': interaction})
+    return render(request, 'library/details/book_detail.html', {'book': book, 'comments': comments, 'interaction': interaction})
 
 
 def video_detail(request, pk):
@@ -35,7 +35,7 @@ def video_detail(request, pk):
         interaction, _ = LibraryInteraction.objects.get_or_create(
             user=request.user, content_type=ct, object_id=video.pk
         )        
-    return render(request, 'library/video_detail.html', {'video': video, 'comments': comments, 'interaction': interaction})
+    return render(request, 'library/details/video_detail.html', {'video': video, 'comments': comments, 'interaction': interaction})
 
 
 def podcast_detail(request, pk):
@@ -47,7 +47,7 @@ def podcast_detail(request, pk):
         interaction, _ = LibraryInteraction.objects.get_or_create(
             user=request.user, content_type=ct, object_id=podcast.pk
         ) 
-    return render(request, 'library/podcast_detail.html', {'podcast': podcast, 'comments': comments, 'interaction': interaction})
+    return render(request, 'library/details/podcast_detail.html', {'podcast': podcast, 'comments': comments, 'interaction': interaction})
 
 
 # ________________________  User Student login View _____________________
@@ -97,14 +97,14 @@ def add_book(request):
             pages=int(pages)
         file_book = request.FILES.get('file')
         if not author or not file_book:
-            return render(request, 'library/add_book.html', {'error': 'Author and book are required.'})
+            return render(request, 'library/uploads/add_book.html', {'error': 'Author and book are required.'})
         book = Book.objects.create(
             author=author, 
             file=file_book, pages=pages
         )
         book.topics.set(topics_ids)
         return redirect('library:book_detail', pk=book.pk)
-    return render(request, 'library/add_book.html')
+    return render(request, 'library/uploads/add_book.html')
 
 @teacher_required
 def edit_added_book(request, pk):
@@ -119,7 +119,7 @@ def edit_added_book(request, pk):
         if topics_ids:
             book.topics.set(topics_ids)
         return redirect('library:book_detail', pk=book.pk)
-    return render(request, 'library/edit_books_inf.html', {'book': book})
+    return render(request, 'library/edits/edit_books_inf.html', {'book': book})
 
 
 
@@ -134,14 +134,14 @@ def upload_podcast(request):
         audio_file = request.FILES.get('audio_file')
         thumbnail = request.FILES.get('thumbnail')
         if not author or not audio_file:
-            return render(request, 'library/upload_podcast.html', {'error': 'Author and podcast(audio file) are required.'})
+            return render(request, 'library/uploads/upload_podcast.html', {'error': 'Author and podcast(audio file) are required.'})
         podcast = Podcast.objects.create(
             author=author, audio_file=audio_file,
             thumbnail=thumbnail, duration=duration
         )
         podcast.topics.set(topics_ids)
         return redirect('library:podcast_detail', pk=podcast.pk)
-    return render(request, 'library/upload_podcast.html')
+    return render(request, 'library/uploads/upload_podcast.html')
     
 @teacher_required
 def edit_added_podcast(request, pk):
@@ -158,7 +158,7 @@ def edit_added_podcast(request, pk):
         if topics_ids:
             podcast.topics.set(topics_ids)
         return redirect('library:podcast_detail', pk=podcast.pk)
-    return render(request, 'library/edit_podcast_inf.html', {'podcast': podcast})
+    return render(request, 'library/edits/edit_podcast_inf.html', {'podcast': podcast})
 
 
 @teacher_required
@@ -172,14 +172,14 @@ def upload_video(request):
         video_file = request.FILES.get('video_file')
         thumbnail = request.FILES.get('thumbnail')
         if not author or not video_file:
-            return render(request, 'library/upload_video.html', {'error': 'Author and video (video file) are required.'})
+            return render(request, 'library/uploads/upload_video.html', {'error': 'Author and video (video file) are required.'})
         video = Video.objects.create(
             author=author, video_file=video_file,
             thumbnail=thumbnail, duration=duration
         )
         video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)
-    return render(request, 'library/upload_video.html')
+    return render(request, 'library/uploads/upload_video.html')
 
 
 @teacher_required
@@ -197,4 +197,4 @@ def edit_added_video(request, pk):
         if topics_ids:
             video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)
-    return render(request, 'library/edit_video_inf.html', {'video': video})
+    return render(request, 'library/edits/edit_video_inf.html', {'video': video})

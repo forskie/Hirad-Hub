@@ -15,3 +15,10 @@ def home(request):
 def home_no_register(request):
     return render(request, 'main/home_.html')
 
+def search(request):
+    query = request.GET.get('q', '')
+    return render(request, 'main/search.html', {'query': query})
+
+def leaderboard(request):
+    leaders = Dashboard.objects.order_by('-total_score')[:10]
+    return render(request, 'main/leaderboard.html', {'leaders': leaders})

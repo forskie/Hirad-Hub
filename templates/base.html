@@ -2,18 +2,623 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock title %}</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}HiradHub{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Sora', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        :root {
+            --bg: #F9FAFB;
+            --surface: #FFFFFF;
+            --surface2: #F3F4F6;
+            --border: #E5E7EB;
+            --text: #111827;
+            --muted: #6B7280;
+            --accent: #6366F1;
+            --accent-h: #4F46E5;
+        }
+
+        html.dark {
+            --bg: #0A0A0B;
+            --surface: #111827;
+            --surface2: #1F2937;
+            --border: #1F2937;
+            --text: #F9FAFB;
+            --muted: #9CA3AF;
+            --accent: #6366F1;
+            --accent-h: #818CF8;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sora', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            height: 52px;
+            background: var(--surface);
+            border-bottom: 0.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            gap: 1.25rem;
+        }
+
+        .nav-logo {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            text-decoration: none;
+            margin-right: auto;
+            flex-shrink: 0;
+        }
+
+        .nav-logo span {
+            color: var(--accent);
+        }
+
+        .nav-link {
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+            white-space: nowrap;
+            padding-bottom: 2px;
+            border-bottom: 2px solid transparent;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-link.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* ── Search ── */
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--surface2);
+            border: 0.5px solid var(--border);
+            border-radius: 8px;
+            padding: 5px 10px;
+        }
+
+        .search-form input {
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            color: var(--text);
+            width: 130px;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .search-form input::placeholder {
+            color: var(--muted);
+        }
+
+        /* ── Theme toggle ── */
+        .theme-btn {
+            width: 32px;
+            height: 32px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            border: 0.5px solid var(--border);
+            background: var(--surface2);
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .theme-btn:hover {
+            color: var(--text);
+            background: var(--border);
+        }
+
+        /* ── Avatar + Dropdown ── */
+        .avatar {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: #1e1d3a;
+            border: 1.5px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 500;
+            color: #A5B4FC;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: calc(100% + 8px);
+            background: var(--surface);
+            border: 0.5px solid var(--border);
+            border-radius: 10px;
+            min-width: 170px;
+            padding: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-header {
+            padding: 8px 10px 8px;
+            border-bottom: 0.5px solid var(--border);
+            margin-bottom: 4px;
+        }
+
+        .dropdown-header p:first-child {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .dropdown-header p:last-child {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            color: var(--text);
+            text-decoration: none;
+            border-radius: 7px;
+            transition: background 0.1s;
+        }
+
+        .dropdown-item:hover {
+            background: var(--surface2);
+        }
+
+        .dropdown-item.danger {
+            color: #EF4444;
+        }
+
+        .dropdown-item.danger:hover {
+            background: #fef2f2;
+        }
+
+        html.dark .dropdown-item.danger:hover {
+            background: #1a0808;
+        }
+
+        .dropdown-divider {
+            border: none;
+            border-top: 0.5px solid var(--border);
+            margin: 4px 0;
+        }
+
+        /* ── Auth buttons ── */
+        .btn-ghost {
+            font-size: 13px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface2);
+            color: var(--text);
+        }
+
+        .btn-primary {
+            font-size: 13px;
+            font-weight: 500;
+            color: #fff;
+            background: var(--accent);
+            text-decoration: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: background 0.15s;
+            white-space: nowrap;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-h);
+        }
+
+        /* ── Messages ── */
+        .messages {
+            padding: 1rem 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .message.success {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 0.5px solid #bbf7d0;
+        }
+
+        .message.error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 0.5px solid #fecaca;
+        }
+
+        .message.warning {
+            background: #fffbeb;
+            color: #b45309;
+            border: 0.5px solid #fde68a;
+        }
+
+        .message.info {
+            background: #eef2ff;
+            color: #4338ca;
+            border: 0.5px solid #c7d2fe;
+        }
+
+        html.dark .message.success {
+            background: #052e16;
+            color: #86efac;
+            border-color: #166534;
+        }
+
+        html.dark .message.error {
+            background: #1a0808;
+            color: #fca5a5;
+            border-color: #7f1d1d;
+        }
+
+        html.dark .message.warning {
+            background: #1a1100;
+            color: #fcd34d;
+            border-color: #78350f;
+        }
+
+        html.dark .message.info {
+            background: #1e1d3a;
+            color: #a5b4fc;
+            border-color: #3730a3;
+        }
+
+        /* ── Main ── */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1.75rem 1.5rem;
+            animation: fadeUp 0.18s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Footer ── */
+        footer {
+            border-top: 0.5px solid var(--border);
+            background: var(--surface);
+            padding: 14px 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        footer span,
+        footer a {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: var(--accent);
+        }
+
+        /* ── Mobile ── */
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--muted);
+            padding: 4px;
+        }
+
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            background: var(--surface);
+            border-bottom: 0.5px solid var(--border);
+            padding: 8px 1.5rem;
+        }
+
+        .mobile-menu.open {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            font-size: 14px;
+            color: var(--muted);
+            text-decoration: none;
+            padding: 10px 0;
+            border-bottom: 0.5px solid var(--border);
+            transition: color 0.15s;
+        }
+
+        .mobile-menu a:last-child {
+            border: none;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+
+            .nav-links,
+            .search-form {
+                display: none !important;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
+    <header class="navbar">
+        <a href="{% url 'main:home' %}" class="nav-logo"><span>Hirad</span>Hub</a>
 
+        <nav class="nav-links" style="display:flex;align-items:center;gap:1.25rem;">
+            <a href="{% url 'library:home' %}" class="nav-link {% block nav_library   %}{% endblock %}">Library</a>
+            <a href="{% url 'post:list' %}" class="nav-link {% block nav_posts     %}{% endblock %}">Posts</a>
+            <a href="{% url 'note:list' %}" class="nav-link {% block nav_notes     %}{% endblock %}">Notes</a>
+            <a href="{% url 'main:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">Dashboard</a>
+        </nav>
 
-    {% block main %}
+        <form method="GET" action="{% url 'main:search' %}" class="search-form">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="color:var(--muted);flex-shrink:0;">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q|default:'' }}" />
+        </form>
 
-    {% endblock main %}
+        <button class="theme-btn" id="theme-toggle" title="Toggle theme">
+            <svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" style="display:none;">
+                <circle cx="12" cy="12" r="5" />
+                <path
+                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+            </svg>
+            <svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+        </button>
+
+        {% if user.is_authenticated %}
+        <div class="dropdown">
+            <div class="avatar">
+                {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="avatar" />
+                {% else %}
+                {{ user.username|first|upper }}
+                {% endif %}
+            </div>
+            <div class="dropdown-menu">
+                <div class="dropdown-header">
+                    <p>{{ user.get_full_name|default:user.username }}</p>
+                    <p>{{ user.title }} · Lv.{{ user.level }}</p>
+                </div>
+                <a href="{% url 'user:profile' %}" class="dropdown-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    Profile
+                </a>
+                <a href="{% url 'user:edit_profile' %}" class="dropdown-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    Edit profile
+                </a>
+                <hr class="dropdown-divider">
+                <a href="{% url 'user:logout' %}" class="dropdown-item danger">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <a href="{% url 'user:login' %}" class="btn-ghost">Login</a>
+            <a href="{% url 'user:register' %}" class="btn-primary">Register</a>
+        </div>
+        {% endif %}
+
+        <button class="hamburger" id="hamburger">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+        </button>
+    </header>
+
+    <div class="mobile-menu" id="mobile-menu">
+        <a href="{% url 'library:home' %}">Library</a>
+        <a href="{% url 'post:list' %}">Posts</a>
+        <a href="{% url 'note:list' %}">Notes</a>
+        <a href="{% url 'main:dashboard' %}">Dashboard</a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'user:profile' %}">Profile</a>
+        <a href="{% url 'user:logout' %}" style="color:#EF4444;">Logout</a>
+        {% else %}
+        <a href="{% url 'user:login' %}">Login</a>
+        <a href="{% url 'user:register' %}">Register</a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <footer>
+        <span><span style="color:var(--accent);font-weight:500;">Hirad</span>Hub</span>
+        <div style="display:flex;gap:1.25rem;">
+            <a href="{% url 'library:home' %}">Library</a>
+            <a href="{% url 'post:list' %}">Posts</a>
+            <a href="{% url 'main:leaderboard' %}">Leaderboard</a>
+        </div>
+    </footer>
+
+    <script>
+        const html = document.documentElement;
+        const btn = document.getElementById('theme-toggle');
+        const sun = document.getElementById('icon-sun');
+        const moon = document.getElementById('icon-moon');
+
+        function applyTheme(t) {
+            if (t === 'dark') {
+                html.classList.add('dark');
+                sun.style.display = 'block';
+                moon.style.display = 'none';
+            } else {
+                html.classList.remove('dark');
+                sun.style.display = 'none';
+                moon.style.display = 'block';
+            }
+        }
+
+        const saved = localStorage.getItem('hh-theme') ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        applyTheme(saved);
+
+        btn.addEventListener('click', () => {
+            const next = html.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem('hh-theme', next);
+            applyTheme(next);
+        });
+
+        document.getElementById('hamburger').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('open');
+        });
+
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (link.href === window.location.href) link.classList.add('active');
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
 </body>
 
 </html>

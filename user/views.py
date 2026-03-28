@@ -38,21 +38,16 @@ def profile_view(request):
 
 @login_required
 def edit_profile(request):
-    form = CustomUserUpdateForm(instance=request.user)
-    return render(request, 'user/edit_profile.html', {'user': request.user, 'form': form})
-
-@login_required
-def update_profile(request):
     if request.method == 'POST':
-        form = CustomUserUpdateForm(request.POST, instance=request.user)
-        if not form.is_valid():
-            return render(request, 'user/edit_profile.html', {'user': request.user, 'form': form})
-        user = form.save(commit=False)
-        user.clean()
-        user.save()
-        return render(request, 'user/profile.html', {'user': user})
-    return render(request, 'user/profile.html', {'user': request.user})
+        form = CustomUserUpdateForm(instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('user:profile')
+    else:
+        form = CustomUserUpdateForm(instance=request.user)
+    return render(request, 'user/edit_profile.html', {'user': request.user, 'form': form})
 
 def logout_view(request):
     logout(request)
     return redirect('home')
+
