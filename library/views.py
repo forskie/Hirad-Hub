@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Book, Video, Podcast, Topic, LibraryInteraction, Like, Comment
 from django.contrib.contenttypes.models import ContentType
 from user.decorators import teacher_required
+from datetime import timedelta
 
 # ________________  Base View  _______________
 
@@ -186,14 +187,14 @@ def upload_video(request):
         topics_ids = request.POST.getlist('topics')
         duration = request.POST.get('duration') or None
         if duration:
-            duration = int(duration)
+            duration = timedelta(duration)
         video_file = request.FILES.get('video_file')
         thumbnail = request.FILES.get('thumbnail')
         if not author or not video_file:
             return render(request, 'library/uploads/upload_video.html', {'error': 'Author and video (video file) are required.'})
         video = Video.objects.create(
             author=author, video_file=video_file,
-            thumbnail=thumbnail, duration=duration
+            thumbnail=thumbnail, duration=timedelta(duration)
         )
         video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)

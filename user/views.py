@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
+
 from .models import CustomUser
 from .forms import CustomUserCreationForm, CustomUserLoginForm, CustomUserUpdateForm
 from django.contrib.auth.decorators import login_required
@@ -27,7 +28,7 @@ def login_view(request):
         form = CustomUserLoginForm()
     return render(request, 'user/login.html', {'form' : form})
 
-def profile_view_others(request):
+def profile_view_others(request, username):
     other_user = get_object_or_404(CustomUser, username=username)
     return render(request, 'user/others_profile.html', {'user' : other_user})
 
@@ -35,19 +36,26 @@ def profile_view_others(request):
 @login_required
 def profile_view(request):
     return render(request, 'user/profile.html', {'user': request.user})
-
 @login_required
 def edit_profile(request):
+    user = request.user
     if request.method == 'POST':
-        form = CustomUserUpdateForm(instance=request.user)
+        form = CustomUserUpdateForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
-            form.save()
-            return redirect('user:profile')
-    else:
-        form = CustomUserUpdateForm(instance=request.user)
-    return render(request, 'user/edit_profile.html', {'user': request.user, 'form': form})
+            user = form.save(commit=False)
+            if request.FILES.get('profile_picture'):
+                user.profile_picture = request.FILES['profile_picture']
 
+            user.save()
+            form.save_m2m()
+            return redirect('user:profile')
+        else:
+            print(form.errors)
+    else:
+        form = CustomUserUpdateForm(instance=user)
+
+    return render(request, 'user/edit_profile.html', {'form': form, 'user': user})
 def logout_view(request):
     logout(request)
-    return redirect('home')
+    return redirect('main:home')
 

@@ -19,6 +19,12 @@ def reward_post(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Like)
 def reward_like(sender, instance, created, **kwargs):
-    if created and hasattr(instance.content_object, 'author'):
-        add_score(LIKE_RECEIVED_POINTS)
-    
+    if not created:
+        return
+    content = instance.content_object
+    if not hasattr(content, 'uploaded_by'):
+        return
+    uploader = content.uploaded_by
+    if uploader == instance.user:
+        return
+    add_score(uploader, LIKE_RECEIVED_POINTS)

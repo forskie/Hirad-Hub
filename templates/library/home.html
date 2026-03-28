@@ -111,8 +111,8 @@
                     {% endif %}
                 </div>
                 <div style="padding:10px;">
-                    <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">{{
-                        video.title|truncatechars:40 }}</p>
+                    <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">
+                        {{ video.title|truncatechars:40 }}</p>
                     <p style="font-size:11px; color:var(--muted);">{{ video.author|truncatechars:25 }}</p>
                 </div>
             </div>
@@ -148,8 +148,8 @@
                     {% endif %}
                 </div>
                 <div style="flex:1; min-width:0;">
-                    <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:2px;">{{
-                        podcast.title|truncatechars:50 }}</p>
+                    <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:2px;">
+                        {{ podcast.title|truncatechars:50 }}</p>
                     <p style="font-size:11px; color:var(--muted);">{{ podcast.author|truncatechars:30 }}
                         {% if podcast.duration %} · {{ podcast.duration }}{% endif %}</p>
                 </div>

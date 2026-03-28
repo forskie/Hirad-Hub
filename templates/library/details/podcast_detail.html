@@ -33,15 +33,15 @@
             <div style="flex:1;">
                 <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:4px;">{{ podcast.title }}
                 </p>
-                <p style="font-size:13px; color:var(--muted);">{{ podcast.author }}{% if podcast.duration %} · {{
-                    podcast.duration }}{% endif %}</p>
+                <p style="font-size:13px; color:var(--muted);">{{ podcast.author }}{% if podcast.duration %} ·
+                    {{ podcast.duration }}{% endif %}</p>
                 <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">
                     {% if podcast.level %}<span
-                        style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{
-                        podcast.get_level_display }}</span>{% endif %}
+                        style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">
+                        {{ podcast.get_level_display }}</span>{% endif %}
                     {% for topic in podcast.topics.all %}<span
-                        style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">{{
-                        topic.name }}</span>{% endfor %}
+                        style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">
+                        {{topic.name }}</span>{% endfor %}
                 </div>
             </div>
             {% if request.user == podcast.creator %}
@@ -99,20 +99,20 @@
             <input type="range" name="progress" min="0" max="100" value="{{ interaction.progress|floatformat:0 }}"
                 style="flex:1; accent-color:var(--accent);"
                 oninput="this.nextElementSibling.textContent=this.value+'%'" />
-            <span style="font-size:12px; color:var(--muted); min-width:36px;">{{ interaction.progress|floatformat:0
-                }}%</span>
+            <span style="font-size:12px; color:var(--muted); min-width:36px;">
+                {{ interaction.progress|floatformat:0}}%</span>
             <button type="submit"
                 style="padding:6px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); cursor:pointer; font-family:'Sora',sans-serif;">Save</button>
         </form>
-        {% if interaction.completed %}<p style="font-size:12px; color:#22c55e; margin-top:8px;">✓ Completed</p>{% endif
-        %}
+        {% if interaction.completed %}<p style="font-size:12px; color:#22c55e; margin-top:8px;">
+            ✓ Completed</p>{%endif%}
     </div>
     {% endif %}
 
     <!-- Comments -->
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
-        <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments ({{
-            podcast.count_comments }})</p>
+        <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments
+            ({{podcast.count_comments }})</p>
         {% if request.user.is_authenticated %}
         <form method="POST" action="{% url 'library:add_comment' 'podcast' podcast.pk %}" style="margin-bottom:1rem;">
             {% csrf_token %}

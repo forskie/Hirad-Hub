@@ -29,16 +29,16 @@
             <div
                 style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem;">
                 <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:4px;">{{ video.title }}</p>
-                <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">by {{ video.author }}{% if
-                    video.duration %} · {{ video.duration }}{% endif %}</p>
+                <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">by {{ video.author }}
+                    {% if video.duration %} · {{ video.duration }}{% endif %}</p>
 
                 <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1rem;">
                     {% if video.level %}<span
-                        style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{
-                        video.get_level_display }}</span>{% endif %}
+                        style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">
+                        {{ video.get_level_display }}</span>{% endif %}
                     {% for topic in video.topics.all %}<span
-                        style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">{{
-                        topic.name }}</span>{% endfor %}
+                        style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">
+                        {{ topic.name }}</span>{% endfor %}
                 </div>
 
                 {% if video.description %}
@@ -90,8 +90,8 @@
                     <input type="range" name="progress" min="0" max="100"
                         value="{{ interaction.progress|floatformat:0 }}" style="flex:1; accent-color:var(--accent);"
                         oninput="this.nextElementSibling.textContent=this.value+'%'" />
-                    <span style="font-size:12px; color:var(--muted); min-width:36px;">{{
-                        interaction.progress|floatformat:0 }}%</span>
+                    <span style="font-size:12px; color:var(--muted); min-width:36px;">
+                        {{ interaction.progress|floatformat:0 }}%</span>
                     <button type="submit"
                         style="padding:6px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); cursor:pointer; font-family:'Sora',sans-serif;">Save</button>
                 </form>
@@ -103,8 +103,8 @@
             <!-- Comments -->
             <div
                 style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
-                <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments ({{
-                    video.count_comments }})</p>
+                <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments
+                    ({{ video.count_comments }})</p>
                 {% if request.user.is_authenticated %}
                 <form method="POST" action="{% url 'library:add_comment' 'video' video.pk %}"
                     style="margin-bottom:1rem;">
@@ -128,8 +128,8 @@
                             {{ comment.user.username|first|upper }}</div>
                         <div style="flex:1; background:var(--surface2); border-radius:10px; padding:10px 12px;">
                             <div style="display:flex; gap:8px; margin-bottom:4px;">
-                                <span style="font-size:12px; font-weight:500; color:var(--text);">{{
-                                    comment.user.get_full_name|default:comment.user.username }}</span>
+                                <span style="font-size:12px; font-weight:500; color:var(--text);">
+                                    {{ comment.user.get_full_name|default:comment.user.username }}</span>
                                 <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }}
                                     ago</span>
                             </div>
@@ -150,22 +150,24 @@
                 <p style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500;">Details</p>
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Added</span><span style="color:var(--text);">{{
-                            video.date_added|date:"M d, Y" }}</span></div>
+                            style="color:var(--muted);">Added</span><span style="color:var(--text);">
+                            {{video.date_added|date:"M d, Y" }}</span></div>
                     {% if video.duration %}<div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <span style="color:var(--muted);">Duration</span><span style="color:var(--text);">{{
-                            video.duration }}</span>
+                        <span style="color:var(--muted);">Duration</span><span style="color:var(--text);">
+                            {{ video.duration }}</span>
                     </div>{% endif %}
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Likes</span><span style="color:var(--text);">{{
-                            video.count_likes }}</span></div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Comments</span><span style="color:var(--text);">{{
-                            video.count_comments }}</span></div>
+                            style="color:var(--muted);">Likes</span><span style="color:var(--text);">
+                            {{ video.count_likes }}</span></div>
+                    {{ video.count_likes }}</span>
                 </div>
+                <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                        style="color:var(--muted);">Comments</span><span style="color:var(--text);">
+                        {{video.count_comments }}</span></div>
             </div>
         </div>
-
     </div>
+
+</div>
 </div>
 {% endblock %}

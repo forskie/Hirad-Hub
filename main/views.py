@@ -8,7 +8,7 @@ def dashboard(request):
     rank = Dashboard.objects.filter(total_score__gt=dash.total_score).count() + 1
     return render(request, 'main/dashboard.html', {'dash': dash, 'rank': rank})
 
-@login_required
+
 def home(request):
     return render(request, 'main/home.html')
 

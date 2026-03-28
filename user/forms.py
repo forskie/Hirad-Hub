@@ -97,6 +97,11 @@ class CustomUserUpdateForm(forms.ModelForm):
         required=True,
         widget=forms.EmailInput(attrs={'class': 'input-register form-control', 'placeholder': 'Your email'})
     )
+    role = forms.ChoiceField(
+        choices=[('student', 'Student'), ('teacher', 'Teacher'), ('director', 'Director'), ('admin', 'Admin')],
+        required=False,
+        widget=forms.Select(attrs={'class': 'input-register form-control'})
+    )
 
     class Meta:
         model = User
