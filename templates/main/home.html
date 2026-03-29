@@ -1,233 +1,390 @@
 {% extends 'base.html' %}
 {% block title %}HiradHub — Educational Platform{% endblock %}
 
+{% block extra_css %}
+<style>
+    .hero-title {
+        font-size: clamp(28px, 5vw, 48px);
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .rank-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .home-cols {
+        display: grid;
+        grid-template-columns: 1fr 340px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .quick-note-area {
+        width: 100%;
+        min-height: 120px;
+        padding: 12px;
+        background: var(--surface2);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 14px;
+        color: var(--text);
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        resize: vertical;
+        line-height: 1.7;
+        transition: border-color 0.15s;
+    }
+
+    .quick-note-area:focus {
+        border-color: var(--accent);
+    }
+
+    .quick-note-area::placeholder {
+        color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+        .home-cols {
+            grid-template-columns: 1fr;
+        }
+
+        .feature-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 540px) {
+        .feature-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width:860px; margin:0 auto;">
 
-    {% if request.user.is_authenticated %}
+{% if request.user.is_authenticated %}
 
-    <!-- Logged in home — personalized -->
-    <div
-        style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:1.5rem;">
-        <div>
-            <p style="font-size:18px; font-weight:500; color:var(--text);">Welcome back,
-                {{ request.user.first_name|default:request.user.username }}</p>
-            <p style="font-size:13px; color:var(--muted); margin-top:2px;">{{ request.user.title }} · Level
-                {{ request.user.level }} · {{ request.user.score }} pts</p>
+<!-- ── LOGGED IN HOME ── -->
+<div class="home-cols">
+
+
+    <div>
+        <div
+            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
+            <div>
+                <p style="font-size:20px; font-weight:500; color:var(--text);">Hey,
+                    {{ request.user.first_name|default:request.user.username }} 👋</p>
+                <p style="font-size:14px; color:var(--muted); margin-top:3px;">{{ request.user.title }} · Level
+                    {{request.user.level }} · {{ request.user.score }} pts</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+                <a href="{% url 'main:dashboard' %}"
+                    style="padding:8px 16px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
+                    onmouseover="this.style.borderColor='var(--accent)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    Dashboard →
+                </a>
+            </div>
         </div>
-        <a href="{% url 'main:dashboard' %}"
-            style="padding:7px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            Go to dashboard →
-        </a>
-    </div>
 
-    <!-- Quick nav cards -->
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1.75rem;">
-        <a href="{% url 'library:home' %}" style="text-decoration:none;">
-            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s;"
-                onmouseover="this.style.borderColor='var(--accent)'"
-                onmouseout="this.style.borderColor='var(--border)'">
-                <div
-                    style="width:36px; height:36px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                    </svg>
+        <!-- Quick nav -->
+        <div class="feature-grid" style="margin-bottom:1.5rem;">
+            <a href="{% url 'library:home' %}" style="text-decoration:none;">
+                <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s;"
+                    onmouseover="this.style.borderColor='var(--accent)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    <div
+                        style="width:36px; height:36px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                        </svg>
+                    </div>
+                    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px;">Library</p>
+                    <p style="font-size:12px; color:var(--muted);">Books, videos, podcasts</p>
                 </div>
-                <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">Library</p>
-                <p style="font-size:12px; color:var(--muted);">Books, videos, podcasts</p>
-            </div>
-        </a>
-        <a href="{% url 'post:list' %}" style="text-decoration:none;">
-            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s;"
-                onmouseover="this.style.borderColor='var(--accent)'"
-                onmouseout="this.style.borderColor='var(--border)'">
-                <div
-                    style="width:36px; height:36px; background:#1e2d1e; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                    </svg>
-                </div>
-                <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">Community</p>
-                <p style="font-size:12px; color:var(--muted);">Posts and discussions</p>
-            </div>
-        </a>
-        <a href="{% url 'note:list' %}" style="text-decoration:none;">
-            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s;"
-                onmouseover="this.style.borderColor='var(--accent)'"
-                onmouseout="this.style.borderColor='var(--border)'">
-                <div
-                    style="width:36px; height:36px; background:#1a1200; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                    </svg>
-                </div>
-                <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">Notes</p>
-                <p style="font-size:12px; color:var(--muted);">Your knowledge base</p>
-            </div>
-        </a>
-    </div>
-
-    {% else %}
-
-    <!-- Landing for guests -->
-    <div style="text-align:center; padding:4rem 0 3rem;">
-        <p
-            style="font-size:13px; color:var(--accent); font-weight:500; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:1rem;">
-            Educational Platform</p>
-        <p style="font-size:32px; font-weight:600; color:var(--text); line-height:1.3; margin-bottom:1rem;">
-            Learn. Write. Level up.
-        </p>
-        <p style="font-size:15px; color:var(--muted); line-height:1.7; max-width:480px; margin:0 auto 2rem;">
-            HiradHub is a platform for students and teachers — a library, note-taking, community posts and a gamified
-            rank system.
-        </p>
-        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <a href="{% url 'user:register' %}"
-                style="padding:10px 24px; background:var(--accent); color:#fff; border-radius:8px; font-size:14px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-                onmouseover="this.style.background='var(--accent-h)'"
-                onmouseout="this.style.background='var(--accent)'">
-                Get started
             </a>
-            <a href="{% url 'user:login' %}"
-                style="padding:10px 24px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:8px; font-size:14px; text-decoration:none; transition:border-color 0.15s;"
-                onmouseover="this.style.borderColor='var(--accent)'"
-                onmouseout="this.style.borderColor='var(--border)'">
-                Sign in
+            <a href="{% url 'post:list' %}" style="text-decoration:none;">
+                <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s;"
+                    onmouseover="this.style.borderColor='var(--accent)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    <div
+                        style="width:36px; height:36px; background:#1e2d1e; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px;">Community</p>
+                    <p style="font-size:12px; color:var(--muted);">Posts & discussions</p>
+                </div>
+            </a>
+            <a href="{% url 'note:list' %}" style="text-decoration:none;">
+                <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s;"
+                    onmouseover="this.style.borderColor='var(--accent)'"
+                    onmouseout="this.style.borderColor='var(--border)'">
+                    <div
+                        style="width:36px; height:36px; background:#1a1200; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                    </div>
+                    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px;">My notes</p>
+                    <p style="font-size:12px; color:var(--muted);">{{ request.user.note_set.count }} notes</p>
+                </div>
             </a>
         </div>
+
+        <!-- Recent posts preview -->
+        {% if recent_posts %}
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+                <p style="font-size:14px; font-weight:500; color:var(--text);">Recent posts</p>
+                <a href="{% url 'post:list' %}" style="font-size:13px; color:var(--accent); text-decoration:none;">View
+                    all →</a>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                {% for post in recent_posts %}
+                <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
+                    <div style="display:flex; align-items:center; gap:10px; padding:10px; background:var(--surface2); border-radius:8px; transition:background 0.15s;"
+                        onmouseover="this.style.background='var(--border)'"
+                        onmouseout="this.style.background='var(--surface2)'">
+                        <div
+                            style="width:28px; height:28px; border-radius:50%; background:#1e1d3a; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; color:#a5b4fc; flex-shrink:0;">
+                            {{ post.author.username|first|upper }}
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <p
+                                style="font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                {{ post.text|truncatechars:60 }}</p>
+                            <p style="font-size:11px; color:var(--muted); margin-top:2px;">{{ post.author.username }} ·
+                                {{ post.created_at|timesince }} ago</p>
+                        </div>
+                        <span style="font-size:11px; color:var(--muted); flex-shrink:0;">♥ {{ post.count_likes }}</span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 
-    <!-- Feature cards -->
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:3rem;">
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
-            <div
-                style="width:36px; height:36px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-            </div>
-            <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:6px;">Rich library</p>
-            <p style="font-size:12px; color:var(--muted); line-height:1.6;">Books, videos and podcasts uploaded by
-                teachers. Track your reading progress.</p>
-        </div>
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
-            <div
-                style="width:36px; height:36px; background:#1a1200; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
+    <!-- Right: quick note widget -->
+    <div style="position:sticky; top:70px; display:flex; flex-direction:column; gap:14px;">
+
+        <!-- Quick note -->
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.25rem;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <p style="font-size:14px; font-weight:500; color:var(--text);">Quick note</p>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                     <polyline points="14 2 14 8 20 8" />
                 </svg>
             </div>
-            <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:6px;">Smart notes</p>
-            <p style="font-size:12px; color:var(--muted); line-height:1.6;">Rich text editor, topic tags, link to
-                library materials. Share publicly or keep private.</p>
+            <form method="POST" action="{% url 'note:create' %}" id="quick-note-form">
+                {% csrf_token %}
+                <input type="text" name="title" id="quick-note-title" placeholder="Title..."
+                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; margin-bottom:8px; transition:border-color 0.15s;"
+                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+                <textarea name="content" id="quick-note-content" class="quick-note-area"
+                    placeholder="Write something quickly..."></textarea>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+                    <label
+                        style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--muted);">
+                        <input type="checkbox" name="is_public"
+                            style="accent-color:var(--accent); width:12px; height:12px;" />
+                        Make public
+                    </label>
+                    <button type="submit"
+                        style="padding:7px 16px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                        onmouseover="this.style.background='var(--accent-h)'"
+                        onmouseout="this.style.background='var(--accent)'">
+                        Save
+                    </button>
+                </div>
+            </form>
         </div>
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
-            <div
-                style="width:36px; height:36px; background:#1e2020; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                    <polygon
-                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
-            </div>
-            <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:6px;">Gamification</p>
-            <p style="font-size:12px; color:var(--muted); line-height:1.6;">Earn points for every action. Climb through
-                10 levels from Newcomer to Hiradcore.</p>
-        </div>
-    </div>
 
-    <!-- Rank system preview -->
-    <div
-        style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:2rem;">
-        <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Rank system</p>
-        <div style="display:flex; flex-wrap:wrap; gap:8px;">
-            {% for rank in ranks %}
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">{{ rank.level }}</span>
-                <span style="font-size:12px; color:var(--text);">{{ rank.title }}</span>
-                <span style="font-size:10px; color:var(--muted);">{{ rank.pts }}+</span>
+        <!-- My score card -->
+        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
+            <p
+                style="font-size:12px; color:var(--muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; font-weight:500;">
+                Your progress</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-size:22px; font-weight:500; color:var(--accent);">{{ request.user.score }}</span>
+                <span
+                    style="font-size:12px; padding:3px 10px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Lv.
+                    {{request.user.level }}</span>
             </div>
-            {% empty %}
-            {% for item in "1,2,3,4,5,6,7,8,9,10"|make_list %}
-            {% endfor %}
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">1</span><span
-                    style="font-size:12px; color:var(--text);">Newcomer</span><span
-                    style="font-size:10px; color:var(--muted);">0+</span>
+            <div style="height:4px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:6px;">
+                <div
+                    style="height:100%; width:{% widthratio request.user.score 20000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;">
+                </div>
             </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">2</span><span
-                    style="font-size:12px; color:var(--text);">Reader</span><span
-                    style="font-size:10px; color:var(--muted);">1000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">3</span><span
-                    style="font-size:12px; color:var(--text);">Curious</span><span
-                    style="font-size:10px; color:var(--muted);">5000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">4</span><span
-                    style="font-size:12px; color:var(--text);">Connoisseur</span><span
-                    style="font-size:10px; color:var(--muted);">10000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">5</span><span
-                    style="font-size:12px; color:var(--text);">Researcher</span><span
-                    style="font-size:10px; color:var(--muted);">20000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">6</span><span
-                    style="font-size:12px; color:var(--text);">Analyst</span><span
-                    style="font-size:10px; color:var(--muted);">35000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">7</span><span
-                    style="font-size:12px; color:var(--text);">Erudite</span><span
-                    style="font-size:10px; color:var(--muted);">45000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">8</span><span
-                    style="font-size:12px; color:var(--text);">Intellectual</span><span
-                    style="font-size:10px; color:var(--muted);">55000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:var(--surface2); border-radius:8px;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">9</span><span
-                    style="font-size:12px; color:var(--text);">Thinker</span><span
-                    style="font-size:10px; color:var(--muted);">70000+</span>
-            </div>
-            <div
-                style="display:flex; align-items:center; gap:6px; padding:6px 10px; background:#1e1d3a; border-radius:8px; border:0.5px solid #4338CA;">
-                <span style="font-size:11px; font-weight:500; color:var(--accent);">10</span><span
-                    style="font-size:12px; color:#a5b4fc;">Hiradcore</span><span
-                    style="font-size:10px; color:var(--muted);">100000+</span>
-            </div>
-            {% endfor %}
+            <p style="font-size:11px; color:var(--muted);">{{ request.user.title }}</p>
         </div>
-    </div>
 
-    <div style="text-align:center; padding-bottom:2rem;">
+    </div>
+</div>
+
+{% else %}
+
+<!-- ── LANDING FOR GUESTS ── -->
+
+<!-- Hero -->
+<div style="text-align:center; padding:5rem 1rem 3.5rem;">
+    <p
+        style="font-size:13px; color:var(--accent); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1.25rem;">
+        Educational Platform</p>
+    <h1 class="hero-title" style="font-weight:600; color:var(--text); line-height:1.2; margin-bottom:1.25rem;">
+        Learn. Write.<br>Level up.
+    </h1>
+    <p style="font-size:16px; color:var(--muted); line-height:1.7; max-width:520px; margin:0 auto 2.5rem;">
+        HiradHub brings together a digital library, smart note-taking, community posts and a gamified rank system — all
+        in one place for students and teachers.
+    </p>
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
         <a href="{% url 'user:register' %}"
-            style="padding:10px 28px; background:var(--accent); color:#fff; border-radius:8px; font-size:14px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+            style="padding:12px 28px; background:var(--accent); color:#fff; border-radius:10px; font-size:15px; font-weight:500; text-decoration:none; transition:background 0.15s;"
             onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-            Join HiradHub
+            Get started — it's free
+        </a>
+        <a href="{% url 'user:login' %}"
+            style="padding:12px 28px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:10px; font-size:15px; text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            Sign in
         </a>
     </div>
-
-    {% endif %}
-
 </div>
+
+<!-- Features -->
+<div class="feature-grid" style="margin-bottom:3rem;">
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
+        <div
+            style="width:40px; height:40px; background:#1e1d3a; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+        </div>
+        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:8px;">Digital Library</p>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7;">Books, videos and podcasts uploaded by teachers.
+            Track reading progress and rate materials.</p>
+    </div>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
+        <div
+            style="width:40px; height:40px; background:#1a1200; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+            </svg>
+        </div>
+        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:8px;">Smart Notes</p>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7;">Rich text editor, topic tags, link to library
+            materials. Share publicly or keep private.</p>
+    </div>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
+        <div
+            style="width:40px; height:40px; background:#1e2020; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
+                <polygon
+                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+        </div>
+        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:8px;">Gamification</p>
+        <p style="font-size:13px; color:var(--muted); line-height:1.7;">Earn points for every action. Climb through 10
+            levels from Newcomer to Hiradcore.</p>
+    </div>
+</div>
+
+<!-- Rank system -->
+<div
+    style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem; margin-bottom:3rem;">
+    <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:4px;">Rank system</p>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:1.25rem;">Complete actions to earn points and unlock new
+        titles.</p>
+    <div class="rank-grid">
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">1</span>
+            <span style="font-size:13px; color:var(--text);">Newcomer</span>
+            <span style="font-size:11px; color:var(--muted);">0+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">2</span>
+            <span style="font-size:13px; color:var(--text);">Reader</span>
+            <span style="font-size:11px; color:var(--muted);">1000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">3</span>
+            <span style="font-size:13px; color:var(--text);">Curious</span>
+            <span style="font-size:11px; color:var(--muted);">5000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">4</span>
+            <span style="font-size:13px; color:var(--text);">Connoisseur</span>
+            <span style="font-size:11px; color:var(--muted);">10000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">5</span>
+            <span style="font-size:13px; color:var(--text);">Researcher</span>
+            <span style="font-size:11px; color:var(--muted);">20000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">6</span>
+            <span style="font-size:13px; color:var(--text);">Analyst</span>
+            <span style="font-size:11px; color:var(--muted);">35000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">7</span>
+            <span style="font-size:13px; color:var(--text);">Erudite</span>
+            <span style="font-size:11px; color:var(--muted);">45000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">8</span>
+            <span style="font-size:13px; color:var(--text);">Intellectual</span>
+            <span style="font-size:11px; color:var(--muted);">55000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">9</span>
+            <span style="font-size:13px; color:var(--text);">Thinker</span>
+            <span style="font-size:11px; color:var(--muted);">70000+</span>
+        </div>
+        <div
+            style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#1e1d3a; border-radius:8px; border:0.5px solid #4338CA;">
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">10</span>
+            <span style="font-size:13px; color:#a5b4fc; font-weight:500;">Hiradcore</span>
+            <span style="font-size:11px; color:var(--muted);">100000+</span>
+        </div>
+    </div>
+</div>
+
+<!-- CTA -->
+<div style="text-align:center; padding:2rem 0 3rem;">
+    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:1rem;">Ready to start?</p>
+    <a href="{% url 'user:register' %}"
+        style="padding:12px 32px; background:var(--accent); color:#fff; border-radius:10px; font-size:15px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+        Join HiradHub
+    </a>
+</div>
+
+{% endif %}
+
 {% endblock %}

@@ -9,12 +9,27 @@ from datetime import timedelta
 
 def library_home(request):
     topics = Topic.objects.all()
-    books = Book.objects.prefetch_related('topics').order_by('-date_added')[:6]
-    videos = Video.objects.prefetch_related('topics').order_by('-date_added')[:6]
-    podcasts = Podcast.objects.prefetch_related('topics').order_by('-date_added')[:6]
-    return render(request, 'library/home.html', {'topics': topics, 'books': books, 'videos': videos, 'podcasts': podcasts})
+    selected_topic_slug = request.GET.get('topic')
 
-
+    books = Book.objects.prefetch_related('topics').order_by('-date_added')
+    videos = Video.objects.prefetch_related('topics').order_by('-date_added')
+    podcasts = Podcast.objects.prefetch_related('topics').order_by('-date_added')
+    if selected_topic_slug:
+        books = books.filter(topics__slug=selected_topic_slug)
+        videos = videos.filter(topics__slug=selected_topic_slug)
+        podcasts = podcasts.filter(topics__slug=selected_topic_slug)
+    books = books[:6]
+    videos = videos[:6]
+    podcasts = podcasts[:6]
+    return render(request, 'library/home.html', {
+        'topics': topics,
+        'books': books,
+        'videos': videos,
+        'podcasts': podcasts,
+        'selected_topic_slug': selected_topic_slug,  
+    })
+    
+    
 def book_detail(request, pk):
     book = get_object_or_404(Book.objects.prefetch_related('topics'), pk=pk)
     comments = book.comments.select_related('user').filter(parent=None).prefetch_related('replies')
@@ -75,16 +90,10 @@ def update_progress(request, model_name, pk):
 @login_required
 def add_comment(request, model_name, pk):
     model_map = {'book': Book, 'video': Video, 'podcast': Podcast}
-    detail_view_map = {'book': 'library:book_detail',
-                        'video': 'library:video_detail',
-                        'podcast': 'library:podcast_detail'}
-    
     model = model_map.get(model_name)
     if not model:
         return redirect('library:home')
-    
     obj = get_object_or_404(model, pk=pk)
-    
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
         parent_id = request.POST.get('parent_id')
@@ -95,7 +104,17 @@ def add_comment(request, model_name, pk):
                 parent_id=parent_id or None,
                 content_object=obj
             )
-    return redirect(detail_view_map[model_name], pk=pk)
+    if request.headers.get('HX-Request'):
+        comments = obj.comments.select_related('user')\
+            .filter(parent=None)\
+            .prefetch_related('replies')
+
+        return render(request, 'library/partials/comments.html', {
+            'obj': obj,
+            'comments': comments,
+            'model_name': model_name
+        })
+    return redirect(f'library:{model_name}_detail', pk=pk)
 
 @login_required
 def toggle_like(request, model_name, pk):
@@ -108,6 +127,8 @@ def toggle_like(request, model_name, pk):
     like, created = Like.objects.get_or_create(user=request.user, content_type=ct, object_id=obj.pk)
     if not created:
         like.delete()
+    if request.headers.get('HX-Request'):
+        return render(request, 'library/partials/like_button.html', {'obj': obj, 'model_name': model_name})
     return redirect(request.META.get('HTTP_REFERER', 'library:home'))
 
 

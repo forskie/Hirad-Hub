@@ -63,7 +63,6 @@ def note_delete(request, pk):
     return render(request, 'note/confirm_delete.html', {'note': note})
 
 
-
 @login_required
 def toggle_like(request, pk):
     note = get_object_or_404(Note, pk=pk)
@@ -71,6 +70,8 @@ def toggle_like(request, pk):
     like, created = Like.objects.get_or_create(user=request.user, content_type=ct, object_id=note.pk)
     if not created:
         like.delete()
+    if request.headers.get('HX-Request'):
+        return render(request, 'note/partials/like_button.html', {'note': note})
     return redirect(request.META.get('HTTP_REFERER', 'note:list'))
 
 
@@ -82,10 +83,12 @@ def add_comment(request, pk):
         parent_id = request.POST.get('parent_id')
         if text:
             Comment.objects.create(
-                user=request.user,  
+                user=request.user,
                 content_object=note,
                 text=text,
                 parent_id=parent_id or None
             )
+    if request.headers.get('HX-Request'):
+        comments = note.comments.select_related('user').filter(parent=None).prefetch_related('replies')
+        return render(request, 'note/partials/comments.html', {'note': note, 'comments': comments})
     return redirect('note:detail', pk=pk)
-    

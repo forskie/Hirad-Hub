@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,9 +11,7 @@
         tailwind.config = {
             darkMode: 'class',
             theme: {
-                extend: {
-                    fontFamily: { sans: ['Sora', 'sans-serif'] }
-                }
+                extend: { fontFamily: { sans: ['Sora', 'sans-serif'] } }
             }
         }
     </script>
@@ -62,6 +59,7 @@
             display: flex;
             flex-direction: column;
             transition: background 0.2s, color 0.2s;
+            font-size: 15px;
         }
 
         /* ── Navbar ── */
@@ -69,30 +67,37 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            height: 52px;
+            height: 56px;
             background: var(--surface);
             border-bottom: 0.5px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 0 1.5rem;
-            gap: 1.25rem;
+            padding: 0 2rem;
+            gap: 1.5rem;
         }
 
         .nav-logo {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             color: var(--text);
             text-decoration: none;
             margin-right: auto;
             flex-shrink: 0;
+            letter-spacing: -0.02em;
         }
 
         .nav-logo span {
             color: var(--accent);
         }
 
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
         .nav-link {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--muted);
             text-decoration: none;
             white-space: nowrap;
@@ -114,11 +119,16 @@
         .search-form {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 8px;
             background: var(--surface2);
             border: 0.5px solid var(--border);
             border-radius: 8px;
-            padding: 5px 10px;
+            padding: 6px 12px;
+            transition: border-color 0.15s;
+        }
+
+        .search-form:focus-within {
+            border-color: var(--accent);
         }
 
         .search-form input {
@@ -127,7 +137,7 @@
             outline: none;
             font-size: 13px;
             color: var(--text);
-            width: 130px;
+            width: 160px;
             font-family: 'Sora', sans-serif;
         }
 
@@ -137,8 +147,8 @@
 
         /* ── Theme toggle ── */
         .theme-btn {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             flex-shrink: 0;
             border-radius: 8px;
             border: 0.5px solid var(--border);
@@ -156,10 +166,10 @@
             background: var(--border);
         }
 
-        /* ── Avatar + Dropdown ── */
+        /* ── Dropdown — FIXED ── */
         .avatar {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             flex-shrink: 0;
             border-radius: 50%;
             background: #1e1d3a;
@@ -167,7 +177,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 500;
             color: #A5B4FC;
             cursor: pointer;
@@ -184,20 +194,31 @@
             position: relative;
         }
 
+        /* Невидимый мост между аватаркой и меню — убирает gap проблему */
+        .dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 100%;
+            height: 12px;
+            /* перекрывает gap */
+            background: transparent;
+        }
+
         .dropdown-menu {
             display: none;
             position: absolute;
             right: 0;
             top: calc(100% + 8px);
+            /* визуальный отступ остаётся */
             background: var(--surface);
             border: 0.5px solid var(--border);
-            border-radius: 10px;
-            min-width: 170px;
+            border-radius: 12px;
+            min-width: 180px;
             padding: 4px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             z-index: 200;
-            top: 100%;
-            padding-top: 8px;
         }
 
         .dropdown:hover .dropdown-menu {
@@ -205,19 +226,19 @@
         }
 
         .dropdown-header {
-            padding: 8px 10px 8px;
+            padding: 10px 12px 8px;
             border-bottom: 0.5px solid var(--border);
             margin-bottom: 4px;
         }
 
         .dropdown-header p:first-child {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             color: var(--text);
         }
 
         .dropdown-header p:last-child {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--muted);
             margin-top: 2px;
         }
@@ -226,11 +247,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 8px 10px;
+            padding: 9px 12px;
             font-size: 13px;
             color: var(--text);
             text-decoration: none;
-            border-radius: 7px;
+            border-radius: 8px;
             transition: background 0.1s;
         }
 
@@ -258,10 +279,10 @@
 
         /* ── Auth buttons ── */
         .btn-ghost {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--muted);
             text-decoration: none;
-            padding: 6px 12px;
+            padding: 7px 14px;
             border-radius: 8px;
             transition: background 0.15s, color 0.15s;
         }
@@ -272,12 +293,12 @@
         }
 
         .btn-primary {
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             color: #fff;
             background: var(--accent);
             text-decoration: none;
-            padding: 6px 14px;
+            padding: 7px 16px;
             border-radius: 8px;
             transition: background 0.15s;
             white-space: nowrap;
@@ -289,16 +310,16 @@
 
         /* ── Messages ── */
         .messages {
-            padding: 1rem 1.5rem 0;
+            padding: 1rem 2rem 0;
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
         .message {
-            padding: 10px 14px;
+            padding: 11px 16px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         .message.success {
@@ -349,13 +370,13 @@
             border-color: #3730a3;
         }
 
-        /* ── Main ── */
         main {
             flex: 1;
             width: 100%;
-            max-width: 1100px;
+            max-width: 1280px;
+
             margin: 0 auto;
-            padding: 1.75rem 1.5rem;
+            padding: 2rem 2rem;
             animation: fadeUp 0.18s ease;
         }
 
@@ -375,7 +396,7 @@
         footer {
             border-top: 0.5px solid var(--border);
             background: var(--surface);
-            padding: 14px 1.5rem;
+            padding: 16px 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -385,7 +406,7 @@
 
         footer span,
         footer a {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--muted);
             text-decoration: none;
         }
@@ -394,7 +415,12 @@
             color: var(--accent);
         }
 
-        /* ── Mobile ── */
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        /* ── Mobile menu ── */
         .hamburger {
             display: none;
             background: none;
@@ -409,7 +435,7 @@
             flex-direction: column;
             background: var(--surface);
             border-bottom: 0.5px solid var(--border);
-            padding: 8px 1.5rem;
+            padding: 10px 1.5rem;
         }
 
         .mobile-menu.open {
@@ -417,10 +443,10 @@
         }
 
         .mobile-menu a {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--muted);
             text-decoration: none;
-            padding: 10px 0;
+            padding: 12px 0;
             border-bottom: 0.5px solid var(--border);
             transition: color 0.15s;
         }
@@ -429,8 +455,56 @@
             border: none;
         }
 
-        .mobile-menu a:hover {
+        .mobile-menu a:hover,
+        .mobile-menu a.active {
+            color: var(--accent);
+        }
+
+        .mobile-search {
+            margin-top: 8px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface2);
+            border: 0.5px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .mobile-search input {
+            background: none;
+            border: none;
+            outline: none;
+            font-size: 14px;
             color: var(--text);
+            width: 100%;
+            font-family: 'Sora', sans-serif;
+        }
+
+        .mobile-search input::placeholder {
+            color: var(--muted);
+        }
+
+        /* ── RESPONSIVE ── */
+
+        @media (max-width: 900px) {
+            .navbar {
+                padding: 0 1.25rem;
+                gap: 1rem;
+            }
+
+            main {
+                padding: 1.5rem 1.25rem;
+            }
+
+            .messages {
+                padding: 1rem 1.25rem 0;
+            }
+
+            footer {
+                padding: 14px 1.25rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -444,16 +518,64 @@
                 display: flex;
             }
 
-            .stat-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
+            /* Контент одна колонка */
+            main {
+                padding: 1rem 1rem;
             }
 
-            .two-col {
+            .messages {
+                padding: 0.75rem 1rem 0;
+            }
+
+            /* Grid адаптация */
+            .grid-2,
+            .grid-3,
+            .grid-4 {
                 grid-template-columns: 1fr !important;
             }
 
-            .sidebar {
+            .grid-sidebar {
+                grid-template-columns: 1fr !important;
+            }
+
+            .sidebar-sticky {
                 display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 14px;
+            }
+
+            .navbar {
+                height: 50px;
+            }
+
+            main {
+                padding: 0.75rem 0.75rem;
+            }
+
+            footer {
+                padding: 12px 1rem;
+            }
+
+            .footer-links {
+                display: none;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            main {
+                max-width: 1400px;
+            }
+
+            .navbar {
+                padding: 0 3rem;
+            }
+
+            footer {
+                padding: 16px 3rem;
             }
         }
 
@@ -476,10 +598,11 @@
 
 <body>
 
+    <!-- NAVBAR -->
     <header class="navbar">
         <a href="{% url 'main:home' %}" class="nav-logo"><span>Hirad</span>Hub</a>
 
-        <nav class="nav-links" style="display:flex;align-items:center;gap:1.25rem;">
+        <nav class="nav-links">
             <a href="{% url 'library:home' %}" class="nav-link {% block nav_library   %}{% endblock %}">Library</a>
             <a href="{% url 'post:list' %}" class="nav-link {% block nav_posts     %}{% endblock %}">Posts</a>
             <a href="{% url 'note:list' %}" class="nav-link {% block nav_notes     %}{% endblock %}">Notes</a>
@@ -487,7 +610,7 @@
         </nav>
 
         <form method="GET" action="{% url 'main:search' %}" class="search-form">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 style="color:var(--muted);flex-shrink:0;">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
@@ -496,13 +619,13 @@
         </form>
 
         <button class="theme-btn" id="theme-toggle" title="Toggle theme">
-            <svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2" style="display:none;">
                 <circle cx="12" cy="12" r="5" />
                 <path
                     d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
             </svg>
-            <svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
             </svg>
@@ -523,14 +646,14 @@
                     <p>{{ user.title }} · Lv.{{ user.level }}</p>
                 </div>
                 <a href="{% url 'user:profile' %}" class="dropdown-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
                     </svg>
                     Profile
                 </a>
                 <a href="{% url 'user:edit_profile' %}" class="dropdown-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                     </svg>
@@ -538,7 +661,7 @@
                 </a>
                 <hr class="dropdown-divider">
                 <a href="{% url 'user:logout' %}" class="dropdown-item danger">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                         <polyline points="16 17 21 12 16 7" />
                         <line x1="21" y1="12" x2="9" y2="12" />
@@ -555,7 +678,7 @@
         {% endif %}
 
         <button class="hamburger" id="hamburger">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="18" x2="21" y2="18" />
@@ -563,20 +686,31 @@
         </button>
     </header>
 
+    <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobile-menu">
+        <form method="GET" action="{% url 'main:search' %}" class="mobile-search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                style="color:var(--muted);flex-shrink:0;">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" name="q" placeholder="Search..." />
+        </form>
         <a href="{% url 'library:home' %}">Library</a>
         <a href="{% url 'post:list' %}">Posts</a>
         <a href="{% url 'note:list' %}">Notes</a>
         <a href="{% url 'main:dashboard' %}">Dashboard</a>
         {% if user.is_authenticated %}
         <a href="{% url 'user:profile' %}">Profile</a>
+        <a href="{% url 'user:edit_profile' %}">Edit profile</a>
         <a href="{% url 'user:logout' %}" style="color:#EF4444;">Logout</a>
         {% else %}
         <a href="{% url 'user:login' %}">Login</a>
-        <a href="{% url 'user:register' %}">Register</a>
+        <a href="{% url 'user:register' %}" style="color:var(--accent); font-weight:500;">Register</a>
         {% endif %}
     </div>
 
+    <!-- MESSAGES -->
     {% if messages %}
     <div class="messages">
         {% for message in messages %}
@@ -585,11 +719,13 @@
     </div>
     {% endif %}
 
+    <!-- CONTENT -->
     <main>{% block content %}{% endblock %}</main>
 
+    <!-- FOOTER -->
     <footer>
-        <span><span style="color:var(--accent);font-weight:500;">Hirad</span>Hub</span>
-        <div style="display:flex;gap:1.25rem;">
+        <span><span style="color:var(--accent);font-weight:500;">Hirad</span>Hub — Educational Platform</span>
+        <div class="footer-links">
             <a href="{% url 'library:home' %}">Library</a>
             <a href="{% url 'post:list' %}">Posts</a>
             <a href="{% url 'main:leaderboard' %}">Leaderboard</a>
@@ -597,6 +733,7 @@
     </footer>
 
     <script>
+        // Theme
         const html = document.documentElement;
         const btn = document.getElementById('theme-toggle');
         const sun = document.getElementById('icon-sun');
@@ -624,10 +761,12 @@
             applyTheme(next);
         });
 
+        // Mobile menu
         document.getElementById('hamburger').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('open');
         });
 
+        // Active nav link
         document.querySelectorAll('.nav-link').forEach(link => {
             if (link.href === window.location.href) link.classList.add('active');
         });

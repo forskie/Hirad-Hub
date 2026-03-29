@@ -39,10 +39,9 @@
         All
     </a>
     {% for topic in topics %}
-    <a href="?topic={{ topic.slug }}"
-        style="font-size:12px; padding:4px 12px; border-radius:20px; border:0.5px solid var(--border); color:var(--muted); text-decoration:none; background:var(--surface); transition:all 0.15s;"
-        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
-        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+    <a href="?topic={{ topic.slug }}" style="font-size:12px; padding:4px 12px; border-radius:20px; border:0.5px solid var(--border);
+            color:{% if topic.slug == selected_topic_slug %}var(--accent){% else %}var(--muted){% endif %};
+            text-decoration:none; background:var(--surface); transition:all 0.15s;">
         {{ topic.name }}
     </a>
     {% endfor %}

@@ -11,5 +11,6 @@ urlpatterns = [
     path('post/<int:pk>/like/', views.toggle_like, name='toggle_like'),
     path('post/<int:pk>/favorite/', views.toggle_favorite, name='toggle_favorite'),
     path('post/<int:pk>/comment/', views.add_comment, name='add_comment'),
+    path('search-users/', views.search_users, name='search_users'),
     
 ]

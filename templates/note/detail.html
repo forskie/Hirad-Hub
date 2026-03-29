@@ -91,7 +91,6 @@
 
     <div style="display:grid; grid-template-columns:1fr 220px; gap:1.25rem; align-items:start;">
 
-        <!-- Main content -->
         <div>
             <!-- Header -->
             <div
@@ -121,7 +120,6 @@
                         {% endif %}
                     </div>
                 </div>
-
                 <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <a href="{% url 'user:profile_others' note.author.username %}"
                         style="display:flex; align-items:center; gap:6px; text-decoration:none;">
@@ -129,7 +127,7 @@
                             style="width:22px; height:22px; border-radius:50%; background:#1e1d3a; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; color:#a5b4fc;">
                             {{ note.author.username|first|upper }}</div>
                         <span style="font-size:12px; color:var(--muted);">
-                            {{ note.author.get_full_name|default:note.author.username }}</span>
+                            {{note.author.get_full_name|default:note.author.username }}</span>
                     </a>
                     <span style="font-size:12px; color:var(--muted);">·</span>
                     <span style="font-size:12px; color:var(--muted);">{{ note.updated_at|date:"M d, Y" }}</span>
@@ -157,19 +155,7 @@
             <!-- Actions -->
             <div style="display:flex; align-items:center; gap:14px; margin-bottom:1.25rem;">
                 {% if request.user.is_authenticated %}
-                <form method="POST" action="{% url 'note:toggle_like' note.pk %}">
-                    {% csrf_token %}
-                    <button type="submit"
-                        style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
-                        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path
-                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                        {{ note.count_likes }} likes
-                    </button>
-                </form>
+                {% include 'note/partials/like_button.html' %}
                 {% else %}
                 <span style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted);">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -199,7 +185,8 @@
                     ({{ note.count_comments }})</p>
 
                 {% if request.user.is_authenticated %}
-                <form method="POST" action="{% url 'note:add_comment' note.pk %}" style="margin-bottom:1rem;">
+                <form hx-post="{% url 'note:add_comment' note.pk %}" hx-target="#comments-list" hx-swap="outerHTML"
+                    hx-on::after-request="this.reset()" style="margin-bottom:1rem;">
                     {% csrf_token %}
                     <textarea name="text" rows="2" placeholder="Write a comment..."
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:none; line-height:1.6; margin-bottom:6px;"
@@ -212,69 +199,12 @@
                 </form>
                 {% endif %}
 
-                {% if comments %}
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    {% for comment in comments %}
-                    <div style="display:flex; gap:8px;">
-                        <div
-                            style="width:28px; height:28px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); flex-shrink:0;">
-                            {{ comment.user.username|first|upper }}</div>
-                        <div style="flex:1;">
-                            <div style="background:var(--surface2); border-radius:10px; padding:10px 12px;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
-                                        {{ comment.user.get_full_name|default:comment.user.username }}</span>
-                                    <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }}
-                                        ago</span>
-                                </div>
-                                <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ comment.text }}</p>
-                            </div>
-                            {% for reply in comment.replies.all %}
-                            <div style="display:flex; gap:8px; margin-top:6px; margin-left:1rem;">
-                                <div
-                                    style="width:24px; height:24px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); flex-shrink:0;">
-                                    {{ reply.user.username|first|upper }}</div>
-                                <div style="background:var(--surface2); border-radius:10px; padding:8px 12px; flex:1;">
-                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
-                                        {{ reply.user.get_full_name|default:reply.user.username }}</span>
-                                    <p style="font-size:13px; color:var(--text); line-height:1.6; margin-top:2px;">
-                                        {{ reply.text }}</p>
-                                </div>
-                            </div>
-                            {% endfor %}
-                            {% if request.user.is_authenticated %}
-                            <form method="POST" action="{% url 'note:add_comment' note.pk %}"
-                                style="margin-top:6px; margin-left:0.5rem;">
-                                {% csrf_token %}
-                                <input type="hidden" name="parent_id" value="{{ comment.pk }}" />
-                                <div style="display:flex; gap:6px;">
-                                    <input type="text" name="text" placeholder="Reply..."
-                                        style="flex:1; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
-                                        onfocus="this.style.borderColor='var(--accent)'"
-                                        onblur="this.style.borderColor='var(--border)'" />
-                                    <button type="submit"
-                                        style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
-                                        onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)'"
-                                        onmouseout="this.style.background='var(--surface2)';this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
-                                        Reply
-                                    </button>
-                                </div>
-                            </form>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p style="font-size:13px; color:var(--muted); text-align:center; padding:1.5rem 0;">No comments yet.</p>
-                {% endif %}
+                {% include 'note/partials/comments.html' %}
             </div>
         </div>
 
         <!-- Sidebar -->
         <div style="position:sticky; top:70px; display:flex; flex-direction:column; gap:10px;">
-
-            <!-- Materials -->
             {% if note.materials.all %}
             <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
                 <p
@@ -297,8 +227,6 @@
                 </div>
             </div>
             {% endif %}
-
-            <!-- Details -->
             <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
                 <p
                     style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase;">
@@ -312,14 +240,14 @@
                             {{ note.updated_at|date:"M d, Y" }}</span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
                             style="color:var(--muted);">Likes</span><span style="color:var(--text);">
-                            {{ note.count_likes}}</span></div>
+                            {{ note.count_likes }}</span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
                             style="color:var(--muted);">Comments</span><span style="color:var(--text);">
                             {{ note.count_comments }}</span></div>
                 </div>
             </div>
-
         </div>
+
     </div>
 </div>
 {% endblock %}

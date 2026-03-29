@@ -1,0 +1,53 @@
+<div id="comments-list" style="display:flex; flex-direction:column; gap:10px;">
+    {% for comment in comments %}
+    <div style="display:flex; gap:8px;">
+        <div
+            style="width:28px; height:28px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); flex-shrink:0;">
+            {{ comment.user.username|first|upper }}
+        </div>
+        <div style="flex:1;">
+            <div style="background:var(--surface2); border-radius:10px; padding:10px 12px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                    <span style="font-size:12px; font-weight:500; color:var(--text);">
+                        {{ comment.user.get_full_name|default:comment.user.username }}</span>
+                    <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }} ago</span>
+                </div>
+                <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ comment.text }}</p>
+            </div>
+            {% for reply in comment.replies.all %}
+            <div style="display:flex; gap:8px; margin-top:6px; margin-left:1rem;">
+                <div
+                    style="width:24px; height:24px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); flex-shrink:0;">
+                    {{ reply.user.username|first|upper }}</div>
+                <div style="background:var(--surface2); border-radius:10px; padding:8px 12px; flex:1;">
+                    <span style="font-size:12px; font-weight:500; color:var(--text);">
+                        {{ reply.user.get_full_name|default:reply.user.username }}</span>
+                    <p style="font-size:13px; color:var(--text); line-height:1.6; margin-top:2px;">{{ reply.text }}</p>
+                </div>
+            </div>
+            {% endfor %}
+            {% if request.user.is_authenticated %}
+            <form hx-post="{% url 'library:add_comment' model_name obj.pk %}" hx-target="#comments-list"
+                hx-swap="outerHTML" style="margin-top:6px; margin-left:0.5rem;">
+                {% csrf_token %}
+                <input type="hidden" name="parent_id" value="{{ comment.pk }}" />
+                <div style="display:flex; gap:6px;">
+                    <input type="text" name="text" placeholder="Reply..."
+                        style="flex:1; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'" />
+                    <button type="submit"
+                        style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
+                        onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)'"
+                        onmouseout="this.style.background='var(--surface2)';this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
+                        Reply
+                    </button>
+                </div>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <p style="font-size:13px; color:var(--muted); text-align:center; padding:1.5rem 0;">No comments yet.</p>
+    {% endfor %}
+</div>

@@ -14,11 +14,10 @@
         Library
     </a>
 
-    <div style="display:grid; grid-template-columns:1fr 260px; gap:1.25rem; align-items:start;">
+    <div style="display:grid; grid-template-columns:1fr 240px; gap:1.25rem; align-items:start;">
 
-        <!-- Left -->
         <div>
-            <!-- Info card -->
+            <!-- Info -->
             <div
                 style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem;">
                 <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:1rem;">
@@ -37,39 +36,27 @@
                         <div style="display:flex; flex-wrap:wrap; gap:6px;">
                             {% if book.level %}<span
                                 style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">
-                                {{ book.get_level_display }}</span>{% endif %}
+                                {{book.get_level_display }}</span>{% endif %}
                             {% if book.pages %}<span
                                 style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">
-                                {{ book.pages }} pages</span>{% endif %}
+                                {{book.pages }} pages</span>{% endif %}
                             {% for topic in book.topics.all %}<span
                                 style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">
-                                {{ topic.name }}</span>{% endfor %}
+                                {{topic.name }}</span>{% endfor %}
                         </div>
                     </div>
                 </div>
-
                 {% if book.description %}
                 <p
                     style="font-size:13px; color:var(--muted); line-height:1.7; padding-top:1rem; border-top:0.5px solid var(--border);">
                     {{ book.description }}</p>
                 {% endif %}
-
                 <div
                     style="display:flex; align-items:center; gap:12px; padding-top:1rem; margin-top:1rem; border-top:0.5px solid var(--border);">
                     {% if request.user.is_authenticated %}
-                    <form method="POST" action="{% url 'library:toggle_like' 'book' book.pk %}">
-                        {% csrf_token %}
-                        <button type="submit"
-                            style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
-                            onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                            {{ book.count_likes }} likes
-                        </button>
-                    </form>
+                    {% with obj=book model_name='book' %}
+                    {% include 'library/partials/like_button.html' %}
+                    {% endwith %}
                     {% endif %}
                     <a href="{{ book.file.url }}" target="_blank"
                         style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; margin-left:auto; transition:background 0.15s;"
@@ -101,8 +88,7 @@
                             style="height:100%; width:{{ interaction.progress|floatformat:0 }}%; background:var(--accent); border-radius:2px;">
                         </div>
                     </div>
-                    <span style="font-size:12px; color:var(--accent); flex-shrink:0;">
-                        {{ interaction.progress|floatformat:0 }}%</span>
+                    <span style="font-size:12px; color:var(--accent);">{{ interaction.progress|floatformat:0 }}%</span>
                 </div>
                 <form method="POST" action="{% url 'library:update_progress' 'book' book.pk %}"
                     style="display:flex; gap:8px; align-items:center;">
@@ -111,12 +97,11 @@
                         value="{{ interaction.progress|floatformat:0 }}" style="flex:1; accent-color:var(--accent);"
                         oninput="this.nextElementSibling.textContent=this.value+'%'" />
                     <span style="font-size:12px; color:var(--muted); min-width:36px;">
-                        {{ interaction.progress|floatformat:0 }}%</span>
+                        {{interaction.progress|floatformat:0 }}%</span>
                     <button type="submit"
                         style="padding:6px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); cursor:pointer; font-family:'Sora',sans-serif;">Save</button>
                 </form>
-                {% if interaction.completed %}
-                <p style="font-size:12px; color:#22c55e; margin-top:8px;">✓ Completed</p>
+                {% if interaction.completed %}<p style="font-size:12px; color:#22c55e; margin-top:8px;">✓ Completed</p>
                 {% endif %}
             </div>
             {% endif %}
@@ -125,9 +110,10 @@
             <div
                 style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
                 <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments
-                    ({{book.count_comments }})</p>
+                    ({{ book.count_comments }})</p>
                 {% if request.user.is_authenticated %}
-                <form method="POST" action="{% url 'library:add_comment' 'book' book.pk %}" style="margin-bottom:1rem;">
+                <form hx-post="{% url 'library:add_comment' 'book' book.pk %}" hx-target="#comments-list"
+                    hx-swap="outerHTML" hx-on::after-request="this.reset()" style="margin-bottom:1rem;">
                     {% csrf_token %}
                     <textarea name="text" rows="2" placeholder="Write a comment..."
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:none; line-height:1.6; margin-bottom:6px;"
@@ -139,71 +125,27 @@
                     </div>
                 </form>
                 {% endif %}
-
-                {% if comments %}
-                <div style="display:flex; flex-direction:column; gap:10px;">
-                    {% for comment in comments %}
-                    <div style="display:flex; gap:8px;">
-                        <div
-                            style="width:28px; height:28px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; color:var(--muted); flex-shrink:0;">
-                            {{ comment.user.username|first|upper }}
-                        </div>
-                        <div style="flex:1;">
-                            <div style="background:var(--surface2); border-radius:10px; padding:10px 12px;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
-                                        {{ comment.user.get_full_name|default:comment.user.username }}</span>
-                                    <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }}
-                                        ago</span>
-                                </div>
-                                <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ comment.text }}</p>
-                            </div>
-                            {% for reply in comment.replies.all %}
-                            <div style="display:flex; gap:8px; margin-top:6px; margin-left:1rem;">
-                                <div
-                                    style="width:24px; height:24px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); flex-shrink:0;">
-                                    {{ reply.user.username|first|upper }}</div>
-                                <div style="background:var(--surface2); border-radius:10px; padding:8px 12px; flex:1;">
-                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
-                                        {{ reply.user.get_full_name|default:reply.user.username }}</span>
-                                    <p style="font-size:13px; color:var(--text); line-height:1.6; margin-top:2px;">
-                                        {{ reply.text }}</p>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <p style="font-size:13px; color:var(--muted); text-align:center; padding:1.5rem 0;">No comments yet.</p>
-                {% endif %}
+                {% include 'library/partials/comments.html' with obj=book model_name='book' %}
             </div>
         </div>
 
-        <!-- Right sidebar -->
+        <!-- Sidebar -->
         <div style="position:sticky; top:70px;">
             <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
                 <p style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500;">Details</p>
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <span style="color:var(--muted);">Added</span>
-                        <span style="color:var(--text);">{{ book.date_added|date:"M d, Y" }}</span>
-                    </div>
-                    {% if book.pages %}
-                    <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <span style="color:var(--muted);">Pages</span>
-                        <span style="color:var(--text);">{{ book.pages }}</span>
-                    </div>
-                    {% endif %}
-                    <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <span style="color:var(--muted);">Likes</span>
-                        <span style="color:var(--text);">{{ book.count_likes }}</span>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px;">
-                        <span style="color:var(--muted);">Comments</span>
-                        <span style="color:var(--text);">{{ book.count_comments }}</span>
-                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Added</span><span style="color:var(--text);">
+                            {{ book.date_added|date:"M d, Y" }}</span></div>
+                    {% if book.pages %}<div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Pages</span><span style="color:var(--text);">
+                            {{ book.pages }}</span></div>{% endif %}
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Likes</span><span style="color:var(--text);">
+                            {{ book.count_likes }}</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span
+                            style="color:var(--muted);">Comments</span><span style="color:var(--text);">
+                            {{ book.count_comments }}</span></div>
                 </div>
             </div>
         </div>

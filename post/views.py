@@ -3,16 +3,25 @@ from .models import Post, Favorite
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from library.models import Like, Comment
-
+from user.models import CustomUser
+from library.models import Topic
 
 def post_list(request):
-    posts = Post.objects.select_related('author').prefetch_related('topics', 'likes', 'comments').order_by('-created_at') 
-    return render(request, 'post/list.html', {'posts': posts})
+    topic_slug = request.GET.get('topic')
+    posts = Post.objects.select_related('author').prefetch_related('topics', 'likes', 'comments').order_by('-created_at')
+    if topic_slug:
+        posts = posts.filter(topics__slug=topic_slug)
+    topics = Topic.objects.all()
+    return render(request, 'post/list.html', {'posts': posts, 'topics': topics})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post.objects.select_related('author').prefetch_related('topics'), pk=pk)
     comments = post.comments.select_related('user').filter(parent=None).prefetch_related('replies')
-    return render(request, 'post/detail.html', {'post': post, 'comments': comments})
+    liked = False
+    if request.user.is_authenticated:
+        ct = ContentType.objects.get_for_model(Post)
+        liked = Like.objects.filter(user=request.user, content_type=ct, object_id=post.pk).exists()
+    return render(request, 'post/detail.html', {'post': post, 'comments': comments, 'liked': liked})
 
 @login_required
 def post_create(request):
@@ -42,20 +51,31 @@ def post_delete(request, pk):
 def toggle_like(request, pk):
     post = get_object_or_404(Post, pk=pk)
     ct = ContentType.objects.get_for_model(Post)
-    like, created = Like.objects.get_or_create(user=request.user, content_type=ct, object_id=post.pk)
+    like, created = Like.objects.get_or_create(
+        user=request.user,
+        content_type=ct,
+        object_id=post.pk
+    )
     if not created:
         like.delete()
+        liked = False
+    else:
+        liked = True
+    likes_count = Like.objects.filter(
+        content_type=ct,
+        object_id=post.pk
+    ).count()
+    if request.headers.get('HX-Request'):
+        return render(
+            request,
+            'post/partials/like_button.html',
+            {
+                'liked': liked,
+                'likes_count': likes_count,
+                'post': post
+            }
+        )
     return redirect(request.META.get('HTTP_REFERER', 'post:list'))
-
-@login_required
-def toggle_favorite(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    ct = ContentType.objects.get_for_model(Post)
-    fav, created = Favorite.objects.get_or_create(user=request.user, content_type=ct, object_id=post.pk)
-    if not created:
-        fav.delete()
-    return redirect(request.META.get('HTTP_REFERER', 'post:list'))
-
 
 @login_required
 def add_comment(request, pk):
@@ -70,4 +90,40 @@ def add_comment(request, pk):
                 text=text,
                 parent_id=parent_id or None
             )
+    if request.headers.get('HX-Request'):
+        comments = post.comments.select_related('user').filter(parent=None).prefetch_related('replies')
+        return render(request, 'post/partials/comments.html', {'post': post, 'comments': comments})
     return redirect('post:detail', pk=pk)
+@login_required
+def toggle_favorite(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    ct = ContentType.objects.get_for_model(Post)
+    fav, created = Favorite.objects.get_or_create(
+        user=request.user,
+        content_type=ct,
+        object_id=post.pk
+    )
+    if not created:
+        fav.delete()
+        is_favorited = False
+    else:
+        is_favorited = True
+    if request.headers.get('HX-Request'):
+        return render(
+            request,
+            'post/partials/favorite_button.html',
+            {
+                'post': post,
+                'is_favorited': is_favorited
+            }
+        )
+    return redirect(request.META.get('HTTP_REFERER', 'post:list'))
+
+def search_users(request):
+    q = request.GET.get('q', '').strip()
+    users = []
+    if q:
+        users = CustomUser.objects.filter(username__icontains=q).values('id', 'username', 'title', 'level', 'first_name', 'last_name')[:8]
+    if request.headers.get('HX-Request'):
+        return render(request, 'post/partials/user_search.html', {'users': users, 'q': q})
+    return redirect('post:list')

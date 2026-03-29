@@ -5,7 +5,6 @@
 {% block content %}
 <div style="max-width:640px; margin:0 auto;">
 
-    <!-- Back -->
     <a href="{% url 'post:list' %}"
         style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); text-decoration:none; margin-bottom:1.25rem; transition:color 0.15s;"
         onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
@@ -18,8 +17,6 @@
     <!-- Post -->
     <div
         style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.25rem;">
-
-        <!-- Author -->
         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
             <a href="{% url 'user:profile_others' post.author.username %}"
                 style="display:flex; align-items:center; gap:10px; text-decoration:none;">
@@ -33,7 +30,7 @@
                 </div>
                 <div>
                     <p style="font-size:14px; font-weight:500; color:var(--text);">
-                        {{ post.author.get_full_name|default:post.author.username }}</p>
+                        {{post.author.get_full_name|default:post.author.username }}</p>
                     <p style="font-size:11px; color:var(--muted);">{{ post.author.title }} ·
                         {{ post.created_at|timesince }} ago</p>
                 </div>
@@ -51,7 +48,6 @@
             {% endif %}
         </div>
 
-        <!-- Content -->
         {% if post.text %}
         <p style="font-size:14px; color:var(--text); line-height:1.75; margin-bottom:1rem;">{{ post.text }}</p>
         {% endif %}
@@ -67,7 +63,6 @@
         </video>
         {% endif %}
 
-        <!-- Topics -->
         {% if post.topics.all %}
         <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1rem;">
             {% for topic in post.topics.all %}
@@ -77,52 +72,46 @@
         </div>
         {% endif %}
 
-        <!-- Actions -->
         <div
             style="display:flex; align-items:center; gap:14px; padding-top:10px; border-top:0.5px solid var(--border);">
             {% if request.user.is_authenticated %}
-            <form method="POST" action="{% url 'post:toggle_like' post.pk %}" style="margin:0;">
-                {% csrf_token %}
-                <button type="submit"
-                    style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
-                    onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
-                    {{ post.count_likes }} likes
-                </button>
-            </form>
-            <form method="POST" action="{% url 'post:toggle_favorite' post.pk %}" style="margin:0; margin-left:auto;">
-                {% csrf_token %}
-                <button type="submit"
-                    style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
-                    onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--muted)'">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            {% include 'post/partials/like_button.html' %}
+
+            <button hx-post="{% url 'post:toggle_favorite' post.pk %}" hx-target="#favorite-btn-{{ post.pk }}"
+                hx-swap="outerHTML"
+                style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; margin-left:auto; transition:color 0.15s;"
+                onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--muted)'">
+
+                <span id="favorite-btn-{{ post.pk }}" style="display:flex; align-items:center; gap:5px;">
+                    <svg width="15" height="15" viewBox="0 0 24 24"
+                        fill="{% if is_favorited %}#f59e0b{% else %}none{% endif %}" stroke="currentColor"
+                        stroke-width="2">
                         <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                     </svg>
-                    Save
-                </button>
-            </form>
+                    {{ post.count_favorites }}
+                </span>
+
+            </button>
             {% else %}
             <span style="display:flex; align-items:center; gap:5px; font-size:13px; color:var(--muted);">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path
                         d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                 </svg>
-                {{ post.count_likes }} likes
+                {{ likes_count }} likes
             </span>
             {% endif %}
         </div>
     </div>
 
     <!-- Comments -->
-    <div style="margin-bottom:1.25rem;">
-        <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">
-            Comments {{ post.count_comments }}</p>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
+        <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments
+            ({{post.count_comments }})</p>
 
         {% if request.user.is_authenticated %}
-        <form method="POST" action="{% url 'post:add_comment' post.pk %}" style="margin-bottom:1rem;">
+        <form hx-post="{% url 'post:add_comment' post.pk %}" hx-target="#comments-list" hx-swap="outerHTML"
+            hx-on::after-request="this.reset()" style="margin-bottom:1rem;">
             {% csrf_token %}
             <div style="display:flex; gap:8px; align-items:flex-start;">
                 <div
@@ -136,89 +125,14 @@
                         onblur="this.style.borderColor='var(--border)'"></textarea>
                     <div style="display:flex; justify-content:flex-end; margin-top:6px;">
                         <button type="submit"
-                            style="padding:6px 14px; background:var(--accent); color:#fff; border:none; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
-                            onmouseover="this.style.background='var(--accent-h)'"
-                            onmouseout="this.style.background='var(--accent)'">
-                            Post
-                        </button>
+                            style="padding:6px 14px; background:var(--accent); color:#fff; border:none; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif;">Post</button>
                     </div>
                 </div>
             </div>
         </form>
         {% endif %}
 
-        <!-- Comment list -->
-        {% if comments %}
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            {% for comment in comments %}
-            <div style="display:flex; gap:8px;">
-                <div
-                    style="width:30px; height:30px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; color:var(--muted); flex-shrink:0;">
-                    {{ comment.user.username|first|upper }}
-                </div>
-                <div style="flex:1;">
-                    <div style="background:var(--surface2); border-radius:10px; padding:10px 12px;">
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                            <a href="{% url 'user:profile_others' comment.user.username %}"
-                                style="font-size:12px; font-weight:500; color:var(--text); text-decoration:none;">
-                                {{ comment.user.get_full_name|default:comment.user.username }}</a>
-                            <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }}
-                                ago</span>
-                        </div>
-                        <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ comment.text }}</p>
-                    </div>
-
-                    <!-- Replies -->
-                    {% if comment.replies.all %}
-                    <div style="margin-top:8px; margin-left:1rem; display:flex; flex-direction:column; gap:8px;">
-                        {% for reply in comment.replies.all %}
-                        <div style="display:flex; gap:8px;">
-                            <div
-                                style="width:26px; height:26px; border-radius:50%; background:var(--surface2); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:500; color:var(--muted); flex-shrink:0;">
-                                {{ reply.user.username|first|upper }}
-                            </div>
-                            <div style="background:var(--surface2); border-radius:10px; padding:8px 12px; flex:1;">
-                                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                                    <span style="font-size:12px; font-weight:500; color:var(--text);">
-                                        {{ reply.user.get_full_name|default:reply.user.username }}</span>
-                                    <span style="font-size:11px; color:var(--muted);">{{ reply.created_at|timesince }}
-                                        ago</span>
-                                </div>
-                                <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ reply.text }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    <!-- Reply form -->
-                    {% if request.user.is_authenticated %}
-                    <form method="POST" action="{% url 'post:add_comment' post.pk %}"
-                        style="margin-top:6px; margin-left:0.5rem;">
-                        {% csrf_token %}
-                        <input type="hidden" name="parent_id" value="{{ comment.pk }}" />
-                        <div style="display:flex; gap:6px;">
-                            <input type="text" name="text" placeholder="Reply..."
-                                style="flex:1; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
-                                onfocus="this.style.borderColor='var(--accent)'"
-                                onblur="this.style.borderColor='var(--border)'" />
-                            <button type="submit"
-                                style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
-                                onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)'"
-                                onmouseout="this.style.background='var(--surface2)';this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
-                                Reply
-                            </button>
-                        </div>
-                    </form>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% else %}
-        <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No comments yet. Be the first.
-        </p>
-        {% endif %}
+        {% include 'post/partials/comments.html' %}
     </div>
 
 </div>
