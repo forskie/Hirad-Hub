@@ -28,12 +28,12 @@
 
     .quick-note-area {
         width: 100%;
-        min-height: 120px;
-        padding: 12px;
+        min-height: 110px;
+        padding: 10px 12px;
         background: var(--surface2);
         border: 0.5px solid var(--border);
         border-radius: 8px;
-        font-size: 14px;
+        font-size: 13px;
         color: var(--text);
         font-family: 'Sora', sans-serif;
         outline: none;
@@ -48,6 +48,114 @@
 
     .quick-note-area::placeholder {
         color: var(--muted);
+    }
+
+    /* Tasks */
+    .task-input {
+        width: 100%;
+        padding: 9px 12px;
+        background: var(--surface2);
+        border: 0.5px solid var(--border);
+        border-radius: 8px;
+        font-size: 13px;
+        color: var(--text);
+        font-family: 'Sora', sans-serif;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+
+    .task-input:focus {
+        border-color: var(--accent);
+    }
+
+    .task-input::placeholder {
+        color: var(--muted);
+    }
+
+    .task-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        background: var(--surface2);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        transition: opacity 0.2s;
+    }
+
+    .task-item.done {
+        opacity: 0.5;
+    }
+
+    .task-item.done .task-text {
+        text-decoration: line-through;
+    }
+
+    .task-checkbox {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1.5px solid var(--border);
+        background: none;
+        cursor: pointer;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+    }
+
+    .task-checkbox.checked {
+        background: var(--accent);
+        border-color: var(--accent);
+    }
+
+    .task-text {
+        flex: 1;
+        font-size: 13px;
+        color: var(--text);
+    }
+
+    .task-del {
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.15s;
+        flex-shrink: 0;
+    }
+
+    .task-del:hover {
+        color: #ef4444;
+        background: #fef2f2;
+    }
+
+    /* Tabs */
+    .widget-tabs {
+        display: flex;
+        border-bottom: 0.5px solid var(--border);
+        margin-bottom: 12px;
+    }
+
+    .widget-tab {
+        font-size: 12px;
+        padding: 6px 12px;
+        color: var(--muted);
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: none;
+        cursor: pointer;
+        font-family: 'Sora', sans-serif;
+        transition: color 0.15s, border-color 0.15s;
+    }
+
+    .widget-tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
     }
 
     @media (max-width: 900px) {
@@ -75,7 +183,7 @@
 <!-- ── LOGGED IN HOME ── -->
 <div class="home-cols">
 
-
+    <!-- Left -->
     <div>
         <div
             style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
@@ -85,14 +193,12 @@
                 <p style="font-size:14px; color:var(--muted); margin-top:3px;">{{ request.user.title }} · Level
                     {{request.user.level }} · {{ request.user.score }} pts</p>
             </div>
-            <div style="display:flex; gap:8px;">
-                <a href="{% url 'main:dashboard' %}"
-                    style="padding:8px 16px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
-                    onmouseover="this.style.borderColor='var(--accent)'"
-                    onmouseout="this.style.borderColor='var(--border)'">
-                    Dashboard →
-                </a>
-            </div>
+            <a href="{% url 'main:dashboard' %}"
+                style="padding:8px 16px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
+                onmouseover="this.style.borderColor='var(--accent)'"
+                onmouseout="this.style.borderColor='var(--border)'">
+                Dashboard →
+            </a>
         </div>
 
         <!-- Quick nav -->
@@ -143,7 +249,7 @@
             </a>
         </div>
 
-        <!-- Recent posts preview -->
+        <!-- Recent posts -->
         {% if recent_posts %}
         <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
@@ -177,43 +283,91 @@
         {% endif %}
     </div>
 
-    <!-- Right: quick note widget -->
+    <!-- Right sidebar -->
     <div style="position:sticky; top:70px; display:flex; flex-direction:column; gap:14px;">
 
-        <!-- Quick note -->
+        <!-- Widget: Quick note + Tasks (tabbed) -->
         <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.25rem;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-                <p style="font-size:14px; font-weight:500; color:var(--text);">Quick note</p>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                </svg>
+
+            <!-- Tabs -->
+            <div class="widget-tabs">
+                <button class="widget-tab active" onclick="switchTab('note', this)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="display:inline;margin-right:4px;vertical-align:middle;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    Note
+                </button>
+                <button class="widget-tab" onclick="switchTab('tasks', this)">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="display:inline;margin-right:4px;vertical-align:middle;">
+                        <polyline points="9 11 12 14 22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>
+                    Tasks
+                </button>
             </div>
-            <form method="POST" action="{% url 'note:create' %}" id="quick-note-form">
-                {% csrf_token %}
-                <input type="text" name="title" id="quick-note-title" placeholder="Title..."
-                    style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; margin-bottom:8px; transition:border-color 0.15s;"
-                    onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
-                <textarea name="content" id="quick-note-content" class="quick-note-area"
-                    placeholder="Write something quickly..."></textarea>
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
-                    <label
-                        style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--muted);">
-                        <input type="checkbox" name="is_public"
-                            style="accent-color:var(--accent); width:12px; height:12px;" />
-                        Make public
-                    </label>
-                    <button type="submit"
-                        style="padding:7px 16px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+
+            <!-- Note panel -->
+            <div id="panel-note">
+                <form method="POST" action="{% url 'note:create' %}" id="quick-note-form">
+                    {% csrf_token %}
+                    <input type="text" name="title" placeholder="Title..."
+                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; margin-bottom:8px; transition:border-color 0.15s;"
+                        onfocus="this.style.borderColor='var(--accent)'"
+                        onblur="this.style.borderColor='var(--border)'" />
+                    <textarea name="content" class="quick-note-area"
+                        placeholder="Write something quickly..."></textarea>
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
+                        <label
+                            style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--muted);">
+                            <input type="checkbox" name="is_public"
+                                style="accent-color:var(--accent); width:12px; height:12px;" />
+                            Make public
+                        </label>
+                        <button type="submit"
+                            style="padding:7px 16px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+                            onmouseover="this.style.background='var(--accent-h)'"
+                            onmouseout="this.style.background='var(--accent)'">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tasks panel -->
+            <div id="panel-tasks" style="display:none;">
+                <div style="display:flex; gap:6px; margin-bottom:10px;">
+                    <input type="text" id="task-input" class="task-input" placeholder="Add a task..."
+                        onkeydown="if(event.key==='Enter'){addTask();event.preventDefault();}" />
+                    <button onclick="addTask()"
+                        style="padding:9px 14px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; cursor:pointer; font-family:'Sora',sans-serif; flex-shrink:0; transition:background 0.15s;"
                         onmouseover="this.style.background='var(--accent-h)'"
                         onmouseout="this.style.background='var(--accent)'">
-                        Save
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
                     </button>
                 </div>
-            </form>
+
+                <div id="task-list" style="max-height:240px; overflow-y:auto;"></div>
+
+                <div
+                    style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:0.5px solid var(--border);">
+                    <span id="task-count" style="font-size:11px; color:var(--muted);">0 tasks</span>
+                    <button onclick="clearDone()"
+                        style="font-size:11px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; transition:color 0.15s;"
+                        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                        Clear done
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <!-- My score card -->
+        <!-- Score card -->
         <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
             <p
                 style="font-size:12px; color:var(--muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; font-weight:500;">
@@ -222,7 +376,7 @@
                 <span style="font-size:22px; font-weight:500; color:var(--accent);">{{ request.user.score }}</span>
                 <span
                     style="font-size:12px; padding:3px 10px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Lv.
-                    {{request.user.level }}</span>
+                    {{ request.user.level }}</span>
             </div>
             <div style="height:4px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:6px;">
                 <div
@@ -238,34 +392,27 @@
 {% else %}
 
 <!-- ── LANDING FOR GUESTS ── -->
-
-<!-- Hero -->
 <div style="text-align:center; padding:5rem 1rem 3.5rem;">
     <p
         style="font-size:13px; color:var(--accent); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1.25rem;">
         Educational Platform</p>
-    <h1 class="hero-title" style="font-weight:600; color:var(--text); line-height:1.2; margin-bottom:1.25rem;">
-        Learn. Write.<br>Level up.
-    </h1>
-    <p style="font-size:16px; color:var(--muted); line-height:1.7; max-width:520px; margin:0 auto 2.5rem;">
-        HiradHub brings together a digital library, smart note-taking, community posts and a gamified rank system — all
-        in one place for students and teachers.
-    </p>
+    <h1 class="hero-title" style="font-weight:600; color:var(--text); line-height:1.2; margin-bottom:1.25rem;">Learn.
+        Write.<br>Level up.</h1>
+    <p style="font-size:16px; color:var(--muted); line-height:1.7; max-width:520px; margin:0 auto 2.5rem;">HiradHub
+        brings together a digital library, smart note-taking, community posts and a gamified rank system — all in one
+        place for students and teachers.</p>
     <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
         <a href="{% url 'user:register' %}"
             style="padding:12px 28px; background:var(--accent); color:#fff; border-radius:10px; font-size:15px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-            Get started — it's free
-        </a>
+            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">Get
+            started — it's free</a>
         <a href="{% url 'user:login' %}"
             style="padding:12px 28px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:10px; font-size:15px; text-decoration:none; transition:border-color 0.15s;"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            Sign in
-        </a>
+            onmouseover="this.style.borderColor='var(--accent)'"
+            onmouseout="this.style.borderColor='var(--border)'">Sign in</a>
     </div>
 </div>
 
-<!-- Features -->
 <div class="feature-grid" style="margin-bottom:3rem;">
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
         <div
@@ -305,7 +452,6 @@
     </div>
 </div>
 
-<!-- Rank system -->
 <div
     style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem; margin-bottom:3rem;">
     <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:4px;">Rank system</p>
@@ -314,77 +460,164 @@
     <div class="rank-grid">
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">1</span>
-            <span style="font-size:13px; color:var(--text);">Newcomer</span>
-            <span style="font-size:11px; color:var(--muted);">0+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">1</span><span
+                style="font-size:13px; color:var(--text);">Newcomer</span><span
+                style="font-size:11px; color:var(--muted);">0+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">2</span>
-            <span style="font-size:13px; color:var(--text);">Reader</span>
-            <span style="font-size:11px; color:var(--muted);">1000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">2</span><span
+                style="font-size:13px; color:var(--text);">Reader</span><span
+                style="font-size:11px; color:var(--muted);">1000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">3</span>
-            <span style="font-size:13px; color:var(--text);">Curious</span>
-            <span style="font-size:11px; color:var(--muted);">5000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">3</span><span
+                style="font-size:13px; color:var(--text);">Curious</span><span
+                style="font-size:11px; color:var(--muted);">5000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">4</span>
-            <span style="font-size:13px; color:var(--text);">Connoisseur</span>
-            <span style="font-size:11px; color:var(--muted);">10000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">4</span><span
+                style="font-size:13px; color:var(--text);">Connoisseur</span><span
+                style="font-size:11px; color:var(--muted);">10000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">5</span>
-            <span style="font-size:13px; color:var(--text);">Researcher</span>
-            <span style="font-size:11px; color:var(--muted);">20000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">5</span><span
+                style="font-size:13px; color:var(--text);">Researcher</span><span
+                style="font-size:11px; color:var(--muted);">20000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">6</span>
-            <span style="font-size:13px; color:var(--text);">Analyst</span>
-            <span style="font-size:11px; color:var(--muted);">35000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">6</span><span
+                style="font-size:13px; color:var(--text);">Analyst</span><span
+                style="font-size:11px; color:var(--muted);">35000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">7</span>
-            <span style="font-size:13px; color:var(--text);">Erudite</span>
-            <span style="font-size:11px; color:var(--muted);">45000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">7</span><span
+                style="font-size:13px; color:var(--text);">Erudite</span><span
+                style="font-size:11px; color:var(--muted);">45000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">8</span>
-            <span style="font-size:13px; color:var(--text);">Intellectual</span>
-            <span style="font-size:11px; color:var(--muted);">55000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">8</span><span
+                style="font-size:13px; color:var(--text);">Intellectual</span><span
+                style="font-size:11px; color:var(--muted);">55000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">9</span>
-            <span style="font-size:13px; color:var(--text);">Thinker</span>
-            <span style="font-size:11px; color:var(--muted);">70000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">9</span><span
+                style="font-size:13px; color:var(--text);">Thinker</span><span
+                style="font-size:11px; color:var(--muted);">70000+</span>
         </div>
         <div
             style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#1e1d3a; border-radius:8px; border:0.5px solid #4338CA;">
-            <span style="font-size:12px; font-weight:500; color:var(--accent);">10</span>
-            <span style="font-size:13px; color:#a5b4fc; font-weight:500;">Hiradcore</span>
-            <span style="font-size:11px; color:var(--muted);">100000+</span>
+            <span style="font-size:12px; font-weight:500; color:var(--accent);">10</span><span
+                style="font-size:13px; color:#a5b4fc; font-weight:500;">Hiradcore</span><span
+                style="font-size:11px; color:var(--muted);">100000+</span>
         </div>
     </div>
 </div>
 
-<!-- CTA -->
 <div style="text-align:center; padding:2rem 0 3rem;">
     <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:1rem;">Ready to start?</p>
     <a href="{% url 'user:register' %}"
         style="padding:12px 32px; background:var(--accent); color:#fff; border-radius:10px; font-size:15px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-        Join HiradHub
-    </a>
+        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">Join
+        HiradHub</a>
 </div>
 
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // ── Tab switcher ──
+    function switchTab(name, btn) {
+        document.querySelectorAll('.widget-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('panel-note').style.display = name === 'note' ? 'block' : 'none';
+        document.getElementById('panel-tasks').style.display = name === 'tasks' ? 'block' : 'none';
+    }
+
+    // ── Tasks (localStorage) ──
+    const STORAGE_KEY = 'hiradhub_tasks';
+
+    function loadTasks() {
+        try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+        catch { return []; }
+    }
+
+    function saveTasks(tasks) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+        const tasks = loadTasks();
+        const list = document.getElementById('task-list');
+        const count = document.getElementById('task-count');
+        if (!list) return;
+
+        const remaining = tasks.filter(t => !t.done).length;
+        count.textContent = remaining + ' task' + (remaining !== 1 ? 's' : '') + ' remaining';
+
+        if (tasks.length === 0) {
+            list.innerHTML = '<p style="font-size:13px; color:var(--muted); text-align:center; padding:1rem 0;">No tasks yet. Add one above.</p>';
+            return;
+        }
+
+        list.innerHTML = tasks.map((task, i) => `
+        <div class="task-item ${task.done ? 'done' : ''}" id="task-${i}">
+        <div class="task-checkbox ${task.done ? 'checked' : ''}" onclick="toggleTask(${i})">
+            ${task.done ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        </div>
+        <span class="task-text">${escHtml(task.text)}</span>
+        <div class="task-del" onclick="deleteTask(${i})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        </div>
+    `).join('');
+    }
+
+    function escHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function addTask() {
+        const input = document.getElementById('task-input');
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text) return;
+        const tasks = loadTasks();
+        tasks.unshift({ text, done: false, created: Date.now() });
+        saveTasks(tasks);
+        input.value = '';
+        renderTasks();
+    }
+
+    function toggleTask(i) {
+        const tasks = loadTasks();
+        tasks[i].done = !tasks[i].done;
+        saveTasks(tasks);
+        renderTasks();
+    }
+
+    function deleteTask(i) {
+        const tasks = loadTasks();
+        tasks.splice(i, 1);
+        saveTasks(tasks);
+        renderTasks();
+    }
+
+    function clearDone() {
+        saveTasks(loadTasks().filter(t => !t.done));
+        renderTasks();
+    }
+
+    // Init on page load
+    document.addEventListener('DOMContentLoaded', renderTasks);
+</script>
 {% endblock %}

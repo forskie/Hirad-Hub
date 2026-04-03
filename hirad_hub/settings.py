@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'library.apps.LibraryConfig',
     'gamification.apps.GamificationConfig',
+    'roadmap.apps.RoadmapConfig',
 ]
 
 MIDDLEWARE = [

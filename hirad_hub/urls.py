@@ -10,6 +10,7 @@ urlpatterns = [
     path('post/', include('post.urls')),
     path('note/', include('note.urls')),
     path('library/', include('library.urls')),
+    # path('roadmap/', include('roadmap.urls')),
 ]
 
 if settings.DEBUG:

@@ -8,25 +8,34 @@ from datetime import timedelta
 # ________________  Base View  _______________
 
 def library_home(request):
-    topics = Topic.objects.all()
-    selected_topic_slug = request.GET.get('topic')
+    topic_slug = request.GET.get('topic')
+    sort = request.GET.get('sort', 'new')
+    order = '-date_added' if sort == 'new' else '-likes'
+    books = Book.objects.prefetch_related('topics')
+    videos = Video.objects.prefetch_related('topics')
+    podcasts = Podcast.objects.prefetch_related('topics')
+    if topic_slug:
+        books    = books.filter(topics__slug=topic_slug)
+        videos   = videos.filter(topics__slug=topic_slug)
+        podcasts = podcasts.filter(topics__slug=topic_slug)
+    if sort == 'popular':
+        from django.db.models import Count
+        books = books.annotate(lc=Count('likes')).order_by('-lc')
+        videos = videos.annotate(lc=Count('likes')).order_by('-lc')
+        podcasts = podcasts.annotate(lc=Count('likes')).order_by('-lc')
+    else:
+        books = books.order_by('-date_added')
+        videos = videos.order_by('-date_added')
+        podcasts = podcasts.order_by('-date_added')
 
-    books = Book.objects.prefetch_related('topics').order_by('-date_added')
-    videos = Video.objects.prefetch_related('topics').order_by('-date_added')
-    podcasts = Podcast.objects.prefetch_related('topics').order_by('-date_added')
-    if selected_topic_slug:
-        books = books.filter(topics__slug=selected_topic_slug)
-        videos = videos.filter(topics__slug=selected_topic_slug)
-        podcasts = podcasts.filter(topics__slug=selected_topic_slug)
-    books = books[:6]
-    videos = videos[:6]
-    podcasts = podcasts[:6]
-    return render(request, 'library/home.html', {
-        'topics': topics,
+    topics = Topic.objects.all()
+    return render(request, 'library/home.html', 
+    {
         'books': books,
         'videos': videos,
         'podcasts': podcasts,
-        'selected_topic_slug': selected_topic_slug,  
+        'topics': topics,
+        'sort': sort,
     })
     
     

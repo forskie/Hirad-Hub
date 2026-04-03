@@ -10,9 +10,7 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: {
-                extend: { fontFamily: { sans: ['Sora', 'sans-serif'] } }
-            }
+            theme: { extend: { fontFamily: { sans: ['Sora', 'sans-serif'] } } }
         }
     </script>
 
@@ -93,29 +91,46 @@
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            gap: 0.5rem;
         }
 
         .nav-link {
-            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
             color: var(--muted);
             text-decoration: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: color 0.15s, background 0.15s;
             white-space: nowrap;
-            padding-bottom: 2px;
-            border-bottom: 2px solid transparent;
-            transition: color 0.15s, border-color 0.15s;
         }
 
         .nav-link:hover {
             color: var(--text);
+            background: var(--surface2);
         }
 
         .nav-link.active {
             color: var(--accent);
-            border-bottom-color: var(--accent);
+            background: #eef2ff;
+        }
+
+        html.dark .nav-link.active {
+            background: #1e1d3a;
+        }
+
+        .nav-link svg {
+            flex-shrink: 0;
         }
 
         /* ── Search ── */
+        .search-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
         .search-form {
             display: flex;
             align-items: center;
@@ -145,6 +160,61 @@
             color: var(--muted);
         }
 
+        /* Search results dropdown */
+        .search-results {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            min-width: 280px;
+            background: var(--surface);
+            border: 0.5px solid var(--border);
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            z-index: 300;
+            overflow: hidden;
+        }
+
+        .search-results.open {
+            display: block;
+        }
+
+        .search-result-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            text-decoration: none;
+            transition: background 0.1s;
+            border-bottom: 0.5px solid var(--border);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-item:hover {
+            background: var(--surface2);
+        }
+
+        .search-result-section {
+            padding: 6px 14px 4px;
+            font-size: 10px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 500;
+            background: var(--surface2);
+        }
+
+        .search-empty {
+            padding: 14px;
+            font-size: 13px;
+            color: var(--muted);
+            text-align: center;
+        }
+
         /* ── Theme toggle ── */
         .theme-btn {
             width: 34px;
@@ -166,10 +236,10 @@
             background: var(--border);
         }
 
-        /* ── Dropdown — FIXED ── */
-        .avatar {
-            width: 32px;
-            height: 32px;
+        /* ── Dropdown — JS controlled ── */
+        .avatar-btn {
+            width: 34px;
+            height: 34px;
             flex-shrink: 0;
             border-radius: 50%;
             background: #1e1d3a;
@@ -177,14 +247,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
             color: #A5B4FC;
             cursor: pointer;
             overflow: hidden;
+            user-select: none;
         }
 
-        .avatar img {
+        .avatar-btn img {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -194,34 +265,21 @@
             position: relative;
         }
 
-        /* Невидимый мост между аватаркой и меню — убирает gap проблему */
-        .dropdown::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 100%;
-            height: 12px;
-            /* перекрывает gap */
-            background: transparent;
-        }
-
         .dropdown-menu {
             display: none;
             position: absolute;
             right: 0;
-            top: calc(100% + 8px);
-            /* визуальный отступ остаётся */
+            top: calc(100% + 6px);
             background: var(--surface);
             border: 0.5px solid var(--border);
             border-radius: 12px;
-            min-width: 180px;
+            min-width: 200px;
             padding: 4px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
             z-index: 200;
         }
 
-        .dropdown:hover .dropdown-menu {
+        .dropdown-menu.open {
             display: block;
         }
 
@@ -246,7 +304,7 @@
         .dropdown-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 9px;
             padding: 9px 12px;
             font-size: 13px;
             color: var(--text);
@@ -370,11 +428,11 @@
             border-color: #3730a3;
         }
 
+        /* ── Main ── */
         main {
             flex: 1;
             width: 100%;
             max-width: 1280px;
-
             margin: 0 auto;
             padding: 2rem 2rem;
             animation: fadeUp 0.18s ease;
@@ -420,7 +478,7 @@
             gap: 1.5rem;
         }
 
-        /* ── Mobile menu ── */
+        /* ── Mobile ── */
         .hamburger {
             display: none;
             background: none;
@@ -443,6 +501,9 @@
         }
 
         .mobile-menu a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 15px;
             color: var(--muted);
             text-decoration: none;
@@ -486,8 +547,7 @@
             color: var(--muted);
         }
 
-        /* ── RESPONSIVE ── */
-
+        /* ── Responsive ── */
         @media (max-width: 900px) {
             .navbar {
                 padding: 0 1.25rem;
@@ -510,7 +570,7 @@
         @media (max-width: 768px) {
 
             .nav-links,
-            .search-form {
+            .search-wrap {
                 display: none !important;
             }
 
@@ -518,28 +578,12 @@
                 display: flex;
             }
 
-            /* Контент одна колонка */
             main {
                 padding: 1rem 1rem;
             }
 
             .messages {
                 padding: 0.75rem 1rem 0;
-            }
-
-            /* Grid адаптация */
-            .grid-2,
-            .grid-3,
-            .grid-4 {
-                grid-template-columns: 1fr !important;
-            }
-
-            .grid-sidebar {
-                grid-template-columns: 1fr !important;
-            }
-
-            .sidebar-sticky {
-                display: none;
             }
         }
 
@@ -603,20 +647,50 @@
         <a href="{% url 'main:home' %}" class="nav-logo"><span>Hirad</span>Hub</a>
 
         <nav class="nav-links">
-            <a href="{% url 'library:home' %}" class="nav-link {% block nav_library   %}{% endblock %}">Library</a>
-            <a href="{% url 'post:list' %}" class="nav-link {% block nav_posts     %}{% endblock %}">Posts</a>
-            <a href="{% url 'note:list' %}" class="nav-link {% block nav_notes     %}{% endblock %}">Notes</a>
-            <a href="{% url 'main:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">Dashboard</a>
+            <a href="{% url 'library:home' %}" class="nav-link {% block nav_library %}{% endblock %}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                </svg>
+                Library
+            </a>
+            <a href="{% url 'post:list' %}" class="nav-link {% block nav_posts %}{% endblock %}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                Posts
+            </a>
+            <a href="{% url 'note:list' %}" class="nav-link {% block nav_notes %}{% endblock %}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+                Notes
+            </a>
+            <a href="{% url 'main:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                </svg>
+                Dashboard
+            </a>
         </nav>
 
-        <form method="GET" action="{% url 'main:search' %}" class="search-form">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                style="color:var(--muted);flex-shrink:0;">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q|default:'' }}" />
-        </form>
+        <!-- Search -->
+        <div class="search-wrap">
+            <form class="search-form" id="search-form" autocomplete="off">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="color:var(--muted);flex-shrink:0;">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" id="search-input" name="q" placeholder="Search..."
+                    value="{{ request.GET.q|default:'' }}" />
+            </form>
+            <div class="search-results" id="search-results"></div>
+        </div>
 
         <button class="theme-btn" id="theme-toggle" title="Toggle theme">
             <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -632,15 +706,15 @@
         </button>
 
         {% if user.is_authenticated %}
-        <div class="dropdown">
-            <div class="avatar">
+        <div class="dropdown" id="user-dropdown">
+            <div class="avatar-btn" id="avatar-btn">
                 {% if user.profile_picture %}
                 <img src="{{ user.profile_picture.url }}" alt="avatar" />
                 {% else %}
                 {{ user.username|first|upper }}
                 {% endif %}
             </div>
-            <div class="dropdown-menu">
+            <div class="dropdown-menu" id="dropdown-menu">
                 <div class="dropdown-header">
                     <p>{{ user.get_full_name|default:user.username }}</p>
                     <p>{{ user.title }} · Lv.{{ user.level }}</p>
@@ -696,17 +770,54 @@
             </svg>
             <input type="text" name="q" placeholder="Search..." />
         </form>
-        <a href="{% url 'library:home' %}">Library</a>
-        <a href="{% url 'post:list' %}">Posts</a>
-        <a href="{% url 'note:list' %}">Notes</a>
-        <a href="{% url 'main:dashboard' %}">Dashboard</a>
+        <a href="{% url 'library:home' %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            Library
+        </a>
+        <a href="{% url 'post:list' %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Posts
+        </a>
+        <a href="{% url 'note:list' %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+            </svg>
+            Notes
+        </a>
+        <a href="{% url 'main:dashboard' %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+            </svg>
+            Dashboard
+        </a>
         {% if user.is_authenticated %}
-        <a href="{% url 'user:profile' %}">Profile</a>
-        <a href="{% url 'user:edit_profile' %}">Edit profile</a>
-        <a href="{% url 'user:logout' %}" style="color:#EF4444;">Logout</a>
+        <a href="{% url 'user:profile' %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+            </svg>
+            Profile
+        </a>
+        <a href="{% url 'user:logout' %}" style="color:#EF4444;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Logout
+        </a>
         {% else %}
         <a href="{% url 'user:login' %}">Login</a>
-        <a href="{% url 'user:register' %}" style="color:var(--accent); font-weight:500;">Register</a>
+        <a href="{% url 'user:register' %}" style="color:var(--accent);font-weight:500;">Register</a>
         {% endif %}
     </div>
 
@@ -733,7 +844,7 @@
     </footer>
 
     <script>
-        // Theme
+        // ── Theme ──
         const html = document.documentElement;
         const btn = document.getElementById('theme-toggle');
         const sun = document.getElementById('icon-sun');
@@ -750,26 +861,167 @@
                 moon.style.display = 'block';
             }
         }
-
         const saved = localStorage.getItem('hh-theme') ||
             (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         applyTheme(saved);
-
         btn.addEventListener('click', () => {
             const next = html.classList.contains('dark') ? 'light' : 'dark';
             localStorage.setItem('hh-theme', next);
             applyTheme(next);
         });
 
-        // Mobile menu
+        // ── Mobile menu ──
         document.getElementById('hamburger').addEventListener('click', () => {
             document.getElementById('mobile-menu').classList.toggle('open');
         });
 
-        // Active nav link
+        // ── Active nav link ──
         document.querySelectorAll('.nav-link').forEach(link => {
-            if (link.href === window.location.href) link.classList.add('active');
+            if (window.location.href.startsWith(link.href)) link.classList.add('active');
         });
+
+        // ── Dropdown — JS controlled (надёжнее hover) ──
+        const avatarBtn = document.getElementById('avatar-btn');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+
+        if (avatarBtn && dropdownMenu) {
+            let closeTimer = null;
+
+            function openDropdown() {
+                clearTimeout(closeTimer);
+                dropdownMenu.classList.add('open');
+            }
+            function scheduleClose() {
+                closeTimer = setTimeout(() => dropdownMenu.classList.remove('open'), 150);
+            }
+
+            // Открывается при наведении на аватарку или меню
+            avatarBtn.addEventListener('mouseenter', openDropdown);
+            avatarBtn.addEventListener('mouseleave', scheduleClose);
+            dropdownMenu.addEventListener('mouseenter', openDropdown);
+            dropdownMenu.addEventListener('mouseleave', scheduleClose);
+
+            // Также открывается по клику (для тач устройств)
+            avatarBtn.addEventListener('click', () => {
+                dropdownMenu.classList.toggle('open');
+            });
+
+            // Закрывается при клике вне
+            document.addEventListener('click', (e) => {
+                if (!avatarBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.remove('open');
+                }
+            });
+        }
+
+        // ── Live search ──
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        let searchTimer = null;
+
+        if (searchInput && searchResults) {
+
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                const q = searchInput.value.trim();
+
+                if (!q) {
+                    searchResults.classList.remove('open');
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                searchTimer = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`/search/?q=${encodeURIComponent(q)}&format=json`);
+                        const data = await res.json();
+                        renderSearchResults(data, q);
+                    } catch {
+                        searchResults.classList.remove('open');
+                    }
+                }, 300);
+            });
+
+            function renderSearchResults(data, q) {
+                const { users = [], posts = [], notes = [], books = [] } = data;
+                const total = users.length + posts.length + notes.length + books.length;
+
+                if (total === 0) {
+                    searchResults.innerHTML = `<div class="search-empty">No results for "${q}"</div>`;
+                    searchResults.classList.add('open');
+                    return;
+                }
+
+                let html = '';
+
+                if (users.length) {
+                    html += `<div class="search-result-section">Users</div>`;
+                    users.forEach(u => {
+                        html += `
+              <a href="/user/${u.username}/" class="search-result-item">
+                <div style="width:28px;height:28px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;color:#a5b4fc;flex-shrink:0;">
+                  ${u.username[0].toUpperCase()}
+                </div>
+                <div>
+                  <p style="font-size:13px;font-weight:500;color:var(--text);">${u.full_name || u.username}</p>
+                  <p style="font-size:11px;color:var(--muted);">@${u.username} · Lv.${u.level}</p>
+                </div>
+              </a>`;
+                    });
+                }
+
+                if (posts.length) {
+                    html += `<div class="search-result-section">Posts</div>`;
+                    posts.forEach(p => {
+                        html += `
+              <a href="/posts/${p.id}/" class="search-result-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.text}</p>
+              </a>`;
+                    });
+                }
+
+                if (notes.length) {
+                    html += `<div class="search-result-section">Notes</div>`;
+                    notes.forEach(n => {
+                        html += `
+              <a href="/notes/${n.id}/" class="search-result-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <p style="font-size:13px;color:var(--text);">${n.title}</p>
+              </a>`;
+                    });
+                }
+
+                if (books.length) {
+                    html += `<div class="search-result-section">Books</div>`;
+                    books.forEach(b => {
+                        html += `
+                <a href="/library/books/${b.id}/" class="search-result-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <p style="font-size:13px;color:var(--text);">${b.title}</p>
+                </a>`;
+                    });
+                }
+
+                searchResults.innerHTML = html;
+                searchResults.classList.add('open');
+            }
+
+            // Закрыть при клике вне поиска
+            document.addEventListener('click', (e) => {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.remove('open');
+                }
+            });
+
+            // Enter — переход на страницу поиска
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.location.href = `/search/?q=${encodeURIComponent(searchInput.value)}`;
+                }
+            });
+        }
     </script>
 
     {% block extra_js %}{% endblock %}

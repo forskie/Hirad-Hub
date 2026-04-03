@@ -22,23 +22,32 @@ def post_detail(request, pk):
         ct = ContentType.objects.get_for_model(Post)
         liked = Like.objects.filter(user=request.user, content_type=ct, object_id=post.pk).exists()
     return render(request, 'post/detail.html', {'post': post, 'comments': comments, 'liked': liked})
-
 @login_required
 def post_create(request):
+    topics = Topic.objects.all()
     if request.method == 'POST':
         text = request.POST.get('text', '').strip()
         image = request.FILES.get('image')
         video = request.FILES.get('video')
         topics_ids = request.POST.getlist('topics')
-        if not text and  not image and not video:
-            return render(request, 'post/create.html', {'error': "Post cannot be empty."})
-        post = Post.objects.create(author=request.user, text=text, image=image, video=video)
+        if not text and not image and not video:
+            return render(request, 'post/create.html', {
+                'error': "Post cannot be empty.",
+                'topics': topics
+            })
+        post = Post.objects.create(
+            author=request.user,
+            text=text,
+            image=image,
+            video=video
+        )
         if topics_ids:
             post.topics.set(topics_ids)
         return redirect('post:detail', pk=post.pk)
-    return render(request, 'post/create.html')
-
-
+    return render(request, 'post/create.html', {
+        'topics': topics
+    })
+    
 @login_required
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk, author=request.user)

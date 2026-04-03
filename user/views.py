@@ -33,9 +33,23 @@ def profile_view_others(request, username):
     return render(request, 'user/others_profile.html', {'user' : other_user})
 
 
+from django.contrib.contenttypes.models import ContentType
+from post.models import Post, Favorite
+
 @login_required
 def profile_view(request):
-    return render(request, 'user/profile.html', {'user': request.user})
+    user = request.user
+    post_ct = ContentType.objects.get_for_model(Post)
+    favorite_posts = Post.objects.filter(
+        id__in=Favorite.objects.filter(
+            user=user,
+            content_type=post_ct
+        ).values_list('object_id', flat=True)
+    ).select_related('author').prefetch_related('likes', 'comments')
+    return render(request, 'user/profile.html', {
+        'user': user,
+        'favorite_posts': favorite_posts
+    })
 @login_required
 def edit_profile(request):
     user = request.user
