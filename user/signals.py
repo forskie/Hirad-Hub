@@ -5,7 +5,7 @@ from .models import TeacherProfile, CustomUser, DirectorProfile
 @receiver(post_save, sender=CustomUser)
 def create_role_profile(sender, instance, created, **kwargs):
     if instance.role == 'teacher':
-        TeacherProfile.objects.create(user=instance)
+        TeacherProfile.objects.get_or_create(user=instance)
     elif instance.role == 'director':
-        DirectorProfile.objects.create(user=instance)
-        TeacherProfile.objects.create(user=instance)
+        DirectorProfile.objects.get_or_create(user=instance)
+        TeacherProfile.objects.get_or_create(user=instance)

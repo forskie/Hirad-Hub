@@ -68,6 +68,7 @@ class TeacherProfile(models.Model):
     verified_at = models.DateTimeField(blank=True, null=True)
     verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name='verified_teachers')
 
+    school = models.ForeignKey('School', on_delete=models.SET_NULL, blank=True, null=True, related_name='teachers')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -84,7 +85,8 @@ class DirectorProfile(models.Model):
     can_manage_roadmaps = models.BooleanField(default=True)
     can_manage_library = models.BooleanField(default=True)
 
-    techers_verified = models.PositiveIntegerField(default=0)
+    school = models.ForeignKey('School', on_delete=models.SET_NULL, blank=True, null=True, related_name='directors')
+    teachers_verified = models.PositiveIntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -94,3 +96,12 @@ class DirectorProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - Director Profile"
+    
+
+class School(models.Model):
+    name = models.CharField(max_length=255)
+    number = models.CharField(max_length=50, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+
+    def __str__(self):
+        return f'School #{self.number} - {self.name} ({self.city})'
