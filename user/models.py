@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
-
+from hirad_hub import settings
 
 class CustomUser(AbstractUser):
     phone_regex = RegexValidator(
@@ -50,3 +50,47 @@ class CustomUser(AbstractUser):
         
     def __str__(self):
         return f"{self.get_full_name() or self.username} — {self.title}"
+    
+
+class TeacherProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='teacher_profile')
+    
+    
+    teacher_score = models.PositiveIntegerField(default=0, db_index=True)
+    teacher_level = models.PositiveIntegerField(default=1)
+    teacher_title = models.CharField(max_length=50, blank=True, default='Novice')
+    
+    materials_uploaded = models.PositiveIntegerField(default=0)
+    total_likes_received = models.PositiveIntegerField(default=0)
+    total_students_helped = models.PositiveIntegerField(default=0)
+
+    is_verified = models.BooleanField(default=False)
+    verified_at = models.DateTimeField(blank=True, null=True)
+    verified_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, blank=True, null=True, related_name='verified_teachers')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Teacher Profile'
+        verbose_name_plural = 'Teacher Profiles'
+
+    def __str__(self):
+        return f'Teacher Profile for {self.user.get_full_name() or self.user.username}'
+    
+class DirectorProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='director_profile')
+    
+    can_verify_teachers = models.BooleanField(default=True)
+    can_manage_roadmaps = models.BooleanField(default=True)
+    can_manage_library = models.BooleanField(default=True)
+
+    techers_verified = models.PositiveIntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = 'Director Profile'
+        verbose_name_plural = 'Director Profiles'
+
+    def __str__(self):
+        return f"{self.user.username} - Director Profile"
