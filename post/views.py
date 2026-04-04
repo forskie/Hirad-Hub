@@ -1,3 +1,5 @@
+from email.mime import image, text
+
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Favorite
 from django.contrib.auth.decorators import login_required
@@ -16,12 +18,14 @@ def post_list(request):
 
 def post_detail(request, pk):
     post = get_object_or_404(Post.objects.select_related('author').prefetch_related('topics'), pk=pk)
+    post.increment_views()
     comments = post.comments.select_related('user').filter(parent=None).prefetch_related('replies')
     liked = False
     if request.user.is_authenticated:
         ct = ContentType.objects.get_for_model(Post)
         liked = Like.objects.filter(user=request.user, content_type=ct, object_id=post.pk).exists()
     return render(request, 'post/detail.html', {'post': post, 'comments': comments, 'liked': liked})
+
 @login_required
 def post_create(request):
     topics = Topic.objects.all()
@@ -35,12 +39,9 @@ def post_create(request):
                 'error': "Post cannot be empty.",
                 'topics': topics
             })
-        post = Post.objects.create(
-            author=request.user,
-            text=text,
-            image=image,
-            video=video
-        )
+        post_type = request.POST.get('post_type', 'post')
+        post = Post.objects.create(author=request.user, text=text, image=image, video=video, post_type=post_type)
+        
         if topics_ids:
             post.topics.set(topics_ids)
         return redirect('post:detail', pk=post.pk)
