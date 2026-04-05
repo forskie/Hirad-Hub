@@ -28,13 +28,20 @@ def reward_like(sender, instance, created, **kwargs):
     if not created:
         return
     content = instance.content_object
-    if not hasattr(content, 'creator'):
+    if not content:
         return
-    uploader = content.creator
-    if uploader == instance.user:
-        return
-    add_score(uploader, LIKE_RECEIVED_POINTS)
+    
+    if hasattr(content, 'author') and content.author != instance.user:
+        add_score(content.author, LIKE_RECEIVED_POINTS)
 
+    if hasattr(content, 'creator') and content.creator and content.creator != instance.user:
+        profile = get_teacher_profile(content.creator)
+        if profile:
+            profile.total_likes_received += 1
+            profile.save(update_fields=['total_likes_received'])
+            add_teacher_score(profile, MATERIAL_LIKE_RECEIVED_POINTS)
+
+            
 @receiver(pre_save, sender=UserProgress)
 def reward_step_completion(sender, instance, **kwargs):
     if not instance.pk:
@@ -69,22 +76,6 @@ def reward_material_upload(sender, instance, created, **kwargs):
         return
     profile.materials_uploaded += 1
     profile.save(update_fields=['materials_uploaded'])
-    add_teacher_score(instance.creator, MATERIAL_UPLOAD_POINTS)
-
-@receiver(post_save, sender=Like)
-def reward_teacher_like(sender, instance, created, **kwargs):
-    if not created:
-        return
-    content = instance.content_object
-    if not hasattr(content, 'creator') or not content.creator:
-        return
-    if content.creator == instance.user:
-        return
-    profile = get_teacher_profile(content.creator)
-    if not profile:
-        return
-    profile.total_likes_received += 1
-    profile.save(update_fields=['total_likes_received'])
-    add_teacher_score(content.creator, MATERIAL_LIKE_RECEIVED_POINTS)
+    add_teacher_score(profile, MATERIAL_UPLOAD_POINTS)
 
     

@@ -152,11 +152,15 @@ def add_book(request):
         if pages:
             pages=int(pages)
         file_book = request.FILES.get('file')
-        if not author or not file_book:
-            return render(request, 'library/uploads/add_book.html', {'error': 'Author and book are required.'})
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        level = request.POST.get('level', '')
+        if not title or not author or not file_book:
+            return render(request, 'library/uploads/add_book.html', {'error': 'Title, author and file are required.'})
         book = Book.objects.create(
-            author=author, 
-            file=file_book, pages=pages
+            title=title, description=description, level=level,
+            author=author, file=file_book, pages=pages,
+            creator=request.user
         )
         book.topics.set(topics_ids)
         return redirect('library:book_detail', pk=book.pk)
@@ -186,7 +190,7 @@ def upload_podcast(request):
         topics_ids = request.POST.getlist('topics')
         duration = request.POST.get('duration') or None
         if duration:
-            duration = int(duration)
+            duration = request.POST.get('duration') or None
         audio_file = request.FILES.get('audio_file')
         thumbnail = request.FILES.get('thumbnail')
         if not author or not audio_file:
@@ -204,7 +208,7 @@ def edit_added_podcast(request, pk):
     podcast = get_object_or_404(Podcast,  pk=pk, creator=request.user)
     if request.method == 'POST':
         podcast.author = request.POST.get('author', podcast.author).strip()
-        podcast.duration = request.POST.get('duration', podcast.duration).strip()
+        podcast.duration = request.POST.get('duration') or podcast.duration
         topics_ids = request.POST.getlist('topics')
         if request.FILES.get('thumbnail'):
             podcast.thumbnail = request.FILES.get('thumbnail')
@@ -231,7 +235,7 @@ def upload_video(request):
             return render(request, 'library/uploads/upload_video.html', {'error': 'Author and video (video file) are required.'})
         video = Video.objects.create(
             author=author, video_file=video_file,
-            thumbnail=thumbnail, duration=timedelta(duration)
+            thumbnail=thumbnail, duration=duration
         )
         video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)
@@ -243,7 +247,8 @@ def edit_added_video(request, pk):
     video = get_object_or_404(Video,  pk=pk, creator=request.user)
     if request.method == 'POST':
         video.author = request.POST.get('author', video.author).strip()
-        video.duration = request.POST.get('duration', video.duration).strip()
+        video.duration = request.POST.get('duration') or video.duration
+
         topics_ids = request.POST.getlist('topics')
         if request.FILES.get('thumbnail'):
             video.thumbnail = request.FILES.get('thumbnail')
