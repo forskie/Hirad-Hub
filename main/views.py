@@ -15,8 +15,8 @@ User = get_user_model()
 @login_required
 def dashboard(request):
     dash, _ = Dashboard.objects.get_or_create(user=request.user)
-    rank = Dashboard.objects.filter(score__gt=request.user.score).count() + 1
-    top_users = Dashboard.objects.order_by('-score')[:5]
+    rank = User.objects.filter(score__gt=request.user.score).count() + 1
+    top_users = User.objects.order_by('-score')[:5]
     recent_posts = Post.objects.filter(author=request.user).order_by('-created_at')[:5]
     return render(request, 'main/dashboard.html',
                 {'dash': dash, 

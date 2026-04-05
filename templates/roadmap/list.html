@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Roadmaps — HiradHub{% endblock %}
+
+{% block extra_css %}
+<style>
+  .roadmap-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.18s, transform 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+  .roadmap-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.18s;
+  }
+  .roadmap-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .roadmap-card:hover::before { opacity: 1; }
+
+  .roadmap-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 900px) { .roadmap-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .roadmap-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1000px; margin:0 auto;">
+
+  <!-- Header -->
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:2rem; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1 style="font-size:24px; font-weight:600; color:var(--text); letter-spacing:-0.02em;">Roadmaps</h1>
+      <p style="font-size:14px; color:var(--muted); margin-top:4px;">Structured learning paths curated by teachers</p>
+    </div>
+    {% if request.user.is_authenticated and request.user.role in 'teacher,admin,director' %}
+      <a href="{% url 'roadmap:create' %}"
+        style="display:flex; align-items:center; gap:6px; padding:9px 18px; background:var(--accent); color:#fff; border-radius:9px; font-size:14px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Create roadmap
+      </a>
+    {% endif %}
+  </div>
+
+  <!-- Topic filter -->
+  {% if topics %}
+  <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.75rem;">
+    <a href="{% url 'roadmap:list' %}" style="font-size:13px; padding:5px 14px; border-radius:20px; border:0.5px solid {% if not request.GET.topic %}var(--accent){% else %}var(--border){% endif %}; color:{% if not request.GET.topic %}var(--accent){% else %}var(--muted){% endif %}; background:{% if not request.GET.topic %}#1e1d3a{% else %}var(--surface){% endif %}; text-decoration:none;">All</a>
+    {% for topic in topics %}
+      <a href="?topic={{ topic.slug }}" style="font-size:13px; padding:5px 14px; border-radius:20px; border:0.5px solid {% if request.GET.topic == topic.slug %}var(--accent){% else %}var(--border){% endif %}; color:{% if request.GET.topic == topic.slug %}var(--accent){% else %}var(--muted){% endif %}; background:{% if request.GET.topic == topic.slug %}#1e1d3a{% else %}var(--surface){% endif %}; text-decoration:none;">{{ topic.name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Roadmaps grid -->
+  {% if roadmaps %}
+  <div class="roadmap-grid">
+    {% for roadmap in roadmaps %}
+    <a href="{% url 'roadmap:detail' roadmap.pk %}" class="roadmap-card">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px;">
+        <div style="width:36px; height:36px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        </div>
+        {% if roadmap.topic %}
+          <span style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:20px;">{{ roadmap.topic.name }}</span>
+        {% endif %}
+      </div>
+      <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px; line-height:1.4;">{{ roadmap.title }}</p>
+      {% if roadmap.description %}
+        <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:12px;">{{ roadmap.description|truncatechars:80 }}</p>
+      {% endif %}
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:0.5px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div style="width:20px; height:20px; border-radius:50%; background:#1e1d3a; display:flex; align-items:center; justify-content:center; font-size:9px; color:#a5b4fc;">{{ roadmap.creator.username|first|upper }}</div>
+          <span style="font-size:12px; color:var(--muted);">{{ roadmap.creator.get_full_name|default:roadmap.creator.username }}</span>
+        </div>
+        <span style="font-size:12px; color:var(--muted);">{{ roadmap.steps.count }} steps</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center; padding:5rem 0;">
+    <div style="width:52px; height:52px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    </div>
+    <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">No roadmaps yet</p>
+    <p style="font-size:13px; color:var(--muted); margin-bottom:1.25rem;">Be the first to create a learning path.</p>
+    {% if request.user.is_authenticated and request.user.role in 'teacher,admin,director' %}
+      <a href="{% url 'roadmap:create' %}" style="padding:9px 20px; background:var(--accent); color:#fff; border-radius:9px; font-size:14px; font-weight:500; text-decoration:none;">Create roadmap</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

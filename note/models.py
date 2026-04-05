@@ -22,11 +22,7 @@ class Note(models.Model):
 
     likes = GenericRelation('library.Like')
     comments = GenericRelation('library.Comment')
-    materials = GenericRelation('library.Book', blank=True)    
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-        
+    materials = models.ManyToManyField('library.Book', blank=True)        
     class Meta:
         indexes = [
             models.Index(fields=['-created_at']),

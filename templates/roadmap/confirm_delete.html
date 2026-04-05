@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% block title %}Edit — {{ roadmap.title }} — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+    <a href="{% url 'roadmap:detail' roadmap.pk %}"
+      style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; text-decoration:none; color:var(--muted);"
+      onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <h1 style="font-size:18px; font-weight:500; color:var(--text);">Edit roadmap</h1>
+    <a href="{% url 'roadmap:delete' roadmap.pk %}"
+      style="margin-left:auto; font-size:13px; color:#ef4444; text-decoration:none; padding:6px 12px; border:0.5px solid #fecaca; border-radius:7px; transition:background 0.15s;"
+      onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
+      Delete
+    </a>
+  </div>
+
+  <!-- Roadmap info -->
+  <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:1.25rem;">
+    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Roadmap info</p>
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="update_roadmap"/>
+
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Title</label>
+        <input type="text" name="title" value="{{ roadmap.title }}"
+          style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description</label>
+        <textarea name="description" rows="2"
+          style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.6;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">{{ roadmap.description }}</textarea>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; margin-bottom:1rem;">
+        <select name="topic"
+          style="padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;">
+          <option value="">— No topic —</option>
+          {% for topic in topics %}
+            <option value="{{ topic.pk }}" {% if roadmap.topic and roadmap.topic.pk == topic.pk %}selected{% endif %}>{{ topic.name }}</option>
+          {% endfor %}
+        </select>
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;">
+          <input type="checkbox" name="is_public" {% if roadmap.is_public %}checked{% endif %} style="accent-color:var(--accent); width:13px; height:13px;"/>
+          <span style="font-size:13px; color:var(--text);">Public</span>
+        </label>
+      </div>
+
+      <button type="submit"
+        style="padding:8px 18px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+        Save changes
+      </button>
+    </form>
+  </div>
+
+  <!-- Steps -->
+  <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:1.25rem;">
+    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Steps ({{ steps|length }})</p>
+
+    {% if steps %}
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:1.25rem;">
+      {% for step in steps %}
+      <div style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--surface2); border-radius:8px;">
+        <span style="font-size:12px; color:var(--muted); font-family:monospace; flex-shrink:0;">{{ step.order|stringformat:"02d" }}</span>
+        <div style="flex:1; min-width:0;">
+          <p style="font-size:13px; font-weight:500; color:var(--text);">{{ step.title }}</p>
+          {% if step.description %}
+            <p style="font-size:12px; color:var(--muted);">{{ step.description|truncatechars:60 }}</p>
+          {% endif %}
+        </div>
+        <span style="font-size:11px; color:var(--muted); flex-shrink:0;">{{ step.resources.count }} res.</span>
+        <form method="POST" style="margin:0;">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete_step"/>
+          <input type="hidden" name="step_pk" value="{{ step.pk }}"/>
+          <button type="submit"
+            style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; background:none; border:none; cursor:pointer; color:var(--muted); border-radius:6px; transition:all 0.15s;"
+            onmouseover="this.style.background='#fef2f2';this.style.color='#ef4444'" onmouseout="this.style.background='none';this.style.color='var(--muted)'">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Add step -->
+    <form method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_step"/>
+      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:10px;">Add step</p>
+      <div style="margin-bottom:8px;">
+        <input type="text" name="step_title" placeholder="Step title"
+          style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div style="margin-bottom:10px;">
+        <textarea name="step_description" rows="2" placeholder="Step description (optional)"
+          style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:none; line-height:1.6;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+      <button type="submit"
+        style="padding:8px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+        + Add step
+      </button>
+    </form>
+  </div>
+
+  <a href="{% url 'roadmap:detail' roadmap.pk %}"
+    style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--accent); text-decoration:none;">
+    View roadmap →
+  </a>
+
+</div>
+{% endblock %}

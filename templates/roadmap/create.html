@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Create Roadmap — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:640px; margin:0 auto;">
+
+  <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+    <a href="{% url 'roadmap:list' %}"
+      style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; text-decoration:none; color:var(--muted); transition:color 0.15s;"
+      onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <h1 style="font-size:18px; font-weight:500; color:var(--text);">Create roadmap</h1>
+  </div>
+
+  <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem; margin-bottom:1rem;">
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      {% if error %}
+        <div style="background:#fef2f2; border:0.5px solid #fecaca; border-radius:8px; padding:10px 14px; margin-bottom:1rem;">
+          <p style="font-size:13px; color:#b91c1c;">{{ error }}</p>
+        </div>
+      {% endif %}
+
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Title</label>
+        <input type="text" name="title" value="{{ form.title.value|default:'' }}" placeholder="e.g. Python for Beginners"
+          style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:14px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description (optional)</label>
+        <textarea name="description" rows="3" placeholder="What will students learn from this roadmap?"
+          style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.7; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">{{ form.description.value|default:'' }}</textarea>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Topic (optional)</label>
+        <select name="topic"
+          style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer; transition:border-color 0.15s;"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          <option value="">— No topic —</option>
+          {% for topic in topics %}
+            <option value="{{ topic.pk }}" {% if form.topic.value == topic.pk|stringformat:"s" %}selected{% endif %}>{{ topic.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="margin-bottom:1.5rem;">
+        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+          <input type="checkbox" name="is_public" {% if not form or form.is_public.value %}checked{% endif %}
+            style="accent-color:var(--accent); width:14px; height:14px;"/>
+          <span style="font-size:13px; color:var(--text);">Make public</span>
+          <span style="font-size:12px; color:var(--muted);">— visible to all students</span>
+        </label>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button type="submit"
+          style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
+          onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+          Create roadmap
+        </button>
+        <a href="{% url 'roadmap:list' %}"
+          style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+    <p style="font-size:12px; color:var(--muted); line-height:1.7;">
+      After creating the roadmap you can add steps and attach library materials to each step.
+    </p>
+  </div>
+
+</div>
+{% endblock %}
