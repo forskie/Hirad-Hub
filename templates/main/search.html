@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% block title %}Search{% if q %} — {{ q }}{% endif %} — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:760px; margin:0 auto;">
+
+  <!-- Search bar -->
+  <form method="GET" action="{% url 'main:search' %}" style="margin-bottom:2rem;">
+    <div style="display:flex; align-items:center; gap:8px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:10px 16px; transition:border-color 0.15s;"
+      onfocusin="this.style.borderColor='var(--accent)'" onfocusout="this.style.borderColor='var(--border)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" name="q" value="{{ q }}" placeholder="Search users, posts, notes, books..."
+        autofocus
+        style="flex:1; background:none; border:none; outline:none; font-size:15px; color:var(--text); font-family:'Sora',sans-serif;"/>
+      {% if q %}
+        <a href="{% url 'main:search' %}" style="color:var(--muted); text-decoration:none; font-size:13px; flex-shrink:0;">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if q %}
+    {% with total=results.users|length|add:results.posts|length|add:results.notes|length|add:results.books|length %}
+
+    <p style="font-size:13px; color:var(--muted); margin-bottom:1.5rem;">
+      {% if total %}{{ total }} result{{ total|pluralize }} for "{{ q }}"{% else %}No results for "{{ q }}"{% endif %}
+    </p>
+
+    {% if total == 0 %}
+      <div style="text-align:center; padding:4rem 0;">
+        <div style="width:52px; height:52px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </div>
+        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">Nothing found</p>
+        <p style="font-size:13px; color:var(--muted);">Try a different search term.</p>
+      </div>
+
+    {% else %}
+
+      <!-- Users -->
+      {% if results.users %}
+      <div style="margin-bottom:2rem;">
+        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Users</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          {% for user in results.users %}
+          <a href="{% url 'user:profile_others' user.username %}"
+            style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:36px; height:36px; border-radius:50%; background:#1e1d3a; border:1.5px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; color:#a5b4fc; flex-shrink:0;">
+              {{ user.username|first|upper }}
+            </div>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:14px; font-weight:500; color:var(--text);">
+                {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+              </p>
+              <p style="font-size:12px; color:var(--muted);">@{{ user.username }} · Lv.{{ user.level }} · {{ user.title }}</p>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Posts -->
+      {% if results.posts %}
+      <div style="margin-bottom:2rem;">
+        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Posts</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          {% for post in results.posts %}
+          <a href="{% url 'post:detail' post.pk %}"
+            style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:13px; color:var(--text); line-height:1.6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ post.text|truncatechars:100 }}</p>
+              <p style="font-size:11px; color:var(--muted); margin-top:3px;">by {{ post.author.username }} · {{ post.created_at|timesince }} ago</p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Notes -->
+      {% if results.notes %}
+      <div style="margin-bottom:2rem;">
+        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Notes</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          {% for note in results.notes %}
+          <a href="{% url 'note:detail' note.pk %}"
+            style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ note.title }}</p>
+              <p style="font-size:11px; color:var(--muted);">by {{ note.author.username }} · {{ note.created_at|timesince }} ago</p>
+            </div>
+            <span style="font-size:11px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px; flex-shrink:0;">public</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Books -->
+      {% if results.books %}
+      <div style="margin-bottom:2rem;">
+        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Books</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          {% for book in results.books %}
+          <a href="{% url 'library:book_detail' book.pk %}"
+            style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:36px; height:44px; background:#1e1d3a; border-radius:6px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ book.title }}</p>
+              <p style="font-size:12px; color:var(--muted);">{{ book.author|default:"No author" }}{% if book.level %} · {{ book.get_level_display }}{% endif %}</p>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    {% endif %}
+    {% endwith %}
+
+  {% else %}
+    <!-- Empty state — no query -->
+    <div style="text-align:center; padding:4rem 0;">
+      <p style="font-size:15px; color:var(--muted);">Type something to search across HiradHub.</p>
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

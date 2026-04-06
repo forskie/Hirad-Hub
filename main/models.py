@@ -21,4 +21,4 @@ class Dashboard(models.Model):
         return self.user.posts.count()
 
     def note_count(self):
-        return self.user.note_set.count()    
+        return self.user.notes.count()    

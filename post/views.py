@@ -14,17 +14,26 @@ def post_list(request):
     if topic_slug:
         posts = posts.filter(topics__slug=topic_slug)
     topics = Topic.objects.all()
-    return render(request, 'post/list.html', {'posts': posts, 'topics': topics})
+
+    post_type = request.GET.get('type')
+    if post_type:
+        posts = posts.filter(post_type=post_type)
+
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    top_users = User.objects.order_by('-score')[:5]
+    return render(request, 'post/list.html', {'posts': posts, 'topics': topics, 'top_users': top_users})
 
 def post_detail(request, pk):
     post = get_object_or_404(Post.objects.select_related('author').prefetch_related('topics'), pk=pk)
     post.increment_views()
     comments = post.comments.select_related('user').filter(parent=None).prefetch_related('replies')
     liked = False
+    other_posts = Post.objects.filter(author=post.author).exclude(pk=post.pk).order_by('-created_at')[:5]
     if request.user.is_authenticated:
         ct = ContentType.objects.get_for_model(Post)
         liked = Like.objects.filter(user=request.user, content_type=ct, object_id=post.pk).exists()
-    return render(request, 'post/detail.html', {'post': post, 'comments': comments, 'liked': liked})
+    return render(request, 'post/detail.html', {'post': post, 'comments': comments, 'liked': liked, 'other_posts': other_posts})
 
 @login_required
 def post_create(request):

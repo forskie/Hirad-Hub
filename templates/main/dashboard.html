@@ -101,37 +101,18 @@
         </div>
 
         <!-- Leaderboard preview -->
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-                <p style="font-size:14px; font-weight:500; color:var(--text);">Leaderboard</p>
-                <a href="{% url 'main:leaderboard' %}"
-                    style="font-size:12px; color:var(--accent); text-decoration:none;">View all →</a>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:6px;">
-                {% for entry in top_users %}
-                <div style="display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px;
-            {% if entry == request.user %}background:#1e1d3a;{% else %}background:var(--surface2);{% endif %}">
-                    <span
-                        style="font-size:12px; font-weight:500; color:var(--muted); min-width:20px; text-align:center;">
-                        {{ forloop.counter }}</span>
-                    <div
-                        style="width:24px; height:24px; border-radius:50%; background:var(--surface); border:0.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--muted); flex-shrink:0;">
-                        {{ entry.user.username|first|upper }}</div>
-                    <span
-                        style="font-size:12px; color:{% if entry.user == request.user %}#a5b4fc{% else %}var(--text){% endif %}; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                        {{ entry.user.get_full_name|default:entry.user.username }}
-                        {% if entry.user == request.user %}<span style="font-size:10px; color:#a5b4fc;"> (you)</span>
-                        {% endif %}
-                    </span>
-                    <span
-                        style="font-size:12px; font-weight:500; color:{% if entry.user == request.user %}#6366F1{% else %}#f59e0b{% endif %}; flex-shrink:0;">
-                        {{ entry.total_score }}</span>
-                </div>
-                {% empty %}
-                <p style="font-size:13px; color:var(--muted); text-align:center; padding:1rem 0;">No data yet.</p>
-                {% endfor %}
-            </div>
-        </div>
+        <!-- Leaderboard preview -->
+<div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
+        <p style="font-size:14px; font-weight:500; color:var(--text);">Leaderboard</p>
+        <a href="{% url 'main:leaderboard' %}" style="font-size:12px; color:var(--accent); text-decoration:none;">
+            View full leaderboard →
+        </a>
+    </div>
+    <p style="font-size:13px; color:var(--muted); text-align:center; padding:1rem 0;">
+        Click "View full leaderboard" to see all users and scores.
+    </p>
+</div>
 
     </div>
 
