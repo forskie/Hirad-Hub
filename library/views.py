@@ -10,7 +10,7 @@ from datetime import timedelta
 def library_home(request):
     topic_slug = request.GET.get('topic')
     sort = request.GET.get('sort', 'new')
-    order = '-date_added' if sort == 'new' else '-likes'
+    order = '-created_at' if sort == 'new' else '-likes'
     books = Book.objects.prefetch_related('topics')
     videos = Video.objects.prefetch_related('topics')
     podcasts = Podcast.objects.prefetch_related('topics')
@@ -24,9 +24,9 @@ def library_home(request):
         videos = videos.annotate(lc=Count('likes')).order_by('-lc')
         podcasts = podcasts.annotate(lc=Count('likes')).order_by('-lc')
     else:
-        books = books.order_by('-date_added')
-        videos = videos.order_by('-date_added')
-        podcasts = podcasts.order_by('-date_added')
+        books = books.order_by('-created_at')
+        videos = videos.order_by('-created_at')
+        podcasts = podcasts.order_by('-created_at')
 
     topics = Topic.objects.all()
     return render(request, 'library/home.html', 

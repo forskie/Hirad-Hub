@@ -22,7 +22,8 @@ class BaseMaterial(models.Model):
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     likes = GenericRelation('Like', related_query_name='materials')
     comments = GenericRelation('Comment', related_query_name='materials')
-    date_added = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
     @property
     def count_likes(self):
         return self.likes.count()  

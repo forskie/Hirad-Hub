@@ -20,14 +20,14 @@ class TopicAdmin(admin.ModelAdmin):
     
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'level', 'date_added', 'count_likes', 'count_comments', 'author')
+    list_display = ('id', 'title', 'level', 'created_at', 'count_likes', 'count_comments', 'author')
     filter_horizontal = ('topics',) 
     search_fields = ('title', 'author', 'description')
     list_filter = ('level', 'topics')
     
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'level', 'date_added', 'count_likes', 'count_comments', 'author')
+    list_display = ('id', 'title', 'level', 'created_at', 'count_likes', 'count_comments', 'author')
     filter_horizontal = ('topics',) 
     search_fields = ('title', 'author', 'description')
     list_filter = ('level', 'topics')
@@ -35,7 +35,7 @@ class VideoAdmin(admin.ModelAdmin):
 
 @admin.register(Podcast)
 class PodcastAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'level', 'date_added', 'count_likes', 'count_comments', 'author')
+    list_display = ('id', 'title', 'level', 'created_at', 'count_likes', 'count_comments', 'author')
     filter_horizontal = ('topics',) 
     search_fields = ('title', 'author', 'description')
     list_filter = ('level', 'topics')

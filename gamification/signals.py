@@ -22,7 +22,6 @@ def reward_post(sender, instance, created, **kwargs):
     if created:
         add_score(instance.author, POST_CREATE_POINTS)
 
-
 @receiver(post_save, sender=Like)
 def reward_like(sender, instance, created, **kwargs):
     if not created:
@@ -30,16 +29,15 @@ def reward_like(sender, instance, created, **kwargs):
     content = instance.content_object
     if not content:
         return
-    
-    if hasattr(content, 'author') and content.author != instance.user:
-        add_score(content.author, LIKE_RECEIVED_POINTS)
-
-    if hasattr(content, 'creator') and content.creator and content.creator != instance.user:
-        profile = get_teacher_profile(content.creator)
-        if profile:
-            profile.total_likes_received += 1
-            profile.save(update_fields=['total_likes_received'])
-            add_teacher_score(profile, MATERIAL_LIKE_RECEIVED_POINTS)
+    creator = getattr(content, 'creator', None)
+    if not creator or creator == instance.user:
+        return
+    add_score(creator, LIKE_RECEIVED_POINTS)
+    profile = get_teacher_profile(creator)
+    if profile:
+        profile.total_likes_received += 1
+        profile.save(update_fields=['total_likes_received'])
+        add_teacher_score(profile, MATERIAL_LIKE_RECEIVED_POINTS)
 
             
 @receiver(pre_save, sender=UserProgress)
