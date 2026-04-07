@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model, authenticate
 from django.utils.html import strip_tags
 from django.core.validators import RegexValidator
 
+from .models import School, TeacherProfile
+
 User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):
@@ -29,10 +31,6 @@ class CustomUserCreationForm(UserCreationForm):
         required=True,
         widget=forms.PasswordInput(attrs={'class': 'input-register form-control', 'placeholder': 'Confirm password'})
     )
-    role = forms.ChoiceField(
-        choices=[('student', 'Student'), ('teacher', 'Teacher')],
-        widget=forms.Select(attrs={'class': 'input-register form-control'})
-    )
     phone_number = forms.CharField(
         required=False,
         validators=[RegexValidator(r'^\+992\d{9}$', "Enter phone number in +992 format")],
@@ -41,7 +39,7 @@ class CustomUserCreationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', 'role', 'phone_number')
+        fields = ('first_name', 'last_name', 'email', 'password1', 'password2', 'phone_number')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -52,6 +50,7 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.username = user.email 
+        user.role = 'student'
         if commit:
             user.save()
         return user
@@ -118,3 +117,45 @@ class CustomUserUpdateForm(forms.ModelForm):
         if cleaned_data.get('phone_number'):
             cleaned_data['phone_number'] = strip_tags(cleaned_data['phone_number'])
         return cleaned_data
+    
+
+class TeacherRegistrationForm(UserCreationForm):
+    first_name = forms.CharField(
+        required=True,
+        max_length=50,)
+    last_name = forms.CharField(
+        required=True,
+        max_length=50,)
+    email = forms.EmailField(required=True)
+    phone_number = forms.CharField(
+        required=False,
+        validators=[RegexValidator(r'^\+992\d{9}$', "Enter phone number in +992 format")])
+    school = forms.ModelChoiceField(
+        queryset=School.objects.all(),
+        required=True,
+        empty_label="-select school-"
+    )
+    subject = forms.CharField(required=True, max_length=100, 
+    widget=forms.TextInput(attrs={'placeholder': 'e.g. Philosophy, Math'}))
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'phone_number', 'password1', 'password2', 'school', 'subject')
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('This email is already in use :(')
+        return email
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.username = self.cleaned_data['email']
+        user.role = 'teacher'
+        if commit:
+            user.save()
+            profile, _ = TeacherProfile.objects.get_or_create(user=user)
+            profile.school = self.cleaned_data.get('school')
+            profile.save(update_fields=['school'])
+        return user
+    

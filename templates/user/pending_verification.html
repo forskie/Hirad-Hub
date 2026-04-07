@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Pending Verification — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:480px; margin:5rem auto; text-align:center;">
+
+  <div style="width:64px; height:64px; background:#1e1d3a; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem;">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  </div>
+
+  <h1 style="font-size:22px; font-weight:600; color:var(--text); margin-bottom:10px; letter-spacing:-0.02em;">
+    Account submitted
+  </h1>
+  <p style="font-size:14px; color:var(--muted); line-height:1.7; margin-bottom:2rem;">
+    Your teacher account has been created successfully. An admin or school director will review and verify your account. You'll be able to upload materials after verification.
+  </p>
+
+  <!-- Status card -->
+  <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; text-align:left;">
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:28px; height:28px; border-radius:50%; background:#1e2d1e; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <span style="font-size:13px; color:var(--text);">Account created</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:28px; height:28px; border-radius:50%; background:#1e1d3a; border:1.5px solid var(--accent); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <div style="width:8px; height:8px; border-radius:50%; background:var(--accent);"></div>
+        </div>
+        <span style="font-size:13px; color:var(--accent); font-weight:500;">Waiting for verification</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; opacity:0.4;">
+        <div style="width:28px; height:28px; border-radius:50%; background:var(--surface2); border:1.5px solid var(--border); flex-shrink:0;"></div>
+        <span style="font-size:13px; color:var(--muted);">Upload access granted</span>
+      </div>
+    </div>
+  </div>
+
+  <p style="font-size:13px; color:var(--muted); margin-bottom:1.5rem;">
+    In the meantime you can browse the library, read posts and take notes.
+  </p>
+
+  <div style="display:flex; flex-direction:column; gap:8px;">
+    <a href="{% url 'main:home' %}"
+      style="padding:10px; background:var(--accent); color:#fff; border-radius:8px; font-size:14px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+      onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+      Go to home
+    </a>
+    <a href="{% url 'library:home' %}"
+      style="padding:10px; background:var(--surface2); border:0.5px solid var(--border); color:var(--text); border-radius:8px; font-size:13px; text-decoration:none;">
+      Browse library
+    </a>
+  </div>
+
+</div>
+{% endblock %}
