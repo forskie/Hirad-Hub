@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher.get_full_name|default:teacher.username }} — Teacher — HiradHub{% endblock %}
+
+{% block content %}
+<div style="max-width:860px; margin:0 auto;">
+
+  <!-- Header -->
+  <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:1.25rem;">
+    <div style="display:flex; align-items:flex-start; gap:1.25rem; flex-wrap:wrap;">
+
+      <!-- Avatar -->
+      <div style="width:68px; height:68px; border-radius:50%; background:#1e1d3a; border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:500; color:#a5b4fc; overflow:hidden; flex-shrink:0;">
+        {% if teacher.profile_picture %}
+          <img src="{{ teacher.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;"/>
+        {% else %}
+          {{ teacher.username|first|upper }}
+        {% endif %}
+      </div>
+
+      <!-- Info -->
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+          <p style="font-size:18px; font-weight:600; color:var(--text);">{{ teacher.get_full_name|default:teacher.username }}</p>
+          {% if profile and profile.is_verified %}
+            <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 8px; background:#052e16; color:#86efac; border-radius:20px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Verified Teacher
+            </span>
+          {% else %}
+            <span style="font-size:11px; padding:2px 8px; background:#1a1100; color:#fcd34d; border-radius:20px;">Pending verification</span>
+          {% endif %}
+        </div>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:8px;">@{{ teacher.username }}</p>
+        {% if profile and profile.school %}
+          <p style="font-size:13px; color:var(--muted);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline; vertical-align:middle; margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            {% if profile.school.number %}School #{{ profile.school.number }} — {% endif %}{{ profile.school.name }}{% if profile.school.city %}, {{ profile.school.city }}{% endif %}
+          </p>
+        {% endif %}
+        {% if teacher.bio %}
+          <p style="font-size:13px; color:var(--text); margin-top:8px; line-height:1.6;">{{ teacher.bio }}</p>
+        {% endif %}
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; flex-direction:column; gap:8px; flex-shrink:0;">
+        {% if request.user.role in 'director,admin' and profile and not profile.is_verified %}
+          <a href="{% url 'user:verify_teacher' teacher.username %}"
+            style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; text-align:center; transition:background 0.15s;"
+            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+            Verify teacher
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Teacher stats -->
+    {% if profile %}
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:1.25rem; padding-top:1.25rem; border-top:0.5px solid var(--border);">
+      <div style="text-align:center;">
+        <p style="font-size:18px; font-weight:500; color:var(--accent);">{{ profile.teacher_score }}</p>
+        <p style="font-size:11px; color:var(--muted);">Teacher score</p>
+      </div>
+      <div style="text-align:center;">
+        <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.teacher_level }}</p>
+        <p style="font-size:11px; color:var(--muted);">{{ profile.teacher_title }}</p>
+      </div>
+      <div style="text-align:center;">
+        <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.materials_uploaded }}</p>
+        <p style="font-size:11px; color:var(--muted);">Materials</p>
+      </div>
+      <div style="text-align:center;">
+        <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.total_likes_received }}</p>
+        <p style="font-size:11px; color:var(--muted);">Likes received</p>
+      </div>
+    </div>
+
+    <!-- Teacher rank progress -->
+    <div style="margin-top:1rem;">
+      <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+        <span style="font-size:12px; color:var(--muted);">Progress to next rank</span>
+        <span style="font-size:12px; color:var(--accent);">{{ profile.teacher_title }}</span>
+      </div>
+      <div style="height:4px; background:var(--surface2); border-radius:2px; overflow:hidden;">
+        <div style="height:100%; width:{% widthratio profile.teacher_score 5000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;"></div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Materials tabs -->
+  <div style="display:flex; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem;">
+    <button onclick="showTab('books')" id="tab-books"
+      style="font-size:13px; padding:8px 16px; color:var(--accent); border:none; border-bottom:2px solid var(--accent); background:none; cursor:pointer; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Books ({{ books|length }})
+    </button>
+    <button onclick="showTab('videos')" id="tab-videos"
+      style="font-size:13px; padding:8px 16px; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; cursor:pointer; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      Videos ({{ videos|length }})
+    </button>
+    <button onclick="showTab('podcasts')" id="tab-podcasts"
+      style="font-size:13px; padding:8px 16px; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; cursor:pointer; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
+      Podcasts ({{ podcasts|length }})
+    </button>
+  </div>
+
+  <!-- Books -->
+  <div id="panel-books">
+    {% if books %}
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:10px;">
+        {% for book in books %}
+        <a href="{% url 'library:book_detail' book.pk %}" style="text-decoration:none;">
+          <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:36px; height:48px; background:#1e1d3a; border-radius:6px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px; line-height:1.4;">{{ book.title|truncatechars:40 }}</p>
+            <p style="font-size:11px; color:var(--muted);">{{ book.count_likes }} likes</p>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No books uploaded yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Videos -->
+  <div id="panel-videos" style="display:none;">
+    {% if videos %}
+      <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:10px;">
+        {% for video in videos %}
+        <a href="{% url 'library:video_detail' video.pk %}" style="text-decoration:none;">
+          <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="height:90px; background:var(--surface2); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+              {% if video.thumbnail %}
+                <img src="{{ video.thumbnail.url }}" style="width:100%;height:100%;object-fit:cover;"/>
+              {% else %}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              {% endif %}
+            </div>
+            <div style="padding:10px;">
+              <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:3px;">{{ video.title|truncatechars:40 }}</p>
+              <p style="font-size:11px; color:var(--muted);">{{ video.count_likes }} likes</p>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No videos uploaded yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Podcasts -->
+  <div id="panel-podcasts" style="display:none;">
+    {% if podcasts %}
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        {% for podcast in podcasts %}
+        <a href="{% url 'library:podcast_detail' podcast.pk %}" style="text-decoration:none;">
+          <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:1rem; display:flex; align-items:center; gap:12px; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:40px; height:40px; border-radius:8px; background:var(--surface2); display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden;">
+              {% if podcast.thumbnail %}
+                <img src="{{ podcast.thumbnail.url }}" style="width:100%;height:100%;object-fit:cover;"/>
+              {% else %}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
+              {% endif %}
+            </div>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:13px; font-weight:500; color:var(--text);">{{ podcast.title|truncatechars:50 }}</p>
+              <p style="font-size:11px; color:var(--muted);">{{ podcast.count_likes }} likes{% if podcast.duration %} · {{ podcast.duration }}{% endif %}</p>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No podcasts uploaded yet.</p>
+    {% endif %}
+  </div>
+
+</div>
+
+<script>
+  function showTab(name) {
+    ['books','videos','podcasts'].forEach(t => {
+      document.getElementById('panel-' + t).style.display = t === name ? 'block' : 'none';
+      const btn = document.getElementById('tab-' + t);
+      btn.style.color = t === name ? 'var(--accent)' : 'var(--muted)';
+      btn.style.borderBottomColor = t === name ? 'var(--accent)' : 'transparent';
+    });
+  }
+</script>
+{% endblock %}

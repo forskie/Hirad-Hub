@@ -9,6 +9,11 @@ urlpatterns = [
     path('register/teacher/', views.register_teacher, name='register_teacher'),
     path('register/pending', views.pending_verification, name='pending_verification'),
 
+    path('teacher/<str:username>/', views.teacher_profile_view, name='teacher_profile'),
+    path('teacher-dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
+    path('verify/<str:username>/', views.verify_teacher, name='verify_teacher'),
+    path('pending-teachers/', views.pending_teachers, name='pending_teachers'),
+
     path('login/', views.login_view, name='login'),
     path('profile/', views.profile_view, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
