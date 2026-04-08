@@ -28,6 +28,8 @@ class Step(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     order = models.PositiveIntegerField()
+    resource_url = models.URLField(blank=True, help_text='Optional direct link to material for this step')
+    
     def __str__(self):
         return self.title
     

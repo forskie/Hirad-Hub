@@ -2,109 +2,347 @@
 {% block title %}Notes — HiradHub{% endblock %}
 {% block nav_notes %}active{% endblock %}
 
-{% block content %}
-<div style="max-width:900px; margin:0 auto;">
+{% block extra_css %}
+<style>
+    .type-tabs {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    .type-tab {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-family: 'Sora', sans-serif;
+        border-radius: 8px;
+        border: 0.5px solid var(--border);
+        background: var(--surface);
+        color: var(--muted);
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.15s;
+        white-space: nowrap;
+    }
+    .type-tab:hover { border-color: var(--accent); color: var(--text); }
+    .type-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .type-tab .count {
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.2);
+    }
+    .type-tab:not(.active) .count {
+        background: var(--surface2);
+        color: var(--muted);
+    }
 
-    <div
-        style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+    /* Folder cards */
+    .folder-card {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        transition: border-color 0.15s;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .folder-card:hover { border-color: var(--accent); }
+
+    .note-card {
+        background: var(--surface);
+        border: 0.5px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: border-color 0.15s;
+    }
+    .note-card:hover { border-color: var(--accent); }
+
+    .section-label {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 500;
+        margin-bottom: 8px;
+        margin-top: 1.5rem;
+    }
+    .section-label:first-child { margin-top: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width:960px; margin:0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
         <div>
             <p style="font-size:18px; font-weight:500; color:var(--text);">My Notes</p>
-            <p style="font-size:13px; color:var(--muted); margin-top:2px;">
-                {{ notes|length }} note{{ notes|length|pluralize }}</p>
+            <p style="font-size:13px; color:var(--muted); margin-top:2px;">{{ notes|length }} note{{ notes|length|pluralize }}</p>
         </div>
-        <a href="{% url 'note:create' %}"
-            style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <!-- New folder button (only for students) -->
+            {% if request.user.role == 'student' %}
+            <button onclick="document.getElementById('new-folder-modal').style.display='flex'"
+                style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--surface); border:0.5px solid var(--border); color:var(--muted); border-radius:8px; font-size:13px; cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
+                onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'"
+                onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+                </svg>
+                New folder
+            </button>
+            {% endif %}
+            <a href="{% url 'note:create' %}"
+                style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+                onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                New note
+            </a>
+        </div>
+    </div>
+
+    <!-- Type tabs -->
+    <div class="type-tabs" style="margin-bottom:1.5rem;">
+        <a href="?type=all" class="type-tab {% if note_type == 'all' or not note_type %}active{% endif %}">
+            All
+            <span class="count">{{ total_count }}</span>
+        </a>
+        <a href="?type=roadmap" class="type-tab {% if note_type == 'roadmap' %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4"/>
             </svg>
-            New note
+            From roadmap
+            <span class="count">{{ roadmap_count }}</span>
+        </a>
+        <a href="?type=material" class="type-tab {% if note_type == 'material' %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            From material
+            <span class="count">{{ material_count }}</span>
+        </a>
+        <a href="?type=simple" class="type-tab {% if note_type == 'simple' %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            Simple
+            <span class="count">{{ simple_count }}</span>
         </a>
     </div>
 
+    <!-- Folders section (students only, shown on 'all' tab) -->
+    {% if request.user.role == 'student' and folders and note_type == 'all' or not note_type %}
+    <div>
+        <p class="section-label">Folders</p>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(180px, 1fr)); gap:10px; margin-bottom:1.5rem;">
+            {% for folder in folders %}
+            <a href="?folder={{ folder.pk }}" class="folder-card">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width:32px; height:32px; background:#1a1200; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <p style="font-size:13px; font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ folder.name }}</p>
+                </div>
+                <p style="font-size:11px; color:var(--muted); padding-left:40px;">{{ folder.notes.count }} note{{ folder.notes.count|pluralize }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Notes grid -->
     {% if notes %}
-    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px;">
-        {% for note in notes %}
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; display:flex; flex-direction:column; gap:8px; transition:border-color 0.15s;"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        {% if note_type == 'all' and folders %}
+        <p class="section-label">All notes</p>
+        {% endif %}
 
-            <!-- Title row -->
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:10px;">
+            {% for note in notes %}
+            <div class="note-card">
+
+                <!-- Type badge -->
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                    <div style="display:flex; align-items:center; gap:6px; min-width:0;">
+                        {% if note.step %}
+                        <span style="font-size:10px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:5px; white-space:nowrap; flex-shrink:0;">
+                            Roadmap
+                        </span>
+                        {% elif note.resource_object_id %}
+                        <span style="font-size:10px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px; white-space:nowrap; flex-shrink:0;">
+                            Material
+                        </span>
+                        {% endif %}
+                        {% if note.is_public %}
+                        <span style="font-size:10px; padding:2px 7px; background:var(--surface2); color:var(--muted); border-radius:5px; flex-shrink:0;">public</span>
+                        {% endif %}
+                    </div>
+                    {% if note.folder %}
+                    <span style="font-size:10px; color:var(--muted); display:flex; align-items:center; gap:3px; flex-shrink:0;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        {{ note.folder.name|truncatechars:12 }}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Title -->
                 <a href="{% url 'note:detail' note.pk %}" style="text-decoration:none; flex:1;">
-                    <p style="font-size:14px; font-weight:500; color:var(--text); line-height:1.4;">
-                        {{note.title|truncatechars:50 }}</p>
+                    <p style="font-size:14px; font-weight:500; color:var(--text); line-height:1.4;">{{ note.title|truncatechars:50 }}</p>
                 </a>
-                {% if note.is_public %}
-                <span
-                    style="font-size:10px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px; flex-shrink:0;">public</span>
-                {% else %}
-                <span
-                    style="font-size:10px; padding:2px 7px; background:var(--surface2); color:var(--muted); border-radius:5px; flex-shrink:0;">private</span>
+
+                <!-- Step context -->
+                {% if note.step %}
+                <p style="font-size:11px; color:var(--muted);">
+                    Step: {{ note.step.title|truncatechars:40 }}
+                </p>
                 {% endif %}
-            </div>
 
-            <!-- Preview -->
-            <p style="font-size:12px; color:var(--muted); line-height:1.6; flex:1;">
-                {{ note.content|striptags|truncatechars:100 }}</p>
+                <!-- Preview -->
+                <p style="font-size:12px; color:var(--muted); line-height:1.6; flex:1;">
+                    {{ note.content|striptags|truncatechars:90 }}
+                </p>
 
-            <!-- Topics -->
-            {% if note.topics.all %}
-            <div style="display:flex; flex-wrap:wrap; gap:5px;">
-                {% for topic in note.topics.all %}
-                <span style="font-size:10px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:5px;">
-                    {{ topic.name }}</span>
-                {% endfor %}
-            </div>
-            {% endif %}
+                <!-- Topics -->
+                {% if note.topics.all %}
+                <div style="display:flex; flex-wrap:wrap; gap:5px;">
+                    {% for topic in note.topics.all %}
+                    <span style="font-size:10px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:5px;">{{ topic.name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
-            <!-- Footer -->
-            <div
-                style="display:flex; align-items:center; justify-content:space-between; padding-top:8px; border-top:0.5px solid var(--border);">
-                <span style="font-size:11px; color:var(--muted);">{{ note.updated_at|timesince }} ago</span>
-                <div style="display:flex; gap:8px;">
-                    <a href="{% url 'note:edit' note.pk %}"
-                        style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); text-decoration:none; transition:all 0.15s;"
-                        onmouseover="this.style.color='var(--text)';this.style.background='var(--border)'"
-                        onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-                        </svg>
-                    </a>
-                    <a href="{% url 'note:delete' note.pk %}"
-                        style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); text-decoration:none; transition:all 0.15s;"
-                        onmouseover="this.style.color='#ef4444';this.style.background='#fef2f2'"
-                        onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6l-1 14H6L5 6" />
-                        </svg>
-                    </a>
+                <!-- Footer -->
+                <div style="display:flex; align-items:center; justify-content:space-between; padding-top:8px; border-top:0.5px solid var(--border);">
+                    <span style="font-size:11px; color:var(--muted);">{{ note.updated_at|timesince }} ago</span>
+                    <div style="display:flex; gap:8px;">
+                        <!-- Move to folder (students only) -->
+                        {% if request.user.role == 'student' and folders %}
+                        <div style="position:relative;" class="folder-picker-wrap">
+                            <button onclick="toggleFolderPicker(this)"
+                                style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); border:none; cursor:pointer; transition:all 0.15s;"
+                                onmouseover="this.style.color='var(--text)';this.style.background='var(--border)'"
+                                onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'"
+                                title="Move to folder">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            </button>
+                            <div class="folder-picker" style="display:none; position:absolute; right:0; bottom:32px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:4px; min-width:150px; z-index:10; box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+                                <form method="POST" action="{% url 'note:move_to_folder' note.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" name="folder_id" value=""
+                                        style="width:100%; text-align:left; padding:8px 12px; font-size:12px; color:var(--muted); background:none; border:none; cursor:pointer; border-radius:6px; font-family:'Sora',sans-serif; transition:background 0.1s;"
+                                        onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+                                        — No folder
+                                    </button>
+                                    {% for folder in folders %}
+                                    <button type="submit" name="folder_id" value="{{ folder.pk }}"
+                                        style="width:100%; text-align:left; padding:8px 12px; font-size:12px; color:var(--text); background:none; border:none; cursor:pointer; border-radius:6px; font-family:'Sora',sans-serif; transition:background 0.1s;"
+                                        onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+                                        {{ folder.name }}
+                                    </button>
+                                    {% endfor %}
+                                </form>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <a href="{% url 'note:edit' note.pk %}"
+                            style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); text-decoration:none; transition:all 0.15s;"
+                            onmouseover="this.style.color='var(--text)';this.style.background='var(--border)'"
+                            onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </a>
+                        <a href="{% url 'note:delete' note.pk %}"
+                            style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; background:var(--surface2); color:var(--muted); text-decoration:none; transition:all 0.15s;"
+                            onmouseover="this.style.color='#ef4444';this.style.background='#fef2f2'"
+                            onmouseout="this.style.color='var(--muted)';this.style.background='var(--surface2)'">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                        </a>
+                    </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
+
     {% else %}
     <div style="text-align:center; padding:5rem 0;">
-        <div
-            style="width:48px; height:48px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+        <div style="width:48px; height:48px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="16" y1="13" x2="8" y2="13" />
-                <line x1="16" y1="17" x2="8" y2="17" />
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
             </svg>
         </div>
-        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">No notes yet.</p>
+        <p style="font-size:13px; color:var(--muted); margin-bottom:12px;">
+            {% if note_type == 'roadmap' %}No roadmap notes yet.
+            {% elif note_type == 'material' %}No notes linked to materials yet.
+            {% elif note_type == 'simple' %}No simple notes yet.
+            {% else %}No notes yet.{% endif %}
+        </p>
         <a href="{% url 'note:create' %}"
-            style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">Create
-            first note</a>
+            style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">
+            Create first note
+        </a>
     </div>
     {% endif %}
 
 </div>
+
+<!-- New folder modal -->
+<div id="new-folder-modal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; width:100%; max-width:340px; margin:0 1rem;">
+        <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:1rem;">New folder</p>
+        <form method="POST" action="{% url 'note:create_folder' %}">
+            {% csrf_token %}
+            <input type="text" name="name" placeholder="Folder name..." autofocus required
+                style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:14px; color:var(--text); outline:none; font-family:'Sora',sans-serif; margin-bottom:12px; transition:border-color 0.15s;"
+                onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                <button type="button" onclick="document.getElementById('new-folder-modal').style.display='none'"
+                    style="padding:8px 16px; background:var(--surface2); border:none; border-radius:8px; font-size:13px; color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif;">
+                    Cancel
+                </button>
+                <button type="submit"
+                    style="padding:8px 16px; background:var(--accent); border:none; border-radius:8px; font-size:13px; font-weight:500; color:#fff; cursor:pointer; font-family:'Sora',sans-serif;">
+                    Create
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFolderPicker(btn) {
+        const picker = btn.nextElementSibling;
+        const isOpen = picker.style.display === 'block';
+        document.querySelectorAll('.folder-picker').forEach(p => p.style.display = 'none');
+        picker.style.display = isOpen ? 'none' : 'block';
+    }
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.folder-picker-wrap')) {
+            document.querySelectorAll('.folder-picker').forEach(p => p.style.display = 'none');
+        }
+    });
+    // Close modal on outside click
+    document.getElementById('new-folder-modal').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+</script>
 {% endblock %}

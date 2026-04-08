@@ -80,13 +80,15 @@ def roadmap_edit(request, pk):
         elif action == 'add_step':
             title = request.POST.get('step_title', '').strip()
             description = request.POST.get('step_description', '').strip()
+            resource_url = request.POST.get('step_resource_url', '').strip()
             if title:
                 next_order = (roadmap.steps.order_by('-order').values_list('order', flat=True).first() or 0) + 1
                 Step.objects.create(
                     roadmap=roadmap,
                     title=title,
                     description=description,
-                    order=next_order
+                    order=next_order,
+                    resource_url=resource_url,
                 )
             elif action == 'delete_step':
                 step_pk = request.POST.get('step_pk')

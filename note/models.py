@@ -53,8 +53,8 @@ class Note(models.Model):
         indexes = [
             models.Index(fields=['-created_at']),
             models.Index(fields=['author', 'is_public']),
-            models.index(fields=['author', 'step']),
-            models.index(fields=['folder']),
+            models.Index(fields=['author', 'step']),
+            models.Index(fields=['folder']),
         ]
 
     @staticmethod

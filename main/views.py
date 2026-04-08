@@ -28,8 +28,26 @@ def dashboard(request):
 
 def home(request):
     recent_posts = Post.objects.select_related('author').order_by('-created_at')[:5]
-    return render(request, 'main/home.html', {'recent_posts' : recent_posts})
-
+    ctx = {'recent_posts': recent_posts}
+    
+    if request.user.is_authenticated:
+        from roadmap.models import UserProgress, Roadmap
+ 
+        last_progress = (
+            UserProgress.objects
+            .filter(user=request.user, completed=False)
+            .select_related('step__roadmap')
+            .order_by('step__roadmap__id', 'step__order')
+            .first()
+        )
+        ctx['current_step'] = last_progress.step if last_progress else None
+ 
+        if request.user.role in ('teacher', 'director', 'admin'):
+            ctx['teacher_books_count'] = Book.objects.filter(creator=request.user).count()
+            ctx['teacher_videos_count'] = Video.objects.filter(creator=request.user).count()
+            ctx['teacher_podcasts_count'] = Podcast.objects.filter(creator=request.user).count()
+ 
+    return render(request, 'main/home.html', ctx)
 
 def leaderboard(request):
     leaders = User.objects.order_by('-score').select_related('teacher_profile')[:50]
@@ -45,7 +63,7 @@ def search(request):
     if not q:
         if fmt == 'json':
             return JsonResponse({'users': [], 'posts': [], 'books': [], 'videos': [], 'podcasts': [], 'notes': []})
-        return render(request, 'main/search.html', {'q': q, 'results': []})
+        return render(request, 'main/search.html', {'q': q, 'results': {}})
     users = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)).values('username', 'first_name', 'last_name', 'level', 'title')[:6]
     posts = Post.objects.filter(Q(text__icontains=q)).select_related('author').order_by('-created_at')[:6]
     notes = Note.objects.filter(Q(title__icontains=q) | Q(content__icontains=q), is_public=True).select_related('author').order_by('-created_at')[:6]
