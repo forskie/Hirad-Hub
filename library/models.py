@@ -1,8 +1,27 @@
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
+
 from django.db import models
 from django.conf import settings
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    parent = models.ForeignKey('self', null=True, blank=True, 
+                               on_delete=models.SET_NULL, related_name='children')
+    order = models.PositiveIntegerField(default=0)
+    icon = models.CharField(max_length=50, blank=True) 
+
+
+    class Meta:
+        ordering = ['order']
+    
+
+    def __str__(self):
+        return self.name
+
 
 class Topic(models.Model):
     name = models.CharField(max_length=122, unique=True)
@@ -24,6 +43,10 @@ class BaseMaterial(models.Model):
     comments = GenericRelation('Comment', related_query_name='materials')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL)
+    grade = models.PositiveSmallIntegerField(null=True, blank=True)
+    subject = models.CharField(max_length=100, blank=True)
+
     @property
     def count_likes(self):
         return self.likes.count()  
@@ -43,18 +66,23 @@ class Book(BaseMaterial):
     pages = models.PositiveIntegerField(null=True, blank=True)
     author = models.CharField(max_length=255, blank=True, db_index=True)
     topics = models.ManyToManyField(Topic, related_name='books', blank=True)
+
+
 class Video(BaseMaterial):
     video_file = models.FileField(upload_to='library/videos/')
     duration = models.DurationField(null=True, blank=True)
     thumbnail = models.ImageField(upload_to='library/videos/thumbnails/', null=True, blank=True)
     author = models.CharField(max_length=255, blank=True, db_index=True)
     topics = models.ManyToManyField(Topic, related_name='videos', blank=True)
+    
+
 class Podcast(BaseMaterial):
     audio_file = models.FileField(upload_to='library/podcasts/')
     duration = models.DurationField(null=True, blank=True)
     author = models.CharField(max_length=255, blank=True, db_index=True)
     thumbnail = models.ImageField(upload_to='library/podcasts/thumbnails/', null=True, blank=True)
     topics = models.ManyToManyField(Topic, related_name='podcasts', blank=True)
+
 
 class LibraryInteraction(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -66,10 +94,12 @@ class LibraryInteraction(models.Model):
     rating = models.PositiveSmallIntegerField(null=True, blank=True)
     completed = models.BooleanField(default=False)
     date_completed = models.DateTimeField(null=True, blank=True)
+
     
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
     
+
     def __str__(self):
         return f"{self.user} - {self.item}"
     
@@ -81,12 +111,14 @@ class Like(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     created_at = models.DateTimeField(auto_now_add=True)
     
+
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
         indexes = [
             models.indexes.Index(fields=['content_type', 'object_id']),
         ]
     
+
 class Comment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -97,11 +129,14 @@ class Comment(models.Model):
     is_edited = models.BooleanField(default=False)
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
     
+
     class Meta:
         ordering = ['-created_at']
         indexes = [
             models.indexes.Index(fields=['content_type', 'object_id']),
         ]
+
+
     def __str__(self):
         return f"Comment by {self.user} at {self.created_at}"
 

@@ -28,18 +28,18 @@ def roadmap_detail(request, pk):
     
     steps = roadmap.steps.prefetch_related('resources__content_type').order_by('order')
     user_progress = {}
-    compleated_count = None
+    completed_count = None
     if request.user.is_authenticated:
         progress = UserProgress.objects.filter(user=request.user, step__roadmap=roadmap).select_related('step')
         user_progress = {p.step_id: p for p in progress}
-        compleated_count = sum(1 for p in progress if p.completed)
+        completed_count = sum(1 for p in progress if p.completed)
 
 
     return render(request, 'roadmap/detail.html',{
         'roadmap': roadmap,
         'steps': steps,
         'user_progress': user_progress,
-        'compleated_count': compleated_count,
+        'completed_count': completed_count,
     })
 
 @teacher_required
@@ -69,20 +69,29 @@ def roadmap_edit(request, pk):
     roadmap = get_object_or_404(Roadmap, pk=pk, creator=request.user)
     topics = Topic.objects.all()
     steps = roadmap.steps.prefetch_related('resources').order_by('order')
+
     if request.method == 'POST':
         action = request.POST.get('action')
+
         if action == 'update_roadmap':
             roadmap.title = request.POST.get('title', roadmap.title).strip()
             roadmap.description = request.POST.get('description', '').strip()
             roadmap.topic_id = request.POST.get('topic') or None
             roadmap.is_public = request.POST.get('is_public') == 'on'
             roadmap.save()
+
         elif action == 'add_step':
             title = request.POST.get('step_title', '').strip()
             description = request.POST.get('step_description', '').strip()
             resource_url = request.POST.get('step_resource_url', '').strip()
+
             if title:
-                next_order = (roadmap.steps.order_by('-order').values_list('order', flat=True).first() or 0) + 1
+                next_order = (
+                    roadmap.steps.order_by('-order')
+                    .values_list('order', flat=True)
+                    .first() or 0
+                ) + 1
+
                 Step.objects.create(
                     roadmap=roadmap,
                     title=title,
@@ -90,16 +99,25 @@ def roadmap_edit(request, pk):
                     order=next_order,
                     resource_url=resource_url,
                 )
-            elif action == 'delete_step':
-                step_pk = request.POST.get('step_pk')
-                Step.objects.filter(pk=step_pk, roadmap=roadmap).delete()
-            return redirect('roadmap:edit', pk=roadmap.pk)
+
+        elif action == 'delete_step':
+            step_pk = request.POST.get('step_pk')
+            Step.objects.filter(pk=step_pk, roadmap=roadmap).delete()
+
+        elif action == 'update_step_url':
+            step_pk = request.POST.get('step_pk')
+            resource_url = request.POST.get('resource_url', '').strip()
+            Step.objects.filter(pk=step_pk, roadmap=roadmap).update(
+                resource_url=resource_url
+            )
+
+        return redirect('roadmap:edit', pk=roadmap.pk)
+
     return render(request, 'roadmap/edit.html', {
         'roadmap': roadmap,
         'topics': topics,
         'steps': steps,
     })
-
 
 @login_required
 def roadmap_delete(request, pk):
