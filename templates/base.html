@@ -723,8 +723,11 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <div class="dropdown-header">
-                    <p>{{ user.get_full_name|default:user.username }}</p>
-                    <p>{{ user.title }} · Lv.{{ user.level }}</p>
+                    {% if user.role == 'teacher' and user.teacher_profile %}
+                        <p>{{ user.teacher_profile.teacher_title }} · Lv.{{ user.teacher_profile.teacher_level }}</p>
+                    {% else %}
+                        <p>{{ user.title }} · Lv.{{ user.level }}</p>
+                    {% endif %}
                 </div>
                 <a href="{% url 'user:profile' %}" class="dropdown-item">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -806,7 +809,7 @@
             </svg>
             Dashboard
         </a>
-        <<a href="{% url 'roadmap:list' %}">
+        <a href="{% url 'roadmap:list' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>

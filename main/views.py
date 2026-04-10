@@ -49,13 +49,37 @@ def home(request):
  
     return render(request, 'main/home.html', ctx)
 
+
 def leaderboard(request):
-    leaders = User.objects.order_by('-score').select_related('teacher_profile')[:50]
+    tab = request.GET.get('tab', 'students')
+    if tab == 'teachers':
+        from user.models import TeacherProfile
+        leaders = TeacherProfile.objects.filter(
+            is_verified=True
+        ).select_related('user').order_by('-teacher_score')[:50]
+    else:
+        leaders = User.objects.filter(
+            role='student'
+        ).order_by('-score')[:50]
     user_rank = None
     if request.user.is_authenticated:
-        user_rank = User.objects.filter(score__gt=request.user.score).count() + 1
-    return render(request, 'main/leaderboard.html', {'leaders': leaders, 'user_rank': user_rank})
-
+        if tab == 'teachers' and request.user.role == 'teacher':
+            try:
+                my_score = request.user.teacher_profile.teacher_score
+                user_rank = TeacherProfile.objects.filter(
+                    teacher_score__gt=my_score, is_verified=True
+                ).count() + 1
+            except:
+                pass
+        else:
+            user_rank = User.objects.filter(
+                role='student', score__gt=request.user.score
+            ).count() + 1
+    return render(request, 'main/leaderboard.html', {
+        'leaders':   leaders,
+        'user_rank': user_rank,
+        'tab':       tab,
+    })
 
 def search(request):
     q = request.GET.get('q', '').strip()

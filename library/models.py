@@ -36,7 +36,7 @@ class Category(models.Model):
 
 class Topic(models.Model):
     name = models.CharField(max_length=122, unique=True)
-    slug = models.SlugField(max_length=122, unique=True, auto_created=True)
+    slug = models.SlugField(unique=True)
     def __str__(self):
         return self.name
     

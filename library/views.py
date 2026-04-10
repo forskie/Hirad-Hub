@@ -171,44 +171,67 @@ def toggle_like(request, model_name, pk):
 
 
 # _________________ User Teacher login View __________
-
 @teacher_required
 def add_book(request):
+    categories = Category.objects.filter(parent=None).prefetch_related('children')
+    topics = Topic.objects.all()
+    grades = range(1, 12)
+
     if request.method == 'POST':
         author = request.POST.get('author', '').strip()
         topics_ids = request.POST.getlist('topics')
         pages = request.POST.get('pages') or None
-        if pages:
-            pages=int(pages)
         file_book = request.FILES.get('file')
         title = request.POST.get('title', '').strip()
         description = request.POST.get('description', '').strip()
         level = request.POST.get('level', '')
-        if not title or not author or not file_book:
-            return render(request, 'library/uploads/add_book.html', {'error': 'Title, author and file are required.'})
-        category_id = request.POST.get('category') or None
-        grade = request.POST.get('grade') or None
-        book = Book.objects.create(
-            title=title, description=description, level=level,
-            author=author, file=file_book, pages=pages,
-            creator=request.user,
-            category_id=category_id,
-            grade=int(grade) if grade else None
-        )
-        book.topics.set(topics_ids)
-        return redirect('library:book_detail', pk=book.pk)
-    return render(request, 'library/uploads/add_book.html')
+        category_id = request.POST.get('category')
+        grade = request.POST.get('grade')
 
+        if pages:
+            pages = int(pages)
+
+        if not title or not author or not file_book:
+            return render(request, 'library/uploads/add_book.html', {
+                'error': 'Title, author and file are required.',
+                'categories': categories,
+                'topics': topics,
+                'grades': grades
+            })
+
+        book = Book.objects.create(
+            title=title,
+            description=description,
+            level=level,
+            author=author,
+            file=file_book,
+            pages=pages,
+            creator=request.user,
+            category_id=category_id or None,
+            grade=grade or None
+        )
+
+        book.topics.set(topics_ids)
+
+        return redirect('library:book_detail', pk=book.pk)
+
+    return render(request, 'library/uploads/add_book.html', {
+        'categories': categories,
+        'topics': topics,
+        'grades': grades,
+    })
 
 @teacher_required
 def edit_added_book(request, pk):
-    book = get_object_or_404(Book,  pk=pk, creator=request.user)
+    book = get_object_or_404(Book, pk=pk, creator=request.user)
     if request.method == 'POST':
         book.author = request.POST.get('author', book.author).strip()
-        book.pages = request.POST.get('pages', book.pages).strip()
+        pages = request.POST.get('pages')
+        if pages:
+            book.pages = int(pages)
         topics_ids = request.POST.getlist('topics')
         if request.FILES.get('file'):
-            book.file= request.FILES.get('file')
+            book.file = request.FILES.get('file')
         book.save()
         if topics_ids:
             book.topics.set(topics_ids)
@@ -216,31 +239,52 @@ def edit_added_book(request, pk):
     return render(request, 'library/edits/edit_books_inf.html', {'book': book})
 
 
-
 @teacher_required
 def upload_podcast(request):
+    categories = Category.objects.filter(parent=None).prefetch_related('children')
+    topics = Topic.objects.all()
+    grades = range(1, 12)
+
     if request.method == 'POST':
         author = request.POST.get('author', '').strip()
         topics_ids = request.POST.getlist('topics')
-        duration = request.POST.get('duration') or None
-        if duration:
-            duration = request.POST.get('duration') or None
+        duration = request.POST.get('duration')
         audio_file = request.FILES.get('audio_file')
         thumbnail = request.FILES.get('thumbnail')
+        category_id = request.POST.get('category')
+        grade = request.POST.get('grade')
+
+        if duration:
+            try:
+                h, m, s = map(int, duration.split(':'))
+                duration = timedelta(hours=h, minutes=m, seconds=s)
+            except:
+                duration = None
+
         if not author or not audio_file:
-            return render(request, 'library/uploads/upload_podcast.html', {'error': 'Author and podcast(audio file) are required.'})
-        category_id = request.POST.get('category') or None
-        grade = request.POST.get('grade') or None
+            return render(request, 'library/uploads/upload_podcast.html', {
+                'error': 'Author and podcast(audio file) are required.',
+                'categories': categories,
+                'topics': topics,
+                'grades': grades
+            })
+
         podcast = Podcast.objects.create(
-            author=author, audio_file=audio_file,
-            thumbnail=thumbnail, duration=duration,
+            author=author,
+            audio_file=audio_file,
+            thumbnail=thumbnail,
+            duration=duration,
             creator=request.user,
-            category_id=category_id,
-            grade=int(grade) if grade else None
+            category_id=category_id or None,
+            grade=grade or None
         )
         podcast.topics.set(topics_ids)
         return redirect('library:podcast_detail', pk=podcast.pk)
-    return render(request, 'library/uploads/upload_podcast.html')
+    return render(request, 'library/uploads/upload_podcast.html', {
+        'categories': categories,
+        'topics': topics,
+        'grades': grades,
+    })
     
 
 @teacher_required
@@ -260,31 +304,49 @@ def edit_added_podcast(request, pk):
         return redirect('library:podcast_detail', pk=podcast.pk)
     return render(request, 'library/edits/edit_podcast_inf.html', {'podcast': podcast})
 
-
 @teacher_required
 def upload_video(request):
+    categories = Category.objects.filter(parent=None).prefetch_related('children')
+    topics = Topic.objects.all()
+    grades = range(1, 12)
+
     if request.method == 'POST':
         author = request.POST.get('author', '').strip()
         topics_ids = request.POST.getlist('topics')
-        duration = request.POST.get('duration') or None
-        if duration:
-            duration = timedelta(duration)
+        duration = request.POST.get('duration')
         video_file = request.FILES.get('video_file')
         thumbnail = request.FILES.get('thumbnail')
+        category_id = request.POST.get('category')
+        grade = request.POST.get('grade')
+        if duration:
+            try:
+                h, m, s = map(int, duration.split(':'))
+                duration = timedelta(hours=h, minutes=m, seconds=s)
+            except:
+                duration = None
         if not author or not video_file:
-            return render(request, 'library/uploads/upload_video.html', {'error': 'Author and video (video file) are required.'})
-        category_id = request.POST.get('category') or None
-        grade = request.POST.get('grade') or None
+            return render(request, 'library/uploads/upload_video.html', {
+                'error': 'Author and video (video file) are required.',
+                'categories': categories,
+                'topics': topics,
+                'grades': grades
+            })
         video = Video.objects.create(
-            author=author, video_file=video_file,
-            thumbnail=thumbnail, duration=duration,
+            author=author,
+            video_file=video_file,
+            thumbnail=thumbnail,
+            duration=duration,
             creator=request.user,
-            category_id=category_id,
-            grade=int(grade) if grade else None
+            category_id=category_id or None,
+            grade=grade or None
         )
         video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)
-    return render(request, 'library/uploads/upload_video.html')
+    return render(request, 'library/uploads/upload_video.html', {
+        'categories': categories,
+        'topics': topics,
+        'grades': grades,
+    })
 
 
 @teacher_required
