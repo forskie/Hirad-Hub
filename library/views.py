@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Book, Video, Podcast, Topic, LibraryInteraction, Like, Comment
+from .models import Book, Video, Podcast, Topic, LibraryInteraction, Like, Comment, Category
 from django.contrib.contenttypes.models import ContentType
 from user.decorators import teacher_required
 from datetime import timedelta
@@ -8,36 +8,64 @@ from datetime import timedelta
 # ________________  Base View  _______________
 
 def library_home(request):
-    topic_slug = request.GET.get('topic')
-    sort = request.GET.get('sort', 'new')
-    order = '-created_at' if sort == 'new' else '-likes'
-    books = Book.objects.prefetch_related('topics')
-    videos = Video.objects.prefetch_related('topics')
-    podcasts = Podcast.objects.prefetch_related('topics')
+    category_slug = request.GET.get('category')
+    topic_slug    = request.GET.get('topic')
+    material_type = request.GET.get('type') 
+    sort          = request.GET.get('sort', 'new')
+
+    books    = Book.objects.select_related('category').prefetch_related('topics')
+    videos   = Video.objects.select_related('category').prefetch_related('topics')
+    podcasts = Podcast.objects.select_related('category').prefetch_related('topics')
+
+
+    if category_slug:
+        books    = books.filter(category__slug=category_slug)
+        videos   = videos.filter(category__slug=category_slug)
+        podcasts = podcasts.filter(category__slug=category_slug)
+
     if topic_slug:
         books    = books.filter(topics__slug=topic_slug)
         videos   = videos.filter(topics__slug=topic_slug)
         podcasts = podcasts.filter(topics__slug=topic_slug)
+
     if sort == 'popular':
         from django.db.models import Count
-        books = books.annotate(lc=Count('likes')).order_by('-lc')
-        videos = videos.annotate(lc=Count('likes')).order_by('-lc')
+        books    = books.annotate(lc=Count('likes')).order_by('-lc')
+        videos   = videos.annotate(lc=Count('likes')).order_by('-lc')
         podcasts = podcasts.annotate(lc=Count('likes')).order_by('-lc')
     else:
-        books = books.order_by('-created_at')
-        videos = videos.order_by('-created_at')
+        books    = books.order_by('-created_at')
+        videos   = videos.order_by('-created_at')
         podcasts = podcasts.order_by('-created_at')
 
-    topics = Topic.objects.all()
-    return render(request, 'library/home.html', 
-    {
-        'books': books,
-        'videos': videos,
-        'podcasts': podcasts,
-        'topics': topics,
-        'sort': sort,
+    if material_type == 'book':
+        videos = Video.objects.none()
+        podcasts = Podcast.objects.none()
+    elif material_type == 'video':
+        books = Book.objects.none()
+        podcasts = Podcast.objects.none()
+    elif material_type == 'podcast':
+        books = Book.objects.none()
+        videos = Video.objects.none()
+
+    categories = Category.objects.filter(parent=None).prefetch_related('children').order_by('order')
+    topics     = Topic.objects.all()
+
+    active_category = None
+    if category_slug:
+        active_category = Category.objects.filter(slug=category_slug).first()
+
+    return render(request, 'library/home.html', {
+        'books':           books,
+        'videos':          videos,
+        'podcasts':        podcasts,
+        'topics':          topics,
+        'categories':      categories,
+        'active_category': active_category,
+        'sort':            sort,
+        'material_type':   material_type,
     })
-    
+
     
 def book_detail(request, pk):
     book = get_object_or_404(Book.objects.prefetch_related('topics'), pk=pk)
@@ -125,6 +153,7 @@ def add_comment(request, model_name, pk):
         })
     return redirect(f'library:{model_name}_detail', pk=pk)
 
+
 @login_required
 def toggle_like(request, model_name, pk):
     model_map = {'book': Book, 'video': Video, 'podcast': Podcast}
@@ -157,14 +186,19 @@ def add_book(request):
         level = request.POST.get('level', '')
         if not title or not author or not file_book:
             return render(request, 'library/uploads/add_book.html', {'error': 'Title, author and file are required.'})
+        category_id = request.POST.get('category') or None
+        grade = request.POST.get('grade') or None
         book = Book.objects.create(
             title=title, description=description, level=level,
             author=author, file=file_book, pages=pages,
-            creator=request.user
+            creator=request.user,
+            category_id=category_id,
+            grade=int(grade) if grade else None
         )
         book.topics.set(topics_ids)
         return redirect('library:book_detail', pk=book.pk)
     return render(request, 'library/uploads/add_book.html')
+
 
 @teacher_required
 def edit_added_book(request, pk):
@@ -195,14 +229,20 @@ def upload_podcast(request):
         thumbnail = request.FILES.get('thumbnail')
         if not author or not audio_file:
             return render(request, 'library/uploads/upload_podcast.html', {'error': 'Author and podcast(audio file) are required.'})
+        category_id = request.POST.get('category') or None
+        grade = request.POST.get('grade') or None
         podcast = Podcast.objects.create(
             author=author, audio_file=audio_file,
-            thumbnail=thumbnail, duration=duration
+            thumbnail=thumbnail, duration=duration,
+            creator=request.user,
+            category_id=category_id,
+            grade=int(grade) if grade else None
         )
         podcast.topics.set(topics_ids)
         return redirect('library:podcast_detail', pk=podcast.pk)
     return render(request, 'library/uploads/upload_podcast.html')
     
+
 @teacher_required
 def edit_added_podcast(request, pk):
     podcast = get_object_or_404(Podcast,  pk=pk, creator=request.user)
@@ -233,9 +273,14 @@ def upload_video(request):
         thumbnail = request.FILES.get('thumbnail')
         if not author or not video_file:
             return render(request, 'library/uploads/upload_video.html', {'error': 'Author and video (video file) are required.'})
+        category_id = request.POST.get('category') or None
+        grade = request.POST.get('grade') or None
         video = Video.objects.create(
             author=author, video_file=video_file,
-            thumbnail=thumbnail, duration=duration
+            thumbnail=thumbnail, duration=duration,
+            creator=request.user,
+            category_id=category_id,
+            grade=int(grade) if grade else None
         )
         video.topics.set(topics_ids)
         return redirect('library:video_detail', pk=video.pk)

@@ -4,631 +4,541 @@
 
 {% block extra_css %}
 <style>
-    /* ── Card system ── */
-    .lib-card {
-        background: var(--surface);
-        border: 0.5px solid var(--border);
-        border-radius: 14px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-        display: flex;
-        flex-direction: column;
-        text-decoration: none;
-    }
+  .lib-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
 
-    .lib-card:hover {
-        transform: translateY(-3px);
-        border-color: var(--accent);
-        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
-    }
+  /* Sidebar */
+  .lib-sidebar {
+    position: sticky;
+    top: 70px;
+  }
+  .sidebar-section {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 10px;
+  }
+  .sidebar-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .cat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .cat-item:hover { background: var(--surface2); color: var(--text); }
+  .cat-item.active { background: #1e1d3a; color: #a5b4fc; }
+  .cat-children {
+    margin-left: 16px;
+    border-left: 1.5px solid var(--border);
+    padding-left: 8px;
+    margin-top: 2px;
+    display: none;
+  }
+  .cat-children.open { display: block; }
+  .cat-child {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .cat-child:hover { color: var(--accent); }
+  .cat-child.active { color: var(--accent); font-weight: 500; }
 
-    /* Cover */
-    .lib-cover {
-        width: 100%;
-        aspect-ratio: 16/9;
-        background: var(--surface2);
-        position: relative;
-        overflow: hidden;
-        flex-shrink: 0;
-    }
+  /* Type filter pills */
+  .type-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .type-pill {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+    text-decoration: none;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .type-pill:hover { border-color: var(--accent); color: var(--accent); }
+  .type-pill.active { background: #1e1d3a; border-color: var(--accent); color: #a5b4fc; }
 
-    .lib-cover img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+  /* Card system */
+  .lib-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+  .lib-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 24px rgba(99,102,241,0.12);
+  }
+  .lib-cover {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: var(--surface2);
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .lib-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .lib-cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lib-play-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.35);
+    opacity: 0; transition: opacity 0.18s;
+  }
+  .lib-card:hover .lib-play-overlay { opacity: 1; }
+  .lib-body {
+    padding: 14px 16px 16px;
+    display: flex; flex-direction: column; gap: 8px; flex: 1;
+  }
+  .lib-type-row { display: flex; align-items: center; justify-content: space-between; }
+  .lib-type-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 500; padding: 2px 8px;
+    border-radius: 20px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .lib-type-book    { background: #1e1d3a; color: #a5b4fc; }
+  .lib-type-video   { background: #1a1200; color: #fcd34d; }
+  .lib-type-podcast { background: #1e2d1e; color: #86efac; }
+  .lib-title {
+    font-size: 14px; font-weight: 500; color: var(--text);
+    line-height: 1.4; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .lib-author { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lib-meta {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    margin-top: auto; padding-top: 8px; border-top: 0.5px solid var(--border);
+  }
+  .lib-level { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .lib-level-beginner     { background: #052e16; color: #86efac; }
+  .lib-level-intermediate { background: #1a1100; color: #fcd34d; }
+  .lib-level-advanced     { background: #1a0808; color: #fca5a5; }
+  .lib-stat {
+    display: flex; align-items: center; gap: 3px;
+    font-size: 11px; color: var(--muted); margin-left: auto;
+  }
 
-    .lib-cover-placeholder {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+  .lib-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
 
-    .lib-play-overlay {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.35);
-        opacity: 0;
-        transition: opacity 0.18s;
-    }
+  .lib-section-title {
+    font-size: 15px; font-weight: 500; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .lib-section-count { font-size: 12px; color: var(--muted); font-weight: 400; }
 
-    .lib-card:hover .lib-play-overlay {
-        opacity: 1;
-    }
+  .lib-empty { grid-column: 1/-1; text-align: center; padding: 3rem 0; }
 
-    /* Body */
-    .lib-body {
-        padding: 14px 16px 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        flex: 1;
-    }
+  /* Create dropdown */
+  .create-wrap { position: relative; }
+  .create-dropdown {
+    display: none; position: absolute; right: 0; top: calc(100% + 6px);
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 10px; min-width: 160px; padding: 4px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12); z-index: 100;
+  }
+  .create-dropdown.open { display: block; }
+  .create-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 12px; font-size: 13px; color: var(--text);
+    text-decoration: none; border-radius: 7px; transition: background 0.1s;
+  }
+  .create-item:hover { background: var(--surface2); }
 
-    .lib-type-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
+  .lib-sort {
+    padding: 6px 12px; background: var(--surface2); border: 0.5px solid var(--border);
+    border-radius: 8px; font-size: 13px; color: var(--text);
+    font-family: 'Sora',sans-serif; outline: none; cursor: pointer;
+  }
+  .lib-sort:focus { border-color: var(--accent); }
 
-    .lib-type-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 10px;
-        font-weight: 500;
-        padding: 2px 8px;
-        border-radius: 20px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-
-    .lib-type-book {
-        background: #1e1d3a;
-        color: #a5b4fc;
-    }
-
-    .lib-type-video {
-        background: #1a1200;
-        color: #fcd34d;
-    }
-
-    .lib-type-podcast {
-        background: #1e2d1e;
-        color: #86efac;
-    }
-
-    .lib-title {
-        font-size: 14px;
-        font-weight: 500;
-        color: var(--text);
-        line-height: 1.4;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .lib-author {
-        font-size: 12px;
-        color: var(--muted);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .lib-meta {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: auto;
-        padding-top: 8px;
-        border-top: 0.5px solid var(--border);
-    }
-
-    .lib-level {
-        font-size: 10px;
-        padding: 2px 8px;
-        border-radius: 20px;
-        font-weight: 500;
-    }
-
-    .lib-level-beginner {
-        background: #052e16;
-        color: #86efac;
-    }
-
-    .lib-level-intermediate {
-        background: #1a1100;
-        color: #fcd34d;
-    }
-
-    .lib-level-advanced {
-        background: #1a0808;
-        color: #fca5a5;
-    }
-
-    .lib-stat {
-        display: flex;
-        align-items: center;
-        gap: 3px;
-        font-size: 11px;
-        color: var(--muted);
-        margin-left: auto;
-    }
-
-    /* Grid */
-    .lib-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 14px;
-    }
-
-    /* Filter pills */
-    .lib-filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-
-    .lib-pill {
-        font-size: 13px;
-        padding: 5px 14px;
-        border-radius: 20px;
-        border: 0.5px solid var(--border);
-        color: var(--muted);
-        background: var(--surface);
-        cursor: pointer;
-        text-decoration: none;
-        transition: all 0.15s;
-        white-space: nowrap;
-    }
-
-    .lib-pill:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-    }
-
-    .lib-pill.active {
-        background: #1e1d3a;
-        border-color: var(--accent);
-        color: #a5b4fc;
-    }
-
-    /* Section heading */
-    .lib-section-title {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--text);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .lib-section-count {
-        font-size: 12px;
-        color: var(--muted);
-        font-weight: 400;
-    }
-
-    /* Create dropdown */
-    .create-wrap {
-        position: relative;
-    }
-
-    .create-dropdown {
-        display: none;
-        position: absolute;
-        right: 0;
-        top: calc(100% + 6px);
-        background: var(--surface);
-        border: 0.5px solid var(--border);
-        border-radius: 10px;
-        min-width: 160px;
-        padding: 4px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-        z-index: 100;
-    }
-
-    .create-dropdown.open {
-        display: block;
-    }
-
-    .create-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 9px 12px;
-        font-size: 13px;
-        color: var(--text);
-        text-decoration: none;
-        border-radius: 7px;
-        transition: background 0.1s;
-    }
-
-    .create-item:hover {
-        background: var(--surface2);
-    }
-
-    /* Empty state */
-    .lib-empty {
-        grid-column: 1/-1;
-        text-align: center;
-        padding: 4rem 0;
-    }
-
-    /* Sort select */
-    .lib-sort {
-        padding: 6px 12px;
-        background: var(--surface2);
-        border: 0.5px solid var(--border);
-        border-radius: 8px;
-        font-size: 13px;
-        color: var(--text);
-        font-family: 'Sora', sans-serif;
-        outline: none;
-        cursor: pointer;
-        transition: border-color 0.15s;
-    }
-
-    .lib-sort:focus {
-        border-color: var(--accent);
-    }
-
-    /* Responsive */
-    @media (max-width: 1100px) {
-        .lib-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .lib-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 480px) {
-        .lib-grid {
-            grid-template-columns: 1fr;
-        }
-    }
+  @media (max-width: 1024px) {
+    .lib-layout { grid-template-columns: 200px 1fr; }
+    .lib-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .lib-layout { grid-template-columns: 1fr; }
+    .lib-sidebar { position: static; display: none; }
+    .lib-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .lib-grid { grid-template-columns: 1fr; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 <div style="max-width:1200px; margin:0 auto;">
 
-    <!-- ── Header ── -->
-    <div
-        style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:1.75rem; flex-wrap:wrap;">
-        <div>
-            <h1 style="font-size:24px; font-weight:600; color:var(--text); letter-spacing:-0.02em;">Library</h1>
-            <p style="font-size:14px; color:var(--muted); margin-top:4px;">Books, videos and podcasts for learning</p>
-        </div>
-        {% if request.user.is_authenticated and request.user.role in 'teacher,admin' %}
-        <div class="create-wrap">
-            <button id="create-btn"
-                style="display:flex; align-items:center; gap:6px; padding:9px 18px; background:var(--accent); color:#fff; border:none; border-radius:9px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
-                onmouseover="this.style.background='var(--accent-h)'"
-                onmouseout="this.style.background='var(--accent)'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19" />
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Create
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 12 15 18 9" />
-                </svg>
-            </button>
-            <div class="create-dropdown" id="create-dropdown">
-                <a href="{% url 'library:add_book' %}" class="create-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                    </svg>
-                    Book
-                </a>
-                <a href="{% url 'library:upload_video' %}" class="create-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
-                        <polygon points="23 7 16 12 23 17 23 7" />
-                        <rect x="1" y="5" width="15" height="14" rx="2" />
-                    </svg>
-                    Video
-                </a>
-                <a href="{% url 'library:upload_podcast' %}" class="create-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2">
-                        <path d="M9 18V5l12-2v13" />
-                        <circle cx="6" cy="18" r="3" />
-                        <circle cx="18" cy="16" r="3" />
-                    </svg>
-                    Podcast
-                </a>
-            </div>
-        </div>
-        {% endif %}
+  <!-- Header -->
+  <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:1.5rem; flex-wrap:wrap;">
+    <div>
+      <h1 style="font-size:24px; font-weight:600; color:var(--text); letter-spacing:-0.02em;">Library</h1>
+      <p style="font-size:14px; color:var(--muted); margin-top:4px;">
+        {% if active_category %}{{ active_category.name }}{% else %}All materials{% endif %}
+      </p>
     </div>
-
-    <!-- ── Filters + Sort ── -->
-    <div
-        style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
-        <div class="lib-filters">
-            <a href="{% url 'library:home' %}" class="lib-pill {% if not request.GET.topic %}active{% endif %}">All</a>
-            {% for topic in topics %}
-            <a href="?topic={{ topic.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
-                class="lib-pill {% if request.GET.topic == topic.slug %}active{% endif %}">
-                {{ topic.name }}
-            </a>
-            {% endfor %}
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <!-- Sort -->
+      <select class="lib-sort" onchange="window.location.href=this.value">
+        <option value="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}sort=new" {% if sort == 'new' %}selected{% endif %}>Newest</option>
+        <option value="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}sort=popular" {% if sort == 'popular' %}selected{% endif %}>Popular</option>
+      </select>
+      <!-- Create button -->
+      {% if request.user.is_authenticated and request.user.role in 'teacher,admin,director' %}
+      <div class="create-wrap">
+        <button id="create-btn"
+          style="display:flex; align-items:center; gap:6px; padding:9px 16px; background:var(--accent); color:#fff; border:none; border-radius:9px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif;"
+          onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Upload
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="create-dropdown" id="create-dropdown">
+          <a href="{% url 'library:add_book' %}" class="create-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Book
+          </a>
+          <a href="{% url 'library:upload_video' %}" class="create-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Video
+          </a>
+          <a href="{% url 'library:upload_podcast' %}" class="create-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
+            Podcast
+          </a>
         </div>
-        <select class="lib-sort" onchange="window.location.href=this.value">
-                    <option value="?{% if request.GET.topic %}topic={{ request.GET.topic }}&{% endif %}sort=new"
-        {% if sort == 'new' %} selected {% endif %}>
-            Newest
-        </option>
-
-        <option value="?{% if request.GET.topic %}topic={{ request.GET.topic }}&{% endif %}sort=popular"
-        {% if sort == 'popular' %} selected {% endif %}>
-            Popular
-</option>
-        </select>
+      </div>
+      {% endif %}
     </div>
+  </div>
 
-    <!-- ── Books section ── -->
-    {% if books %}
-    <div style="margin-bottom:2.5rem;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-            <p class="lib-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                </svg>
-                Books
-                <span class="lib-section-count">{{ books|length }}</span>
-            </p>
-        </div>
-        <div class="lib-grid">
-            {% for book in books %}
-            <a href="{% url 'library:book_detail' book.pk %}" class="lib-card">
-                <div class="lib-cover">
-                    <div class="lib-cover-placeholder">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        </svg>
-                    </div>
-                </div>
-                <div class="lib-body">
-                    <div class="lib-type-row">
-                        <span class="lib-type-badge lib-type-book">
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                            </svg>
-                            Book
-                        </span>
-                        {% if book.pages %}<span style="font-size:11px; color:var(--muted);">{{ book.pages }}p</span>
-                        {% endif %}
-                    </div>
-                    <p class="lib-title">{{ book.title }}</p>
-                    <p class="lib-author">{{ book.author|default:"No author" }}</p>
-                    <div class="lib-meta">
-                        {% if book.level %}
-                        <span class="lib-level lib-level-{{ book.level }}">{{ book.get_level_display }}</span>
-                        {% endif %}
-                        <span class="lib-stat">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                            {{ book.count_likes }}
-                        </span>
-                    </div>
-                </div>
-            </a>
-            {% empty %}
-            <div class="lib-empty">
-                <p style="font-size:14px; color:var(--muted);">No books yet.</p>
-                {% if request.user.role in 'teacher,admin' %}
-                <a href="{% url 'library:add_book' %}"
-                    style="display:inline-block; margin-top:10px; padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">Upload
-                    first book</a>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
+  <div class="lib-layout">
 
-    <!-- ── Videos section ── -->
-    {% if videos %}
-    <div style="margin-bottom:2.5rem;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-            <p class="lib-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
-                    <polygon points="23 7 16 12 23 17 23 7" />
-                    <rect x="1" y="5" width="15" height="14" rx="2" />
-                </svg>
-                Videos
-                <span class="lib-section-count">{{ videos|length }}</span>
-            </p>
-        </div>
-        <div class="lib-grid">
-            {% for video in videos %}
-            <a href="{% url 'library:video_detail' video.pk %}" class="lib-card">
-                <div class="lib-cover">
-                    {% if video.thumbnail %}
-                    <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}" />
-                    {% else %}
-                    <div class="lib-cover-placeholder">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5">
-                            <polygon points="23 7 16 12 23 17 23 7" />
-                            <rect x="1" y="5" width="15" height="14" rx="2" />
-                        </svg>
-                    </div>
-                    {% endif %}
-                    <div class="lib-play-overlay">
-                        <div
-                            style="width:44px; height:44px; background:rgba(255,255,255,0.9); border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#111827" stroke="none">
-                                <polygon points="5 3 19 12 5 21 5 3" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-                <div class="lib-body">
-                    <div class="lib-type-row">
-                        <span class="lib-type-badge lib-type-video">
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <polygon points="23 7 16 12 23 17 23 7" />
-                                <rect x="1" y="5" width="15" height="14" rx="2" />
-                            </svg>
-                            Video
-                        </span>
-                        {% if video.duration %}<span style="font-size:11px; color:var(--muted);">
-                            {{ video.duration}}</span>{% endif %}
-                    </div>
-                    <p class="lib-title">{{ video.title }}</p>
-                    <p class="lib-author">{{ video.author|default:"No author" }}</p>
-                    <div class="lib-meta">
-                        {% if video.level %}
-                        <span class="lib-level lib-level-{{ video.level }}">{{ video.get_level_display }}</span>
-                        {% endif %}
-                        <span class="lib-stat">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                            {{ video.count_likes }}
-                        </span>
-                    </div>
-                </div>
-            </a>
-            {% empty %}
-            <div class="lib-empty">
-                <p style="font-size:14px; color:var(--muted);">No videos yet.</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
+    <!-- LEFT: Sidebar -->
+    <div class="lib-sidebar">
 
-    <!-- ── Podcasts section ── -->
-    {% if podcasts %}
-    <div style="margin-bottom:2rem;">
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-            <p class="lib-section-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2">
-                    <path d="M9 18V5l12-2v13" />
-                    <circle cx="6" cy="18" r="3" />
-                    <circle cx="18" cy="16" r="3" />
-                </svg>
-                Podcasts
-                <span class="lib-section-count">{{ podcasts|length }}</span>
-            </p>
-        </div>
-        <div class="lib-grid">
-            {% for podcast in podcasts %}
-            <a href="{% url 'library:podcast_detail' podcast.pk %}" class="lib-card">
-                <div class="lib-cover">
-                    {% if podcast.thumbnail %}
-                    <img src="{{ podcast.thumbnail.url }}" alt="{{ podcast.title }}" />
-                    {% else %}
-                    <div class="lib-cover-placeholder">
-                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5">
-                            <path d="M9 18V5l12-2v13" />
-                            <circle cx="6" cy="18" r="3" />
-                            <circle cx="18" cy="16" r="3" />
-                        </svg>
-                    </div>
-                    {% endif %}
-                </div>
-                <div class="lib-body">
-                    <div class="lib-type-row">
-                        <span class="lib-type-badge lib-type-podcast">
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path d="M9 18V5l12-2v13" />
-                                <circle cx="6" cy="18" r="3" />
-                            </svg>
-                            Podcast
-                        </span>
-                        {% if podcast.duration %}<span style="font-size:11px; color:var(--muted);">{{ podcast.duration
-                            }}</span>{% endif %}
-                    </div>
-                    <p class="lib-title">{{ podcast.title }}</p>
-                    <p class="lib-author">{{ podcast.author|default:"No author" }}</p>
-                    <div class="lib-meta">
-                        {% if podcast.level %}
-                        <span class="lib-level lib-level-{{ podcast.level }}">{{ podcast.get_level_display }}</span>
-                        {% endif %}
-                        <span class="lib-stat">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                            </svg>
-                            {{ podcast.count_likes }}
-                        </span>
-                    </div>
-                </div>
-            </a>
-            {% empty %}
-            <div class="lib-empty">
-                <p style="font-size:14px; color:var(--muted);">No podcasts yet.</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-
-    <!-- ── Full empty state ── -->
-    {% if not books and not videos and not podcasts %}
-    <div style="text-align:center; padding:6rem 0;">
-        <div
-            style="width:56px; height:56px; background:var(--surface2); border-radius:14px; display:flex; align-items:center; justify-content:center; margin:0 auto 1.25rem;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-        </div>
-        <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:6px;">Library is empty</p>
-        <p style="font-size:14px; color:var(--muted); margin-bottom:1.25rem;">No content has been added yet.</p>
-        {% if request.user.is_authenticated and request.user.role in 'teacher,admin' %}
-        <a href="{% url 'library:add_book' %}"
-            style="padding:9px 20px; background:var(--accent); color:#fff; border-radius:9px; font-size:14px; font-weight:500; text-decoration:none;">
-            Add first material
+      <!-- Categories -->
+      <div class="sidebar-section">
+        <p class="sidebar-label">Categories</p>
+        <a href="{% url 'library:home' %}{% if request.GET.sort %}?sort={{ request.GET.sort }}{% endif %}"
+          class="cat-item {% if not request.GET.category %}active{% endif %}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          All materials
         </a>
-        {% endif %}
-    </div>
-    {% endif %}
 
+        {% for cat in categories %}
+        <div>
+          <a href="?category={{ cat.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+            class="cat-item {% if active_category and active_category.slug == cat.slug %}active{% endif %}"
+            {% if cat.children.all %}onclick="toggleChildren('{{ cat.slug }}', event)"{% endif %}>
+            {% if cat.icon %}<span style="font-size:14px;">{{ cat.icon }}</span>{% endif %}
+            {{ cat.name }}
+            {% if cat.children.all %}
+              <svg style="margin-left:auto; flex-shrink:0;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            {% endif %}
+          </a>
+          {% if cat.children.all %}
+          <div class="cat-children {% if active_category and active_category.parent_id == cat.pk %}open{% endif %}" id="children-{{ cat.slug }}">
+            {% for child in cat.children.all %}
+            <a href="?category={{ child.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+              class="cat-child {% if active_category and active_category.slug == child.slug %}active{% endif %}">
+              {{ child.name }}
+            </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Material type filter -->
+      <div class="sidebar-section">
+        <p class="sidebar-label">Material type</p>
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}{% if request.GET.sort %}sort={{ request.GET.sort }}{% endif %}"
+            class="cat-item {% if not material_type %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            All types
+          </a>
+          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}type=book{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+            class="cat-item {% if material_type == 'book' %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Books
+          </a>
+          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}type=video{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+            class="cat-item {% if material_type == 'video' %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Videos
+          </a>
+          <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}type=podcast{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+            class="cat-item {% if material_type == 'podcast' %}active{% endif %}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
+            Podcasts
+          </a>
+        </div>
+      </div>
+
+      <!-- Topics -->
+      {% if topics %}
+      <div class="sidebar-section">
+        <p class="sidebar-label">Topics</p>
+        <div style="display:flex; flex-wrap:wrap; gap:5px;">
+          {% for topic in topics %}
+          <a href="?topic={{ topic.slug }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}"
+            style="font-size:11px; padding:3px 9px; background:var(--surface2); color:var(--muted); border-radius:20px; text-decoration:none; border:0.5px solid var(--border); transition:all 0.15s; {% if request.GET.topic == topic.slug %}background:#1e1d3a;color:#a5b4fc;border-color:var(--accent);{% endif %}"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="{% if request.GET.topic != topic.slug %}this.style.borderColor='var(--border)'{% endif %}">
+            {{ topic.name }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT: Content -->
+    <div>
+
+      <!-- Active category header -->
+      {% if active_category %}
+      <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:12px;">
+        {% if active_category.icon %}
+          <span style="font-size:24px;">{{ active_category.icon }}</span>
+        {% endif %}
+        <div>
+          <p style="font-size:15px; font-weight:500; color:var(--text);">{{ active_category.name }}</p>
+          {% if active_category.description %}
+            <p style="font-size:13px; color:var(--muted); margin-top:2px;">{{ active_category.description }}</p>
+          {% endif %}
+        </div>
+        {% if active_category.children.all %}
+        <div style="margin-left:auto; display:flex; flex-wrap:wrap; gap:6px;">
+          {% for child in active_category.children.all %}
+          <a href="?category={{ child.slug }}"
+            style="font-size:12px; padding:4px 10px; background:var(--surface2); color:var(--muted); border:0.5px solid var(--border); border-radius:20px; text-decoration:none; transition:all 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+            {{ child.name }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Books -->
+      {% if books %}
+      <div style="margin-bottom:2rem;">
+        <div style="display:flex; align-items:center; margin-bottom:1rem;">
+          <p class="lib-section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Books
+            <span class="lib-section-count">{{ books|length }}</span>
+          </p>
+        </div>
+        <div class="lib-grid">
+          {% for book in books %}
+          <a href="{% url 'library:book_detail' book.pk %}" class="lib-card">
+            <div class="lib-cover">
+              <div class="lib-cover-placeholder">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+            </div>
+            <div class="lib-body">
+              <div class="lib-type-row">
+                <span class="lib-type-badge lib-type-book">Book</span>
+                {% if book.grade %}<span style="font-size:11px; color:var(--muted);">Grade {{ book.grade }}</span>{% elif book.pages %}<span style="font-size:11px; color:var(--muted);">{{ book.pages }}p</span>{% endif %}
+              </div>
+              <p class="lib-title">{{ book.title }}</p>
+              <p class="lib-author">{{ book.author|default:"No author" }}</p>
+              {% if book.category %}
+                <p style="font-size:11px; color:var(--muted);">{{ book.category.name }}</p>
+              {% endif %}
+              <div class="lib-meta">
+                {% if book.level %}<span class="lib-level lib-level-{{ book.level }}">{{ book.get_level_display }}</span>{% endif %}
+                <span class="lib-stat">♥ {{ book.count_likes }}</span>
+              </div>
+            </div>
+          </a>
+          {% empty %}
+          <div class="lib-empty"><p style="font-size:13px; color:var(--muted);">No books in this category.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Videos -->
+      {% if videos %}
+      <div style="margin-bottom:2rem;">
+        <div style="display:flex; align-items:center; margin-bottom:1rem;">
+          <p class="lib-section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Videos
+            <span class="lib-section-count">{{ videos|length }}</span>
+          </p>
+        </div>
+        <div class="lib-grid">
+          {% for video in videos %}
+          <a href="{% url 'library:video_detail' video.pk %}" class="lib-card">
+            <div class="lib-cover">
+              {% if video.thumbnail %}
+                <img src="{{ video.thumbnail.url }}" alt="{{ video.title }}"/>
+              {% else %}
+                <div class="lib-cover-placeholder">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                </div>
+              {% endif %}
+              <div class="lib-play-overlay">
+                <div style="width:40px;height:40px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#111827" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="lib-body">
+              <div class="lib-type-row">
+                <span class="lib-type-badge lib-type-video">Video</span>
+                {% if video.duration %}<span style="font-size:11px; color:var(--muted);">{{ video.duration }}</span>{% endif %}
+              </div>
+              <p class="lib-title">{{ video.title }}</p>
+              <p class="lib-author">{{ video.author|default:"No author" }}</p>
+              <div class="lib-meta">
+                {% if video.level %}<span class="lib-level lib-level-{{ video.level }}">{{ video.get_level_display }}</span>{% endif %}
+                <span class="lib-stat">♥ {{ video.count_likes }}</span>
+              </div>
+            </div>
+          </a>
+          {% empty %}
+          <div class="lib-empty"><p style="font-size:13px; color:var(--muted);">No videos in this category.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Podcasts -->
+      {% if podcasts %}
+      <div style="margin-bottom:2rem;">
+        <div style="display:flex; align-items:center; margin-bottom:1rem;">
+          <p class="lib-section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
+            Podcasts
+            <span class="lib-section-count">{{ podcasts|length }}</span>
+          </p>
+        </div>
+        <div class="lib-grid">
+          {% for podcast in podcasts %}
+          <a href="{% url 'library:podcast_detail' podcast.pk %}" class="lib-card">
+            <div class="lib-cover">
+              {% if podcast.thumbnail %}
+                <img src="{{ podcast.thumbnail.url }}" alt="{{ podcast.title }}"/>
+              {% else %}
+                <div class="lib-cover-placeholder">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
+                </div>
+              {% endif %}
+            </div>
+            <div class="lib-body">
+              <div class="lib-type-row">
+                <span class="lib-type-badge lib-type-podcast">Podcast</span>
+                {% if podcast.duration %}<span style="font-size:11px; color:var(--muted);">{{ podcast.duration }}</span>{% endif %}
+              </div>
+              <p class="lib-title">{{ podcast.title }}</p>
+              <p class="lib-author">{{ podcast.author|default:"No author" }}</p>
+              <div class="lib-meta">
+                {% if podcast.level %}<span class="lib-level lib-level-{{ podcast.level }}">{{ podcast.get_level_display }}</span>{% endif %}
+                <span class="lib-stat">♥ {{ podcast.count_likes }}</span>
+              </div>
+            </div>
+          </a>
+          {% empty %}
+          <div class="lib-empty"><p style="font-size:13px; color:var(--muted);">No podcasts in this category.</p></div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Full empty state -->
+      {% if not books and not videos and not podcasts %}
+      <div style="text-align:center; padding:5rem 0;">
+        <div style="width:52px; height:52px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </div>
+        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">
+          {% if active_category %}No materials in {{ active_category.name }} yet.{% else %}Library is empty.{% endif %}
+        </p>
+        {% if request.user.is_authenticated and request.user.role in 'teacher,admin,director' %}
+          <a href="{% url 'library:add_book' %}" style="display:inline-block; margin-top:12px; padding:9px 20px; background:var(--accent); color:#fff; border-radius:9px; font-size:14px; font-weight:500; text-decoration:none;">Add first material</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Create dropdown
-    const createBtn = document.getElementById('create-btn');
-    const createDropdown = document.getElementById('create-dropdown');
+  // Create dropdown
+  const createBtn = document.getElementById('create-btn');
+  const createDropdown = document.getElementById('create-dropdown');
+  if (createBtn && createDropdown) {
+    createBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      createDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => createDropdown.classList.remove('open'));
+  }
 
-    if (createBtn && createDropdown) {
-        createBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            createDropdown.classList.toggle('open');
-        });
-        document.addEventListener('click', () => createDropdown.classList.remove('open'));
+  // Category children toggle
+  function toggleChildren(slug, e) {
+    const el = document.getElementById('children-' + slug);
+    if (!el) return;
+    // Если кликнули на саму категорию с детьми — не переходить, только открыть
+    if (el.children.length > 0) {
+      e.preventDefault();
+      el.classList.toggle('open');
     }
+  }
 </script>
 {% endblock %}

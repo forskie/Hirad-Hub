@@ -7,6 +7,12 @@ from django.conf import settings
 
 
 class Category(models.Model):
+    CATEGORY_TYPES = [
+        ('school', 'School Materials'),
+        ('national', 'National Literature'),
+        ('olympiad', 'Olympiad Prep'),
+        ('general', 'Genaral'), 
+    ]
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     parent = models.ForeignKey('self', null=True, blank=True, 
@@ -14,9 +20,14 @@ class Category(models.Model):
     order = models.PositiveIntegerField(default=0)
     icon = models.CharField(max_length=50, blank=True) 
 
+    category_type = models.CharField(choices=CATEGORY_TYPES, max_length=20, default='general' )
+    
+    description = models.TextField(blank=True)
+
 
     class Meta:
         ordering = ['order']
+        verbose_name_plural = 'Categories'
     
 
     def __str__(self):
