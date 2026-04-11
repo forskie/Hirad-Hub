@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.db import models
-from library.models import ContentType, Topic
+from library.models import Topic
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-
+from django.contrib.contenttypes.models import ContentType
 
 class Post(models.Model):
     POST_TYPES_CHOICES = [

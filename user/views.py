@@ -28,24 +28,87 @@ def login_view(request):
 
 def profile_view_others(request, username):
     other_user = get_object_or_404(CustomUser, username=username)
-    return render(request, 'user/profile/others_profile.html', {'user' : other_user})
+    if other_user.role in ('teacher', 'director'):
+        try:
+            profile = other_user.teacher_profile
+        except TeacherProfile.DoesNotExist:
+            profile = None
+        books    = Book.objects.filter(creator=other_user).order_by('-created_at')
+        videos   = Video.objects.filter(creator=other_user).order_by('-created_at')
+        podcasts = Podcast.objects.filter(creator=other_user).order_by('-created_at')
+        return render(request, 'user/profile/teacher_profile.html', {
+            'teacher':  other_user,
+            'profile':  profile,
+            'books':    books,
+            'videos':   videos,
+            'podcasts': podcasts,
+        })
+    return render(request, 'user/profile/others_profile.html', {'user': other_user})
 
 
+LEVEL_THRESHOLDS = [0, 1000, 5000, 10000, 20000, 35000, 45000, 55000, 70000, 100000]
+ 
 @login_required
 def profile_view(request):
     user = request.user
+ 
+    from post.models import Post, Favorite
+    from django.contrib.contenttypes.models import ContentType
     post_ct = ContentType.objects.get_for_model(Post)
     favorite_posts = Post.objects.filter(
         id__in=Favorite.objects.filter(
-            user=user,
-            content_type=post_ct
+            user=user, content_type=post_ct
         ).values_list('object_id', flat=True)
     ).select_related('author').prefetch_related('likes', 'comments')
+ 
+    level_idx = min(user.level - 1, len(LEVEL_THRESHOLDS) - 1)
+    level_current_min = LEVEL_THRESHOLDS[level_idx]
+    if user.level < 10:
+        level_next_min = LEVEL_THRESHOLDS[min(level_idx + 1, len(LEVEL_THRESHOLDS) - 1)]
+        score_in_level = user.score - level_current_min
+        level_range    = level_next_min - level_current_min
+        level_progress_pct = min(int(score_in_level / level_range * 100), 100) if level_range > 0 else 100
+    else:
+        level_current_min  = LEVEL_THRESHOLDS[-1]
+        level_next_min     = level_current_min
+        level_progress_pct = 100
+ 
+    teacher_profile  = None
+    director_profile = None
+    teacher_books    = []
+    teacher_videos   = []
+    teacher_podcasts = []
+ 
+    if user.role in ('teacher', 'director', 'admin'):
+        from library.models import Book, Video, Podcast
+        try:
+            teacher_profile = user.teacher_profile
+        except Exception:
+            pass
+ 
+        teacher_books    = Book.objects.filter(creator=user).order_by('-created_at')
+        teacher_videos   = Video.objects.filter(creator=user).order_by('-created_at')
+        teacher_podcasts = Podcast.objects.filter(creator=user).order_by('-created_at')
+ 
+        if user.role == 'director':
+            try:
+                director_profile = user.director_profile
+            except Exception:
+                pass
+ 
     return render(request, 'user/profile/profile.html', {
-        'user': user,
-        'favorite_posts': favorite_posts
+        'user':              user,
+        'favorite_posts':    favorite_posts,
+        'level_current_min': level_current_min,
+        'level_next_min':    level_next_min,
+        'level_progress_pct': level_progress_pct,
+        'teacher_profile':   teacher_profile,
+        'director_profile':  director_profile,
+        'teacher_books':     teacher_books,
+        'teacher_videos':    teacher_videos,
+        'teacher_podcasts':  teacher_podcasts,
     })
-
+ 
 
 @login_required
 def edit_profile(request):
@@ -102,7 +165,7 @@ def pending_verification(request):
     return render(request, 'user/pending_verification.html')
 
 
-def teacher_profile_view(request):
+def teacher_profile_view(request, username):
     user = get_object_or_404(CustomUser, username=username, role='teacher')
     try:
         profile = user.teacher_profile
@@ -187,7 +250,6 @@ def pending_teachers(request):
         is_verified=False
     ).select_related('user', 'school').order_by('created_at')
 
-    # Директор видит только учителей своей школы
     if request.user.role == 'director':
         try:
             director_school = request.user.director_profile.school

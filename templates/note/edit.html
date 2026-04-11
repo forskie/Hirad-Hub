@@ -12,6 +12,16 @@
         toolbar: 'bold italic underline | bullist numlist | link image | code',
         menubar: false,
         height: 380,
+        skin: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oxide-dark' : 'oxide',
+        content_css: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default',
+        setup: function (editor) {
+            editor.on('init', function () {
+                const isDark = document.documentElement.classList.contains('dark');
+                if (isDark) {
+                    tinymce.activeEditor.dom.styleSheetLoader.load('dark');
+                }
+            });
+        },
         content_style: 'body { font-family: Sora, sans-serif; font-size: 14px; line-height: 1.8; }',
         branding: false,
         promotion: false,

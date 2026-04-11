@@ -6,40 +6,92 @@
 <style>
   .post-layout {
     display: grid;
-    grid-template-columns: 1fr 280px;
+    grid-template-columns: 1fr 260px;
     gap: 1.5rem;
     align-items: start;
   }
-  .post-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 14px;
-    padding: 1.25rem;
-    transition: border-color 0.18s;
-  }
-  .post-card:hover { border-color: rgba(99,102,241,0.4); }
 
-  .post-type-badge {
+  /* ── Type badges ── */
+  .type-badge {
     display: inline-flex; align-items: center; gap: 4px;
     font-size: 10px; font-weight: 500; padding: 2px 8px;
     border-radius: 20px; text-transform: uppercase; letter-spacing: 0.04em;
+    flex-shrink: 0;
   }
   .type-post     { background: var(--surface2); color: var(--muted); }
-  .type-question { background: #1a1200; color: #fcd34d; }
-  .type-article  { background: #1e1d3a; color: #a5b4fc; }
+  .type-question { background: #1a1200; color: #fcd34d; border: 0.5px solid #78350f; }
+  .type-article  { background: #1e1d3a; color: #a5b4fc; border: 0.5px solid #3730a3; }
+  .badge-unanswered { background: #1a0a00; color: #fb923c; border: 0.5px solid #9a3412; }
 
-  .sidebar-card {
+  /* ── Filter tabs ── */
+  .filter-tab {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; padding: 5px 13px;
+    border-radius: 20px; border: 0.5px solid var(--border);
+    color: var(--muted); background: var(--surface);
+    text-decoration: none; transition: all 0.15s; white-space: nowrap;
+  }
+  .filter-tab:hover { border-color: var(--accent); color: var(--text); }
+  .filter-tab.active { background: #1e1d3a; border-color: var(--accent); color: #a5b4fc; }
+  .filter-tab.active-q { background: #1a1200; border-color: #f59e0b; color: #fcd34d; }
+  .filter-tab.active-a { background: #052e16; border-color: #22c55e; color: #86efac; }
+
+  /* ── Post cards ── */
+  .post-card {
     background: var(--surface);
     border: 0.5px solid var(--border);
     border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 12px;
+    transition: border-color 0.15s;
+    overflow: hidden;
   }
-  .sidebar-title {
-    font-size: 12px; color: var(--muted);
+  .post-card:hover { border-color: rgba(99,102,241,0.35); }
+
+  /* Article — larger visual weight */
+  .post-card.is-article {
+    border-left: 2px solid #4338ca;
+  }
+  /* Unanswered question — orange accent */
+  .post-card.is-unanswered {
+    border-left: 2px solid #f59e0b;
+  }
+  /* Answered question — green */
+  .post-card.is-answered-q {
+    border-left: 2px solid #22c55e;
+  }
+
+  .post-body { padding: 1rem 1.1rem; }
+  .post-footer {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 1.1rem;
+    border-top: 0.5px solid var(--border);
+    background: var(--surface2);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 11px;
+    padding: 1rem;
+    margin-bottom: 10px;
+  }
+  .sidebar-label {
+    font-size: 11px; color: var(--muted);
     text-transform: uppercase; letter-spacing: 0.06em;
     font-weight: 500; margin-bottom: 10px;
   }
+
+  /* ── Pagination ── */
+  .page-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 7px; border: 0.5px solid var(--border);
+    background: var(--surface); color: var(--muted);
+    text-decoration: none; font-size: 13px; transition: all 0.15s;
+  }
+  .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .page-btn.disabled { opacity: 0.35; pointer-events: none; }
 
   @media (max-width: 860px) {
     .post-layout { grid-template-columns: 1fr; }
@@ -52,29 +104,30 @@
 <div style="max-width:1000px; margin:0 auto;">
 
   <!-- Header -->
-  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
     <div>
-      <h1 style="font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.02em;">Community</h1>
-      <p style="font-size:13px; color:var(--muted); margin-top:3px;">Posts, questions and articles</p>
+      <h1 style="font-size:20px; font-weight:500; color:var(--text); letter-spacing:-0.02em;">Community</h1>
+      <p style="font-size:12px; color:var(--muted); margin-top:2px;">{{ total_count }} post{{ total_count|pluralize }}</p>
     </div>
     {% if request.user.is_authenticated %}
-      <a href="{% url 'post:create' %}"
-        style="display:flex; align-items:center; gap:6px; padding:8px 16px; background:var(--accent); color:#fff; border-radius:9px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Write
-      </a>
+    <a href="{% url 'post:create' %}"
+      style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+      onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Write
+    </a>
     {% endif %}
   </div>
 
   <div class="post-layout">
 
-    <!-- LEFT: Feed -->
+    <!-- ══ LEFT: Feed ══ -->
     <div>
 
-      <!-- User search -->
-      <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:1rem; display:flex; align-items:center; gap:8px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <!-- User search (HTMX) -->
+      <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:9px; padding:9px 12px; margin-bottom:1rem; display:flex; align-items:center; gap:8px; transition:border-color 0.15s;"
+        onfocusin="this.style.borderColor='var(--accent)'" onfocusout="this.style.borderColor='var(--border)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" placeholder="Search users..."
           hx-get="{% url 'post:search_users' %}"
           hx-trigger="keyup changed delay:300ms"
@@ -85,183 +138,346 @@
       </div>
       <div id="user-search-results" style="margin-bottom:1rem;"></div>
 
-      <!-- Type + Topic filters -->
-      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.25rem;">
-        <a href="{% url 'post:list' %}" style="font-size:12px; padding:4px 12px; border-radius:20px; border:0.5px solid {% if not request.GET.topic and not request.GET.type %}var(--accent){% else %}var(--border){% endif %}; color:{% if not request.GET.topic and not request.GET.type %}var(--accent){% else %}var(--muted){% endif %}; background:{% if not request.GET.topic and not request.GET.type %}#1e1d3a{% else %}var(--surface){% endif %}; text-decoration:none;">All</a>
-        <a href="?type=question" style="font-size:12px; padding:4px 12px; border-radius:20px; border:0.5px solid {% if request.GET.type == 'question' %}#f59e0b{% else %}var(--border){% endif %}; color:{% if request.GET.type == 'question' %}#f59e0b{% else %}var(--muted){% endif %}; background:{% if request.GET.type == 'question' %}#1a1200{% else %}var(--surface){% endif %}; text-decoration:none;">❓ Questions</a>
-        <a href="?type=article" style="font-size:12px; padding:4px 12px; border-radius:20px; border:0.5px solid {% if request.GET.type == 'article' %}var(--accent){% else %}var(--border){% endif %}; color:{% if request.GET.type == 'article' %}var(--accent){% else %}var(--muted){% endif %}; background:{% if request.GET.type == 'article' %}#1e1d3a{% else %}var(--surface){% endif %}; text-decoration:none;">📄 Articles</a>
+      <!-- Filters -->
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.1rem;">
+        <a href="{% url 'post:list' %}"
+          class="filter-tab {% if not request.GET.type and not request.GET.topic %}active{% endif %}">
+          All
+        </a>
+        <a href="?type=question"
+          class="filter-tab {% if request.GET.type == 'question' %}active-q{% endif %}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Questions
+          {% if unanswered_count %}<span style="font-size:10px; padding:1px 6px; background:#78350f; color:#fcd34d; border-radius:10px;">{{ unanswered_count }}</span>{% endif %}
+        </a>
+        <a href="?type=article"
+          class="filter-tab {% if request.GET.type == 'article' %}active-a{% endif %}">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Articles
+        </a>
+        {% if topics %}
+        <span style="width:1px; background:var(--border); margin:0 2px;"></span>
         {% for topic in topics %}
-          <a href="?topic={{ topic.slug }}" style="font-size:12px; padding:4px 12px; border-radius:20px; border:0.5px solid {% if request.GET.topic == topic.slug %}var(--accent){% else %}var(--border){% endif %}; color:{% if request.GET.topic == topic.slug %}var(--accent){% else %}var(--muted){% endif %}; background:{% if request.GET.topic == topic.slug %}#1e1d3a{% else %}var(--surface){% endif %}; text-decoration:none;">{{ topic.name }}</a>
+        <a href="?topic={{ topic.slug }}"
+          class="filter-tab {% if request.GET.topic == topic.slug %}active{% endif %}">
+          {{ topic.name }}
+        </a>
+        {% endfor %}
+        {% endif %}
+      </div>
+
+      <!-- Feed -->
+      {% if posts %}
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        {% for post in posts %}
+
+        {% if post.post_type == 'article' %}
+        <!-- ── ARTICLE card ── -->
+        <div class="post-card is-article">
+          <div class="post-body">
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+              <a href="{% url 'user:profile_others' post.author.username %}" style="display:flex;align-items:center;gap:7px;text-decoration:none;flex:1;min-width:0;">
+                <div style="width:26px;height:26px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#a5b4fc;flex-shrink:0;overflow:hidden;">
+                  {% if post.author.profile_picture %}<img src="{{ post.author.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;"/>{% else %}{{ post.author.username|first|upper }}{% endif %}
+                </div>
+                <span style="font-size:12px;color:var(--muted);">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} ago</span>
+              </a>
+              <span class="type-badge type-article">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Article
+              </span>
+              {% if post.author == request.user %}
+              <a href="{% url 'post:delete' post.pk %}" style="color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              </a>
+              {% endif %}
+            </div>
+            <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
+              <p style="font-size:15px;font-weight:500;color:var(--text);line-height:1.5;margin-bottom:6px;">{{ post.text|truncatechars:80 }}</p>
+              <p style="font-size:13px;color:var(--muted);line-height:1.6;">{{ post.text|truncatechars:160 }}</p>
+            </a>
+            {% if post.image %}
+            <a href="{% url 'post:detail' post.pk %}">
+              <img src="{{ post.image.url }}" style="width:100%;border-radius:8px;margin-top:10px;max-height:220px;object-fit:cover;"/>
+            </a>
+            {% endif %}
+            {% if post.topics.all %}
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;">
+              {% for topic in post.topics.all %}
+              <a href="?topic={{ topic.slug }}" style="font-size:10px;padding:2px 7px;background:#1e1d3a;color:#a5b4fc;border-radius:5px;text-decoration:none;">{{ topic.name }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+          <div class="post-footer">
+            {% include 'post/partials/like_button.html' %}
+            <a href="{% url 'post:detail' post.pk %}#comments" style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              {{ post.count_comments }}
+            </a>
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              {{ post.view_count }}
+            </span>
+            {% if request.user.is_authenticated %}
+            <form hx-post="{% url 'post:toggle_favorite' post.pk %}" hx-target="this" hx-swap="outerHTML" style="margin:0;margin-left:auto;">
+              {% csrf_token %}
+              <button type="submit" style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Sora',sans-serif;padding:0;transition:color 0.15s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                Save
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+
+        {% elif post.post_type == 'question' %}
+        <!-- ── QUESTION card ── -->
+        <div class="post-card {% if not post.is_answered %}is-unanswered{% else %}is-answered-q{% endif %}">
+          <div class="post-body">
+            <div style="display:flex;align-items:flex-start;gap:10px;">
+              <!-- Vote/answer count column -->
+              <div style="flex-shrink:0;text-align:center;padding-top:2px;">
+                <p style="font-size:16px;font-weight:500;color:{% if post.is_answered %}#22c55e{% else %}var(--muted){% endif %};">{{ post.count_comments }}</p>
+                <p style="font-size:10px;color:var(--muted);">ans.</p>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
+                  <span class="type-badge type-question">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    Question
+                  </span>
+                  {% if post.is_answered %}
+                  <span style="font-size:10px;padding:2px 7px;background:#052e16;color:#86efac;border-radius:10px;border:0.5px solid #166534;">✓ Answered</span>
+                  {% else %}
+                  <span class="type-badge badge-unanswered">Needs answer</span>
+                  {% endif %}
+                </div>
+                <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
+                  <p style="font-size:14px;font-weight:500;color:var(--text);line-height:1.5;margin-bottom:5px;">{{ post.text|truncatechars:120 }}</p>
+                </a>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                  {% if post.topics.all %}
+                  {% for topic in post.topics.all %}
+                  <a href="?topic={{ topic.slug }}" style="font-size:10px;padding:2px 7px;background:#1a1200;color:#fcd34d;border-radius:5px;text-decoration:none;">{{ topic.name }}</a>
+                  {% endfor %}
+                  {% endif %}
+                  <a href="{% url 'user:profile_others' post.author.username %}" style="font-size:11px;color:var(--muted);text-decoration:none;margin-left:auto;">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} ago</a>
+                  {% if post.author == request.user %}
+                  <a href="{% url 'post:delete' post.pk %}" style="color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                  </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% else %}
+        <!-- ── POST card (compact) ── -->
+        <div class="post-card">
+          <div class="post-body" style="padding:0.9rem 1.1rem;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+              <a href="{% url 'user:profile_others' post.author.username %}" style="display:flex;align-items:center;gap:7px;text-decoration:none;flex:1;min-width:0;">
+                <div style="width:26px;height:26px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#a5b4fc;flex-shrink:0;overflow:hidden;">
+                  {% if post.author.profile_picture %}<img src="{{ post.author.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;"/>{% else %}{{ post.author.username|first|upper }}{% endif %}
+                </div>
+                <span style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} ago</span>
+              </a>
+              {% if post.author == request.user %}
+              <a href="{% url 'post:delete' post.pk %}" style="color:var(--muted);text-decoration:none;flex-shrink:0;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+              </a>
+              {% endif %}
+            </div>
+
+            {% if post.text %}
+            <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
+              <p style="font-size:13px;color:var(--text);line-height:1.65;">{{ post.text|truncatechars:180 }}</p>
+            </a>
+            {% endif %}
+
+            {% if post.image %}
+            <a href="{% url 'post:detail' post.pk %}">
+              <img src="{{ post.image.url }}" style="width:100%;border-radius:7px;margin-top:8px;max-height:200px;object-fit:cover;"/>
+            </a>
+            {% endif %}
+
+            {% if post.topics.all %}
+            <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;">
+              {% for topic in post.topics.all %}
+              <a href="?topic={{ topic.slug }}" style="font-size:10px;padding:2px 7px;background:var(--surface2);color:var(--muted);border-radius:5px;text-decoration:none;border:0.5px solid var(--border);">{{ topic.name }}</a>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="post-footer">
+            {% if request.user.is_authenticated %}
+            <form hx-post="{% url 'post:toggle_like' post.pk %}" hx-target="this" hx-swap="outerHTML" style="margin:0;">
+              {% csrf_token %}
+              <button type="submit" style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Sora',sans-serif;padding:0;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                {{ post.count_likes }}
+              </button>
+            </form>
+            {% else %}
+            <span style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              {{ post.count_likes }}
+            </span>
+            {% endif %}
+            <a href="{% url 'post:detail' post.pk %}#comments" style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              {{ post.count_comments }}
+            </a>
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:3px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              {{ post.view_count }}
+            </span>
+            {% if request.user.is_authenticated %}
+            <form hx-post="{% url 'post:toggle_favorite' post.pk %}" hx-target="this" hx-swap="outerHTML" style="margin:0;margin-left:auto;">
+              {% csrf_token %}
+              <button type="submit" style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Sora',sans-serif;padding:0;transition:color 0.15s;" onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--muted)'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                Save
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
         {% endfor %}
       </div>
 
-      <!-- Posts list -->
-      {% if posts %}
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          {% for post in posts %}
-          <div class="post-card">
+      <!-- Pagination -->
+      {% if posts.has_other_pages %}
+      <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:1.5rem; flex-wrap:wrap;">
+        {% if posts.has_previous %}
+        <a href="?{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}{% if request.GET.topic %}topic={{ request.GET.topic }}&{% endif %}page={{ posts.previous_page_number }}" class="page-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </a>
+        {% else %}
+        <span class="page-btn disabled">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </span>
+        {% endif %}
 
-            <!-- Top row: author + type + delete -->
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-              <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
-                <a href="{% url 'user:profile_others' post.author.username %}" style="display:flex; align-items:center; gap:8px; text-decoration:none; flex:1; min-width:0;">
-                  <div style="width:30px; height:30px; border-radius:50%; background:#1e1d3a; border:1.5px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; color:#a5b4fc; overflow:hidden; flex-shrink:0;">
-                    {% if post.author.profile_picture %}
-                      <img src="{{ post.author.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;"/>
-                    {% else %}
-                      {{ post.author.username|first|upper }}
-                    {% endif %}
-                  </div>
-                  <div style="min-width:0;">
-                    <p style="font-size:13px; font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ post.author.get_full_name|default:post.author.username }}</p>
-                    <p style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} ago</p>
-                  </div>
-                </a>
-                <!-- Post type badge -->
-                <span class="post-type-badge type-{{ post.post_type }}">
-                  {% if post.post_type == 'question' %}❓{% elif post.post_type == 'article' %}📄{% endif %}
-                  {{ post.get_post_type_display }}
-                </span>
-              </div>
-              {% if post.author == request.user %}
-                <a href="{% url 'post:delete' post.pk %}"
-                  style="display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:7px; color:var(--muted); text-decoration:none; margin-left:8px; flex-shrink:0; transition:all 0.15s;"
-                  onmouseover="this.style.background='#fef2f2';this.style.color='#ef4444'" onmouseout="this.style.background='none';this.style.color='var(--muted)'">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
-                </a>
-              {% endif %}
-            </div>
-
-            <!-- Text -->
-            {% if post.text %}
-              <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
-                <p style="font-size:14px; color:var(--text); line-height:1.7; margin-bottom:10px;">{{ post.text|truncatechars:200 }}</p>
-              </a>
-            {% endif %}
-
-            <!-- Image -->
-            {% if post.image %}
-              <a href="{% url 'post:detail' post.pk %}">
-                <img src="{{ post.image.url }}" style="width:100%; border-radius:8px; margin-bottom:10px; max-height:280px; object-fit:cover;"/>
-              </a>
-            {% endif %}
-
-            <!-- Topics -->
-            {% if post.topics.all %}
-              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:10px;">
-                {% for topic in post.topics.all %}
-                  <a href="?topic={{ topic.slug }}" style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; text-decoration:none;">{{ topic.name }}</a>
-                {% endfor %}
-              </div>
-            {% endif %}
-
-            <!-- Actions -->
-            <div style="display:flex; align-items:center; gap:14px; padding-top:10px; border-top:0.5px solid var(--border);">
-              {% if request.user.is_authenticated %}
-                <form hx-post="{% url 'post:toggle_like' post.pk %}" hx-target="this" hx-swap="outerHTML" style="margin:0;">
-                  {% csrf_token %}
-                  <button type="submit" style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
-                    onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    {{ post.count_likes }}
-                  </button>
-                </form>
-                <a href="{% url 'post:detail' post.pk %}#comments" style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); text-decoration:none; transition:color 0.15s;"
-                  onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  {{ post.count_comments }}
-                </a>
-                {% if post.view_count %}
-                  <span style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted);">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    {{ post.view_count }}
-                  </span>
-                {% endif %}
-                <form hx-post="{% url 'post:toggle_favorite' post.pk %}" hx-target="this" hx-swap="outerHTML" style="margin:0; margin-left:auto;">
-                  {% csrf_token %}
-                  <button type="submit" style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif; padding:0; transition:color 0.15s;"
-                    onmouseover="this.style.color='#f59e0b'" onmouseout="this.style.color='var(--muted)'">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-                    Save
-                  </button>
-                </form>
-              {% else %}
-                <span style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted);">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                  {{ post.count_likes }}
-                </span>
-                <a href="{% url 'post:detail' post.pk %}#comments" style="display:flex; align-items:center; gap:5px; font-size:12px; color:var(--muted); text-decoration:none;">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  {{ post.count_comments }}
-                </a>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-      {% else %}
-        <div style="text-align:center; padding:4rem 0;">
-          <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">
-            {% if request.GET.topic %}No posts in this topic.{% elif request.GET.type %}No {{ request.GET.type }}s yet.{% else %}No posts yet.{% endif %}
-          </p>
-          {% if request.user.is_authenticated %}
-            <a href="{% url 'post:create' %}" style="padding:8px 18px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">Be the first</a>
+        {% for num in posts.paginator.page_range %}
+          {% if posts.number == num %}
+          <span class="page-btn active">{{ num }}</span>
+          {% elif num > posts.number|add:"-3" and num < posts.number|add:"3" %}
+          <a href="?{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}{% if request.GET.topic %}topic={{ request.GET.topic }}&{% endif %}page={{ num }}" class="page-btn">{{ num }}</a>
           {% endif %}
+        {% endfor %}
+
+        {% if posts.has_next %}
+        <a href="?{% if request.GET.type %}type={{ request.GET.type }}&{% endif %}{% if request.GET.topic %}topic={{ request.GET.topic }}&{% endif %}page={{ posts.next_page_number }}" class="page-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        {% else %}
+        <span class="page-btn disabled">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </span>
+        {% endif %}
+      </div>
+      <p style="text-align:center; font-size:11px; color:var(--muted); margin-top:8px;">
+        Page {{ posts.number }} of {{ posts.paginator.num_pages }}
+      </p>
+      {% endif %}
+
+      {% else %}
+      <div style="text-align:center; padding:4rem 0;">
+        <div style="width:44px;height:44px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         </div>
+        <p style="font-size:14px; color:var(--muted); margin-bottom:12px;">
+          {% if request.GET.topic %}No posts in this topic.
+          {% elif request.GET.type == 'question' %}No questions yet.
+          {% elif request.GET.type == 'article' %}No articles yet.
+          {% else %}No posts yet.{% endif %}
+        </p>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'post:create' %}" style="padding:8px 18px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">Be the first</a>
+        {% endif %}
+      </div>
       {% endif %}
     </div>
+    <!-- ══ END LEFT ══ -->
 
-    <!-- RIGHT: Sidebar -->
+    <!-- ══ RIGHT: Sidebar ══ -->
     <div class="post-sidebar" style="position:sticky; top:70px;">
+
+      <!-- Stats -->
+      <div class="sidebar-card">
+        <p class="sidebar-label">Overview</p>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:12px; color:var(--muted);">Posts</span>
+            <span style="font-size:12px; font-weight:500; color:var(--text);">{{ counts.post }}</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:12px; color:var(--muted);">Questions</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:12px; font-weight:500; color:var(--text);">{{ counts.question }}</span>
+              {% if unanswered_count %}<span style="font-size:10px; padding:1px 6px; background:#1a1200; color:#fcd34d; border-radius:8px;">{{ unanswered_count }} open</span>{% endif %}
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:12px; color:var(--muted);">Articles</span>
+            <span style="font-size:12px; font-weight:500; color:var(--text);">{{ counts.article }}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Top users -->
       {% if top_users %}
       <div class="sidebar-card">
-        <p class="sidebar-title">Top students</p>
-        <div style="display:flex; flex-direction:column; gap:8px;">
+        <p class="sidebar-label">Top students</p>
+        <div style="display:flex; flex-direction:column; gap:7px;">
           {% for u in top_users %}
           <a href="{% url 'user:profile_others' u.username %}" style="display:flex; align-items:center; gap:8px; text-decoration:none;">
-            <div style="width:28px; height:28px; border-radius:50%; background:#1e1d3a; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; color:#a5b4fc; flex-shrink:0;">{{ u.username|first|upper }}</div>
-            <div style="flex:1; min-width:0;">
-              <p style="font-size:12px; font-weight:500; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ u.get_full_name|default:u.username }}</p>
-              <p style="font-size:11px; color:var(--muted);">{{ u.score }} pts</p>
+            <div style="width:26px;height:26px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#a5b4fc;flex-shrink:0;">{{ u.username|first|upper }}</div>
+            <div style="flex:1;min-width:0;">
+              <p style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.get_full_name|default:u.username }}</p>
+              <p style="font-size:10px;color:var(--muted);">{{ u.score }} pts · Lv.{{ u.level }}</p>
             </div>
-            <span style="font-size:11px; color:var(--muted);">Lv.{{ u.level }}</span>
           </a>
           {% endfor %}
         </div>
-        <a href="{% url 'main:leaderboard' %}" style="display:block; margin-top:10px; font-size:12px; color:var(--accent); text-decoration:none;">View leaderboard →</a>
+        <a href="{% url 'main:leaderboard' %}" style="display:block;margin-top:8px;font-size:11px;color:var(--accent);text-decoration:none;">Leaderboard →</a>
       </div>
       {% endif %}
 
-      <!-- Popular topics -->
+      <!-- Topics -->
       {% if topics %}
       <div class="sidebar-card">
-        <p class="sidebar-title">Topics</p>
-        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        <p class="sidebar-label">Topics</p>
+        <div style="display:flex; flex-wrap:wrap; gap:5px;">
           {% for topic in topics %}
-            <a href="?topic={{ topic.slug }}" style="font-size:12px; padding:3px 10px; background:var(--surface2); color:var(--muted); border-radius:20px; text-decoration:none; border:0.5px solid var(--border); transition:all 0.15s;"
-              onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
-              {{ topic.name }}
-            </a>
+          <a href="?topic={{ topic.slug }}"
+            style="font-size:11px; padding:3px 9px; background:var(--surface2); color:var(--muted); border-radius:20px; text-decoration:none; border:0.5px solid var(--border); transition:all 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+            {{ topic.name }}
+          </a>
           {% endfor %}
         </div>
       </div>
       {% endif %}
 
-      <!-- Write CTA -->
       {% if request.user.is_authenticated %}
-      <div class="sidebar-card" style="text-align:center;">
-        <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:4px;">Share your thoughts</p>
-        <p style="font-size:12px; color:var(--muted); margin-bottom:12px;">Ask a question or write an article</p>
-        <a href="{% url 'post:create' %}" style="display:block; padding:8px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-          onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-          Write post
-        </a>
-      </div>
+      <a href="{% url 'post:create' %}"
+        style="display:block; padding:9px; background:var(--accent); color:#fff; border-radius:9px; font-size:13px; font-weight:500; text-decoration:none; text-align:center; transition:background 0.15s;"
+        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+        + Write post
+      </a>
       {% endif %}
-
     </div>
+    <!-- ══ END SIDEBAR ══ -->
+
   </div>
 </div>
 {% endblock %}

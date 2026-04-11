@@ -718,16 +718,13 @@
                 {% if user.profile_picture %}
                 <img src="{{ user.profile_picture.url }}" alt="avatar" />
                 {% else %}
-                {{ user.username|first|upper }}
+                {{ request.user.username|first|upper }}
                 {% endif %}
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <div class="dropdown-header">
-                    {% if user.role == 'teacher' and user.teacher_profile %}
-                        <p>{{ user.teacher_profile.teacher_title }} · Lv.{{ user.teacher_profile.teacher_level }}</p>
-                    {% else %}
-                        <p>{{ user.title }} · Lv.{{ user.level }}</p>
-                    {% endif %}
+                        <p>{{ request.user.get_full_name|default:request.user.username }}</p>
+                        <p>{% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_title }} · Lv.{{ request.user.teacher_profile.teacher_level }}{% else %}{{ request.user.title }} · Lv.{{ request.user.level }}{% endif %}</p>  
                 </div>
                 <a href="{% url 'user:profile' %}" class="dropdown-item">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -974,8 +971,7 @@
                 if (users.length) {
                     html += `<div class="search-result-section">Users</div>`;
                     users.forEach(u => {
-                        html += `
-              <a href="/user/${u.username}/" class="search-result-item">
+                        html += `<a href="/user/profile/${u.username}/" class="search-result-item">
                 <div style="width:28px;height:28px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;color:#a5b4fc;flex-shrink:0;">
                   ${u.username[0].toUpperCase()}
                 </div>
@@ -991,7 +987,7 @@
                     html += `<div class="search-result-section">Posts</div>`;
                     posts.forEach(p => {
                         html += `
-              <a href="/posts/${p.id}/" class="search-result-item">
+              <a href="/post/${p.id}/" class="search-result-item">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 <p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.text}</p>
               </a>`;
@@ -1002,7 +998,7 @@
                     html += `<div class="search-result-section">Notes</div>`;
                     notes.forEach(n => {
                         html += `
-              <a href="/notes/${n.id}/" class="search-result-item">
+              <a href="/note/${n.id}" class="search-result-item">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 <p style="font-size:13px;color:var(--text);">${n.title}</p>
               </a>`;

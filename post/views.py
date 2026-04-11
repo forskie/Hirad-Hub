@@ -1,5 +1,3 @@
-from email.mime import image, text
-
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Favorite
 from django.contrib.auth.decorators import login_required
@@ -7,22 +5,57 @@ from django.contrib.contenttypes.models import ContentType
 from library.models import Like, Comment
 from user.models import CustomUser
 from library.models import Topic
+from django.core.paginator import Paginator
+
+
+VALID_POST_TYPES = {'post', 'question', 'article'}
 
 def post_list(request):
     topic_slug = request.GET.get('topic')
-    posts = Post.objects.select_related('author').prefetch_related('topics', 'likes', 'comments').order_by('-created_at')
+    post_type  = request.GET.get('type')
+ 
+    posts = (
+        Post.objects
+        .select_related('author')
+        .prefetch_related('topics', 'likes', 'comments')
+        .order_by('-created_at')
+    )
+ 
     if topic_slug:
         posts = posts.filter(topics__slug=topic_slug)
+ 
+    if post_type and post_type in VALID_POST_TYPES:
+        posts = posts.filter(post_type=post_type)
+ 
     topics = Topic.objects.all()
 
-    post_type = request.GET.get('type')
-    if post_type:
-        posts = posts.filter(post_type=post_type)
+    from django.db.models import Count
+    all_posts = Post.objects.all()
+    counts = {
+        'post':     all_posts.filter(post_type='post').count(),
+        'question': all_posts.filter(post_type='question').count(),
+        'article':  all_posts.filter(post_type='article').count(),
+    }
+    unanswered_count = all_posts.filter(post_type='question', is_answered=False).count()
+    total_count = all_posts.count()
 
+    paginator = Paginator(posts, 15)
+    page_num  = request.GET.get('page', 1)
+    posts     = paginator.get_page(page_num)
+ 
     from django.contrib.auth import get_user_model
     User = get_user_model()
     top_users = User.objects.order_by('-score')[:5]
-    return render(request, 'post/list.html', {'posts': posts, 'topics': topics, 'top_users': top_users})
+ 
+    return render(request, 'post/list.html', {
+        'posts': posts,
+        'topics': topics,
+        'top_users': top_users,
+        'counts': counts,
+        'unanswered_count': unanswered_count,
+        'total_count': total_count,
+    })
+
 
 def post_detail(request, pk):
     post = get_object_or_404(Post.objects.select_related('author').prefetch_related('topics'), pk=pk)

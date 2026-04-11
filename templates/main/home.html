@@ -1,184 +1,116 @@
 {% extends 'base.html' %}
-{% block title %}HiradHub — Educational Platform{% endblock %}
+{% block title %}HiradHub{% endblock %}
 
 {% block extra_css %}
 <style>
-    .hero-title { font-size: clamp(28px, 5vw, 48px); }
+  .home-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  .nav-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .nav-item {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    transition: border-color 0.15s;
+  }
+  .nav-item:hover { border-color: var(--accent); }
+  .step-card {
+    background: var(--surface);
+    border: 0.5px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.1rem 1.25rem;
+    text-decoration: none;
+    display: block;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+  .step-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+  }
+  .step-card:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.12); }
+  .widget-tabs { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 10px; }
+  .widget-tab {
+    font-size: 12px; padding: 5px 10px; color: var(--muted);
+    border: none; border-bottom: 2px solid transparent; background: none;
+    cursor: pointer; font-family: 'Sora', sans-serif; transition: color 0.15s, border-color 0.15s;
+  }
+  .widget-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .quick-note-area {
+    width: 100%; min-height: 80px; padding: 8px 10px;
+    background: var(--surface2); border: 0.5px solid var(--border);
+    border-radius: 7px; font-size: 12px; color: var(--text);
+    font-family: 'Sora', sans-serif; outline: none; resize: none;
+    line-height: 1.7; transition: border-color 0.15s;
+  }
+  .quick-note-area:focus { border-color: var(--accent); }
+  .quick-note-area::placeholder { color: var(--muted); }
+  .task-item { display: flex; align-items: center; gap: 7px; padding: 6px 8px; background: var(--surface2); border-radius: 6px; margin-bottom: 4px; }
+  .task-item.done { opacity: 0.4; }
+  .task-item.done .task-text { text-decoration: line-through; }
+  .task-checkbox { width: 14px; height: 14px; border-radius: 3px; border: 1.5px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .task-checkbox.checked { background: var(--accent); border-color: var(--accent); }
+  .task-text { flex: 1; font-size: 12px; color: var(--text); }
+  .task-del { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; color: var(--muted); cursor: pointer; border-radius: 3px; }
+  .task-del:hover { color: #ef4444; }
+  .lang-btn {
+    padding: 4px 10px; font-size: 12px; font-weight: 500;
+    border-radius: 6px; border: 0.5px solid var(--border);
+    background: var(--surface2); color: var(--muted);
+    cursor: pointer; font-family: 'Sora', sans-serif; transition: all 0.15s;
+  }
+  .lang-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .lang-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
 
-    .feature-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-    }
+  /* ── Guest animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim { opacity: 0; animation: fadeUp 0.6s ease forwards; }
+  .anim-1 { animation-delay: 0.05s; }
+  .anim-2 { animation-delay: 0.18s; }
+  .anim-3 { animation-delay: 0.32s; }
+  .anim-4 { animation-delay: 0.46s; }
+  .anim-5 { animation-delay: 0.60s; }
+  .anim-6 { animation-delay: 0.74s; }
 
-    .home-cols {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 1.5rem;
-        align-items: start;
-    }
+  /* Guest feature grid */
+  .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap:12px; }
+  .rank-grid { display: flex; flex-wrap: wrap; gap: 6px; }
 
-    .quick-note-area {
-        width: 100%;
-        min-height: 100px;
-        padding: 10px 12px;
-        background: var(--surface2);
-        border: 0.5px solid var(--border);
-        border-radius: 8px;
-        font-size: 13px;
-        color: var(--text);
-        font-family: 'Sora', sans-serif;
-        outline: none;
-        resize: vertical;
-        line-height: 1.7;
-        transition: border-color 0.15s;
-    }
-    .quick-note-area:focus { border-color: var(--accent); }
-    .quick-note-area::placeholder { color: var(--muted); }
+  /* Floating badge */
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; color: var(--accent);
+    background: #1e1d3a; border: 0.5px solid #3730a3;
+    padding: 5px 12px; border-radius: 20px; margin-bottom: 1.25rem;
+  }
 
-    .task-input {
-        width: 100%;
-        padding: 9px 12px;
-        background: var(--surface2);
-        border: 0.5px solid var(--border);
-        border-radius: 8px;
-        font-size: 13px;
-        color: var(--text);
-        font-family: 'Sora', sans-serif;
-        outline: none;
-        transition: border-color 0.15s;
-    }
-    .task-input:focus { border-color: var(--accent); }
-    .task-input::placeholder { color: var(--muted); }
-
-    .task-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 10px;
-        background: var(--surface2);
-        border-radius: 8px;
-        margin-bottom: 6px;
-        transition: opacity 0.2s;
-    }
-    .task-item.done { opacity: 0.5; }
-    .task-item.done .task-text { text-decoration: line-through; }
-
-    .task-checkbox {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
-        border: 1.5px solid var(--border);
-        background: none;
-        cursor: pointer;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.15s;
-    }
-    .task-checkbox.checked { background: var(--accent); border-color: var(--accent); }
-
-    .task-text { flex: 1; font-size: 13px; color: var(--text); }
-
-    .task-del {
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--muted);
-        cursor: pointer;
-        border-radius: 4px;
-        transition: all 0.15s;
-        flex-shrink: 0;
-    }
-    .task-del:hover { color: #ef4444; background: #fef2f2; }
-
-    .widget-tabs {
-        display: flex;
-        border-bottom: 0.5px solid var(--border);
-        margin-bottom: 12px;
-    }
-    .widget-tab {
-        font-size: 12px;
-        padding: 6px 12px;
-        color: var(--muted);
-        border: none;
-        border-bottom: 2px solid transparent;
-        background: none;
-        cursor: pointer;
-        font-family: 'Sora', sans-serif;
-        transition: color 0.15s, border-color 0.15s;
-    }
-    .widget-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    /* Step progress card */
-    .step-card {
-        background: var(--surface);
-        border: 0.5px solid var(--border);
-        border-radius: 12px;
-        padding: 1.1rem;
-        margin-bottom: 1.25rem;
-        position: relative;
-        overflow: hidden;
-        transition: border-color 0.15s;
-    }
-    .step-card:hover { border-color: var(--accent); }
-    .step-card::before {
-        content: '';
-        position: absolute;
-        left: 0; top: 0; bottom: 0;
-        width: 3px;
-        background: var(--accent);
-        border-radius: 3px 0 0 3px;
-    }
-
-    /* Teacher stats */
-    .teacher-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 1.25rem;
-    }
-    .stat-box {
-        background: var(--surface);
-        border: 0.5px solid var(--border);
-        border-radius: 10px;
-        padding: 0.9rem;
-        text-align: center;
-    }
-
-    /* Lang switcher */
-    .lang-btn {
-        padding: 4px 10px;
-        font-size: 12px;
-        font-weight: 500;
-        border-radius: 6px;
-        border: 0.5px solid var(--border);
-        background: var(--surface2);
-        color: var(--muted);
-        cursor: pointer;
-        font-family: 'Sora', sans-serif;
-        transition: all 0.15s;
-    }
-    .lang-btn.active, .lang-btn:hover {
-        background: var(--accent);
-        color: #fff;
-        border-color: var(--accent);
-    }
-
-    .rank-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-
-    @media (max-width: 900px) {
-        .home-cols { grid-template-columns: 1fr; }
-        .feature-grid { grid-template-columns: repeat(2, 1fr); }
-        .teacher-stats { grid-template-columns: repeat(3, 1fr); }
-    }
-    @media (max-width: 540px) {
-        .feature-grid { grid-template-columns: 1fr; }
-        .teacher-stats { grid-template-columns: repeat(2, 1fr); }
-    }
+  @media(max-width:860px) {
+    .home-grid { grid-template-columns: 1fr; }
+    .sidebar-col { display: none; }
+  }
+  @media(max-width:540px) {
+    .nav-grid { grid-template-columns: repeat(2,1fr); }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
 </style>
 {% endblock %}
 
@@ -186,467 +118,384 @@
 
 {% if request.user.is_authenticated %}
 
-<!-- ── LOGGED IN HOME ── -->
-<div class="home-cols">
+{% with user=request.user %}
+<div class="home-grid">
 
-    <!-- ── Left column ── -->
-    <div>
+  <!-- LEFT -->
+  <div style="display:flex; flex-direction:column; gap:1rem;">
 
-        <!-- Greeting -->
-        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
-            <div>
-                <p style="font-size:20px; font-weight:500; color:var(--text);">
-                    {% if request.user.role == 'teacher' %}
-                        Hey, Teacher {{ request.user.first_name|default:request.user.username }} 👋
-                    {% elif request.user.role == 'director' %}
-                        Welcome, Director {{ request.user.first_name|default:request.user.username }} 👋
-                    {% else %}
-                        Hey, {{ request.user.first_name|default:request.user.username }} 👋
-                    {% endif %}
-                </p>
-                <p style="font-size:13px; color:var(--muted); margin-top:3px;">
-                    {{ request.user.title }} · Level {{ request.user.level }} · {{ request.user.score }} pts
-                </p>
-            </div>
-            <a href="{% url 'main:dashboard' %}"
-                style="padding:8px 16px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
-                onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                Dashboard →
-            </a>
-        </div>
-
-        <!-- ── STUDENT: Current roadmap step ── -->
-        {% if request.user.role == 'student' %}
-            {% if current_step %}
-            <a href="{% url 'roadmap:detail' current_step.roadmap.pk %}" style="text-decoration:none; display:block;">
-                <div class="step-card">
-                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:8px;">
-                        <div>
-                            <p style="font-size:11px; color:var(--accent); font-weight:500; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">
-                                Continue learning
-                            </p>
-                            <p style="font-size:15px; font-weight:500; color:var(--text);">{{ current_step.title }}</p>
-                            <p style="font-size:12px; color:var(--muted); margin-top:3px;">
-                                {{ current_step.roadmap.title }} · Step {{ current_step.order }}
-                            </p>
-                        </div>
-                        <div style="width:34px; height:34px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
-                            </svg>
-                        </div>
-                    </div>
-                    {% if current_step.description %}
-                    <p style="font-size:12px; color:var(--muted); line-height:1.6;">{{ current_step.description|truncatechars:120 }}</p>
-                    {% endif %}
-                    {% if current_step.resources.all %}
-                    <div style="margin-top:10px; padding-top:10px; border-top:0.5px solid var(--border);">
-                        <p style="font-size:11px; color:var(--muted); margin-bottom:6px;">Materials for this step:</p>
-                        <div style="display:flex; flex-wrap:wrap; gap:6px;">
-                            {% for res in current_step.resources.all|slice:":3" %}
-                            <span style="font-size:11px; padding:3px 9px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">
-                                {{ res.content_object }}
-                            </span>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endif %}
-                </div>
-            </a>
-            {% else %}
-            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; margin-bottom:1.25rem; display:flex; align-items:center; gap:12px;">
-                <div style="width:36px; height:36px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M1 12h4M19 12h4"/>
-                    </svg>
-                </div>
-                <div style="flex:1;">
-                    <p style="font-size:14px; font-weight:500; color:var(--text);">No active roadmap</p>
-                    <p style="font-size:12px; color:var(--muted); margin-top:2px;">Start a roadmap to track your progress step by step.</p>
-                </div>
-                <a href="{% url 'roadmap:list' %}"
-                    style="padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none; white-space:nowrap; transition:background 0.15s;"
-                    onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-                    Browse →
-                </a>
-            </div>
-            {% endif %}
-        {% endif %}
-
-        <!-- ── TEACHER / DIRECTOR: stats + actions ── -->
-        {% if request.user.role in 'teacher,director,admin' %}
-            {% if request.user.role == 'director' %}
-            <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; margin-bottom:1.25rem;">
-                <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:10px;">Director panel</p>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <a href="{% url 'user:pending_teachers' %}"
-                        style="flex:1; min-width:120px; padding:9px 14px; background:#1e1d3a; color:#a5b4fc; border-radius:8px; font-size:13px; text-decoration:none; text-align:center; transition:background 0.15s;"
-                        onmouseover="this.style.background='#2d2b52'" onmouseout="this.style.background='#1e1d3a'">
-                        Pending teachers
-                    </a>
-                    <a href="{% url 'roadmap:list' %}"
-                        style="flex:1; min-width:120px; padding:9px 14px; background:var(--surface2); color:var(--text); border-radius:8px; font-size:13px; text-decoration:none; text-align:center; transition:background 0.15s;"
-                        onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
-                        Manage roadmaps
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-
-            <div class="teacher-stats" style="margin-bottom:1.25rem;">
-                <div class="stat-box">
-                    <p style="font-size:22px; font-weight:500; color:var(--accent);">{{ teacher_books_count|default:0 }}</p>
-                    <p style="font-size:11px; color:var(--muted); margin-top:3px;">Books</p>
-                </div>
-                <div class="stat-box">
-                    <p style="font-size:22px; font-weight:500; color:#22C55E;">{{ teacher_videos_count|default:0 }}</p>
-                    <p style="font-size:11px; color:var(--muted); margin-top:3px;">Videos</p>
-                </div>
-                <div class="stat-box">
-                    <p style="font-size:22px; font-weight:500; color:#F59E0B;">{{ teacher_podcasts_count|default:0 }}</p>
-                    <p style="font-size:11px; color:var(--muted); margin-top:3px;">Podcasts</p>
-                </div>
-            </div>
-
-            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.25rem;">
-                <a href="{% url 'library:home' %}"
-                    style="padding:9px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none; font-weight:500; transition:background 0.15s;"
-                    onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-                    + Upload material
-                </a>
-                <a href="{% url 'roadmap:create' %}"
-                    style="padding:9px 16px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:8px; font-size:13px; text-decoration:none; transition:border-color 0.15s;"
-                    onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                    + New roadmap
-                </a>
-            </div>
-        {% endif %}
-
-        <!-- Quick nav -->
-        <div class="feature-grid" style="margin-bottom:1.5rem;">
-            <a href="{% url 'library:home' %}" style="text-decoration:none;">
-                <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s; height:100%;"
-                    onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                    <div style="width:36px; height:36px; background:#1e1d3a; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                        </svg>
-                    </div>
-                    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px;">Library</p>
-                    <p style="font-size:12px; color:var(--muted);">Books, videos, podcasts</p>
-                </div>
-            </a>
-            <a href="{% url 'post:list' %}" style="text-decoration:none;">
-                <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s; height:100%;"
-                    onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                    <div style="width:36px; height:36px; background:#1e2d1e; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                        </svg>
-                    </div>
-                    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px;">Community</p>
-                    <p style="font-size:12px; color:var(--muted);">Posts & discussions</p>
-                </div>
-            </a>
-            <a href="{% url 'note:list' %}" style="text-decoration:none;">
-                <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; transition:border-color 0.15s; height:100%;"
-                    onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-                    <div style="width:36px; height:36px; background:#1a1200; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                            <polyline points="14 2 14 8 20 8"/>
-                        </svg>
-                    </div>
-                    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:3px;">My notes</p>
-                    <p style="font-size:12px; color:var(--muted);">{{ request.user.notes.count }} notes</p>
-                </div>
-            </a>
-        </div>
-
-        <!-- Recent posts -->
-        {% if recent_posts %}
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-                <p style="font-size:14px; font-weight:500; color:var(--text);">Recent posts</p>
-                <a href="{% url 'post:list' %}" style="font-size:13px; color:var(--accent); text-decoration:none;">View all →</a>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                {% for post in recent_posts %}
-                <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
-                    <div style="display:flex; align-items:center; gap:10px; padding:10px; background:var(--surface2); border-radius:8px; transition:background 0.15s;"
-                        onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
-                        <div style="width:28px; height:28px; border-radius:50%; background:#1e1d3a; border:1px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:11px; color:#a5b4fc; flex-shrink:0;">
-                            {{ post.author.username|first|upper }}
-                        </div>
-                        <div style="flex:1; min-width:0;">
-                            <p style="font-size:13px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ post.text|truncatechars:60 }}</p>
-                            <p style="font-size:11px; color:var(--muted); margin-top:2px;">{{ post.author.username }} · {{ post.created_at|timesince }} ago</p>
-                        </div>
-                        <span style="font-size:11px; color:var(--muted); flex-shrink:0;">♥ {{ post.count_likes }}</span>
-                    </div>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <div>
+        <p style="font-size:19px; font-weight:500; color:var(--text);">
+          {% if user.role == 'teacher' %}Hey, Teacher {{ user.first_name|default:user.username }} 👋
+          {% elif user.role == 'director' %}Welcome, Director {{ user.first_name|default:user.username }} 👋
+          {% else %}Hey, {{ user.first_name|default:user.username }} 👋{% endif %}
+        </p>
+        <p style="font-size:12px; color:var(--muted); margin-top:3px;">
+          {% if user.role == 'teacher' and user.teacher_profile %}
+            {{ user.teacher_profile.teacher_title }} · Lv.{{ user.teacher_profile.teacher_level }} · {{ user.teacher_profile.teacher_score }} pts
+          {% else %}
+            {{ user.title }} · Lv.{{ user.level }} · {{ user.score }} pts
+          {% endif %}
+        </p>
+      </div>
+      <a href="{% url 'main:dashboard' %}"
+        style="font-size:12px; color:var(--muted); text-decoration:none; padding:6px 12px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px; transition:all 0.15s;"
+        onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--text)'"
+        onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">
+        Dashboard →
+      </a>
     </div>
 
-    <!-- ── Right sidebar ── -->
-    <div style="position:sticky; top:70px; display:flex; flex-direction:column; gap:14px;">
-
-        <!-- Language switcher -->
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:0.9rem 1.1rem;">
-            <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; font-weight:500; margin-bottom:8px;">Language</p>
-            <div style="display:flex; gap:6px;">
-                {# Django i18n set_language — подключить после добавления LocaleMiddleware в settings.py #}
-                {# Пример: form POST на /i18n/setlang/ с полем 'language' и 'next' #}
-                <form method="post" action="/i18n/setlang/" style="display:contents;">
-                    {% csrf_token %}
-                    <input type="hidden" name="next" value="{{ request.path }}">
-                    <button type="submit" name="language" value="ru"
-                        class="lang-btn {% if request.LANGUAGE_CODE == 'ru' %}active{% endif %}">
-                        RU
-                    </button>
-                    <button type="submit" name="language" value="tg"
-                        class="lang-btn {% if request.LANGUAGE_CODE == 'tg' %}active{% endif %}">
-                        TJ
-                    </button>
-                    <button type="submit" name="language" value="en"
-                        class="lang-btn {% if request.LANGUAGE_CODE == 'en' %}active{% endif %}">
-                        EN
-                    </button>
-                </form>
-            </div>
-            <p style="font-size:10px; color:var(--muted); margin-top:6px;">
-                {# Удалить эту строку после включения i18n в settings.py #}
-                Requires LocaleMiddleware in settings
-            </p>
+    {% if user.role == 'student' %}
+      {% if current_step %}
+      <a href="{% url 'roadmap:detail' current_step.roadmap.pk %}" class="step-card">
+        <p style="font-size:10px; color:var(--accent); font-weight:500; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:5px;">Continue learning</p>
+        <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ current_step.title }}</p>
+        <p style="font-size:12px; color:var(--muted);">{{ current_step.roadmap.title }} · Step {{ current_step.order }}</p>
+        {% if current_step.resources.all %}
+        <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:8px;">
+          {% for res in current_step.resources.all|slice:":3" %}
+          <span style="font-size:11px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:5px;">{{ res.content_object }}</span>
+          {% endfor %}
         </div>
-
-        <!-- Widget: Quick note + Tasks (tabbed) -->
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.25rem;">
-            <div class="widget-tabs">
-                <button class="widget-tab active" onclick="switchTab('note', this)">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;vertical-align:middle;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    Note
-                </button>
-                <button class="widget-tab" onclick="switchTab('tasks', this)">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:4px;vertical-align:middle;">
-                        <polyline points="9 11 12 14 22 4"/>
-                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                    </svg>
-                    Tasks
-                </button>
-            </div>
-
-            <div id="panel-note">
-                <form method="POST" action="{% url 'note:create' %}" id="quick-note-form">
-                    {% csrf_token %}
-                    <input type="text" name="title" placeholder="Title..."
-                        style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; margin-bottom:8px; transition:border-color 0.15s;"
-                        onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
-                    <textarea name="content" class="quick-note-area" placeholder="Write something quickly..."></textarea>
-                    <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px;">
-                        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:12px; color:var(--muted);">
-                            <input type="checkbox" name="is_public" style="accent-color:var(--accent); width:12px; height:12px;"/>
-                            Make public
-                        </label>
-                        <button type="submit"
-                            style="padding:7px 16px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
-                            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="panel-tasks" style="display:none;">
-                <div style="display:flex; gap:6px; margin-bottom:10px;">
-                    <input type="text" id="task-input" class="task-input" placeholder="Add a task..."
-                        onkeydown="if(event.key==='Enter'){addTask();event.preventDefault();}"/>
-                    <button onclick="addTask()"
-                        style="padding:9px 14px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; cursor:pointer; font-family:'Sora',sans-serif; flex-shrink:0; transition:background 0.15s;"
-                        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"/>
-                            <line x1="5" y1="12" x2="19" y2="12"/>
-                        </svg>
-                    </button>
-                </div>
-                <div id="task-list" style="max-height:240px; overflow-y:auto;"></div>
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding-top:8px; border-top:0.5px solid var(--border);">
-                    <span id="task-count" style="font-size:11px; color:var(--muted);">0 tasks</span>
-                    <button onclick="clearDone()"
-                        style="font-size:11px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif;"
-                        onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
-                        Clear done
-                    </button>
-                </div>
-            </div>
+        {% endif %}
+      </a>
+      {% else %}
+      <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:1rem 1.25rem; display:flex; align-items:center; gap:12px;">
+        <div style="width:32px; height:32px; background:#1e1d3a; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M1 12h4M19 12h4"/></svg>
         </div>
-
-        <!-- Score card -->
-        <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
-            <p style="font-size:12px; color:var(--muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em; font-weight:500;">Your progress</p>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-size:22px; font-weight:500; color:var(--accent);">{{ request.user.score }}</span>
-                <span style="font-size:12px; padding:3px 10px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Lv. {{ request.user.level }}</span>
-            </div>
-            <div style="height:4px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:6px;">
-                <div style="height:100%; width:{% widthratio request.user.score 20000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;"></div>
-            </div>
-            <p style="font-size:11px; color:var(--muted);">{{ request.user.title }}</p>
+        <div style="flex:1;">
+          <p style="font-size:13px; font-weight:500; color:var(--text);">No active roadmap</p>
+          <p style="font-size:11px; color:var(--muted); margin-top:1px;">Pick a learning path to get started.</p>
         </div>
+        <a href="{% url 'roadmap:list' %}"
+          style="font-size:12px; color:#fff; background:var(--accent); padding:6px 12px; border-radius:7px; text-decoration:none; white-space:nowrap; transition:background 0.15s;"
+          onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">Browse →</a>
+      </div>
+      {% endif %}
+    {% endif %}
 
+    {% if user.role in 'teacher,admin,director' %}
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <a href="{% url 'library:home' %}"
+        style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none; font-weight:500; transition:background 0.15s;"
+        onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">+ Upload material</a>
+      <a href="{% url 'roadmap:create' %}"
+        style="padding:8px 16px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:8px; font-size:13px; text-decoration:none; transition:border-color 0.15s;"
+        onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">+ New roadmap</a>
+      {% if user.role == 'director' %}
+      <a href="{% url 'user:pending_teachers' %}"
+        style="padding:8px 16px; background:#1e1d3a; color:#a5b4fc; border-radius:8px; font-size:13px; text-decoration:none; transition:background 0.15s;"
+        onmouseover="this.style.background='#2d2b52'" onmouseout="this.style.background='#1e1d3a'">Pending teachers</a>
+      {% endif %}
     </div>
+    {% endif %}
+
+    <div class="nav-grid">
+      <a href="{% url 'library:home' %}" class="nav-item">
+        <div style="width:28px;height:28px;background:#1e1d3a;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <p style="font-size:12px;font-weight:500;color:var(--text);">Library</p>
+      </a>
+      <a href="{% url 'roadmap:list' %}" class="nav-item">
+        <div style="width:28px;height:28px;background:#1e1d3a;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+        <p style="font-size:12px;font-weight:500;color:var(--text);">Roadmaps</p>
+      </a>
+      <a href="{% url 'post:list' %}" class="nav-item">
+        <div style="width:28px;height:28px;background:#1e2d1e;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+        <p style="font-size:12px;font-weight:500;color:var(--text);">Community</p>
+      </a>
+      <a href="{% url 'note:list' %}" class="nav-item">
+        <div style="width:28px;height:28px;background:#1a1200;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <p style="font-size:12px;font-weight:500;color:var(--text);">Notes</p>
+      </a>
+      <a href="{% url 'main:leaderboard' %}" class="nav-item">
+        <div style="width:28px;height:28px;background:#1e2020;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <p style="font-size:12px;font-weight:500;color:var(--text);">Ranking</p>
+      </a>
+      <a href="{% url 'user:profile' %}" class="nav-item">
+        <div style="width:28px;height:28px;background:#1a0a1a;border-radius:6px;display:flex;align-items:center;justify-content:center;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <p style="font-size:12px;font-weight:500;color:var(--text);">Profile</p>
+      </a>
+    </div>
+
+    {% if recent_posts %}
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.1rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+        <p style="font-size:13px; font-weight:500; color:var(--text);">Recent posts</p>
+        <a href="{% url 'post:list' %}" style="font-size:12px; color:var(--accent); text-decoration:none;">All →</a>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:5px;">
+        {% for post in recent_posts %}
+        <a href="{% url 'post:detail' post.pk %}" style="display:flex; align-items:center; gap:8px; padding:7px 9px; background:var(--surface2); border-radius:7px; text-decoration:none; transition:background 0.15s;"
+          onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
+          <div style="width:22px;height:22px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;color:#a5b4fc;flex-shrink:0;">{{ post.author.username|first|upper }}</div>
+          <p style="flex:1;font-size:12px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ post.text|truncatechars:50 }}</p>
+          <span style="font-size:10px;color:var(--muted);flex-shrink:0;">♥ {{ post.count_likes }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar-col" style="position:sticky; top:70px; display:flex; flex-direction:column; gap:10px;">
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.1rem;">
+      {% if user.role == 'teacher' and user.teacher_profile %}
+        {% with tp=user.teacher_profile %}
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:22px; font-weight:500; color:var(--accent);">{{ tp.teacher_score }}</span>
+          <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Lv.{{ tp.teacher_level }}</span>
+        </div>
+        <div style="height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:5px;">
+          <div style="height:100%; width:{% widthratio tp.teacher_score 10000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;"></div>
+        </div>
+        <p style="font-size:11px; color:var(--muted);">{{ tp.teacher_title }}</p>
+        {% if not tp.is_verified %}<p style="font-size:11px; color:#fcd34d; margin-top:5px;">⏳ Awaiting verification</p>{% endif %}
+        {% endwith %}
+      {% else %}
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:22px; font-weight:500; color:var(--accent);">{{ user.score }}</span>
+          <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Lv.{{ user.level }}</span>
+        </div>
+        <div style="height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:5px;">
+          <div style="height:100%; width:{% widthratio user.score 20000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;"></div>
+        </div>
+        <p style="font-size:11px; color:var(--muted);">{{ user.title }}</p>
+      {% endif %}
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:0.9rem 1rem;">
+      <p style="font-size:11px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:8px;">Language</p>
+      <div style="display:flex; gap:5px;">
+        <form method="post" action="/i18n/setlang/" style="display:contents;">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" name="language" value="ru" class="lang-btn {% if LANGUAGE_CODE == 'ru' %}active{% endif %}">RU</button>
+          <button type="submit" name="language" value="tg" class="lang-btn {% if LANGUAGE_CODE == 'tg' %}active{% endif %}">TJ</button>
+          <button type="submit" name="language" value="en" class="lang-btn {% if LANGUAGE_CODE == 'en' or not LANGUAGE_CODE %}active{% endif %}">EN</button>
+        </form>
+      </div>
+    </div>
+
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:0.9rem 1rem;">
+      <div class="widget-tabs">
+        <button class="widget-tab active" onclick="switchTab('note',this)">📝 Note</button>
+        <button class="widget-tab" onclick="switchTab('tasks',this)">✅ Tasks</button>
+      </div>
+      <div id="panel-note">
+        <form method="POST" action="{% url 'note:create' %}">
+          {% csrf_token %}
+          <input type="text" name="title" placeholder="Title..."
+            style="width:100%; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif; margin-bottom:5px;"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+          <textarea name="content" class="quick-note-area" placeholder="Quick thought..."></textarea>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:7px;">
+            <label style="display:flex; align-items:center; gap:4px; cursor:pointer; font-size:11px; color:var(--muted);">
+              <input type="checkbox" name="is_public" style="accent-color:var(--accent); width:11px; height:11px;"/> Public
+            </label>
+            <button type="submit" style="padding:5px 13px; background:var(--accent); color:#fff; border:none; border-radius:6px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif;">Save</button>
+          </div>
+        </form>
+      </div>
+      <div id="panel-tasks" style="display:none;">
+        <div style="display:flex; gap:5px; margin-bottom:7px;">
+          <input type="text" id="task-input" placeholder="Add task..."
+            style="flex:1; padding:6px 9px; background:var(--surface2); border:0.5px solid var(--border); border-radius:6px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
+            onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"
+            onkeydown="if(event.key==='Enter'){addTask();event.preventDefault();}"/>
+          <button onclick="addTask()" style="padding:6px 10px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+        <div id="task-list" style="max-height:180px; overflow-y:auto;"></div>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-top:5px; padding-top:5px; border-top:0.5px solid var(--border);">
+          <span id="task-count" style="font-size:10px; color:var(--muted);">0 remaining</span>
+          <button onclick="clearDone()" style="font-size:10px; color:var(--muted); background:none; border:none; cursor:pointer; font-family:'Sora',sans-serif;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">Clear done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
+{% endwith %}
 
 {% else %}
+<!-- ── GUEST LANDING WITH ANIMATIONS ── -->
+<div style="max-width:860px; margin:0 auto;">
 
-<!-- ── LANDING FOR GUESTS ── -->
-<div style="text-align:center; padding:5rem 1rem 3.5rem;">
-    <p style="font-size:13px; color:var(--accent); font-weight:500; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1.25rem;">Educational Platform</p>
-    <h1 class="hero-title" style="font-weight:600; color:var(--text); line-height:1.2; margin-bottom:1.25rem;">Learn. Write.<br>Level up.</h1>
-    <p style="font-size:16px; color:var(--muted); line-height:1.7; max-width:520px; margin:0 auto 2.5rem;">HiradHub brings together a digital library, smart note-taking, community posts and a gamified rank system — all in one place for students and teachers.</p>
-    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-        <a href="{% url 'user:register' %}"
-            style="padding:12px 28px; background:var(--accent); color:#fff; border-radius:10px; font-size:15px; font-weight:500; text-decoration:none; transition:background 0.15s;"
-            onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-            Get started — it's free
-        </a>
-        <a href="{% url 'user:login' %}"
-            style="padding:12px 28px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:10px; font-size:15px; text-decoration:none; transition:border-color 0.15s;"
-            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-            Sign in
-        </a>
+  <!-- Hero -->
+  <div class="anim anim-1" style="text-align:center; padding:5rem 1rem 3rem;">
+    <div class="hero-badge">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Educational Platform for Schools
     </div>
-</div>
-
-<div class="feature-grid" style="margin-bottom:3rem;">
-    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
-        <div style="width:40px; height:40px; background:#1e1d3a; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-        </div>
-        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:8px;">Digital Library</p>
-        <p style="font-size:13px; color:var(--muted); line-height:1.7;">Books, videos and podcasts uploaded by teachers. Track reading progress and rate materials.</p>
-    </div>
-    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
-        <div style="width:40px; height:40px; background:#1a1200; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fcd34d" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-            </svg>
-        </div>
-        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:8px;">Smart Notes</p>
-        <p style="font-size:13px; color:var(--muted); line-height:1.7;">Rich text editor, topic tags, link to library materials. Share publicly or keep private.</p>
-    </div>
-    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem;">
-        <div style="width:40px; height:40px; background:#1e2020; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-        </div>
-        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:8px;">Gamification</p>
-        <p style="font-size:13px; color:var(--muted); line-height:1.7;">Earn points for every action. Climb through 10 levels from Newcomer to Hiradcore.</p>
-    </div>
-</div>
-
-<div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem; margin-bottom:3rem;">
-    <p style="font-size:16px; font-weight:500; color:var(--text); margin-bottom:4px;">Rank system</p>
-    <p style="font-size:13px; color:var(--muted); margin-bottom:1.25rem;">Complete actions to earn points and unlock new titles.</p>
-    <div class="rank-grid">
-        {% for rank in "1,2,3,4,5,6,7,8,9,10"|make_list %}{% endfor %}
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">1</span><span style="font-size:13px; color:var(--text);">Newcomer</span><span style="font-size:11px; color:var(--muted);">0+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">2</span><span style="font-size:13px; color:var(--text);">Reader</span><span style="font-size:11px; color:var(--muted);">1000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">3</span><span style="font-size:13px; color:var(--text);">Curious</span><span style="font-size:11px; color:var(--muted);">5000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">4</span><span style="font-size:13px; color:var(--text);">Connoisseur</span><span style="font-size:11px; color:var(--muted);">10000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">5</span><span style="font-size:13px; color:var(--text);">Researcher</span><span style="font-size:11px; color:var(--muted);">20000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">6</span><span style="font-size:13px; color:var(--text);">Analyst</span><span style="font-size:11px; color:var(--muted);">35000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">7</span><span style="font-size:13px; color:var(--text);">Erudite</span><span style="font-size:11px; color:var(--muted);">45000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">8</span><span style="font-size:13px; color:var(--text);">Intellectual</span><span style="font-size:11px; color:var(--muted);">55000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:var(--surface2); border-radius:8px;"><span style="font-size:12px; font-weight:500; color:var(--accent);">9</span><span style="font-size:13px; color:var(--text);">Thinker</span><span style="font-size:11px; color:var(--muted);">70000+</span></div>
-        <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:#1e1d3a; border-radius:8px; border:0.5px solid #4338CA;"><span style="font-size:12px; font-weight:500; color:var(--accent);">10</span><span style="font-size:13px; color:#a5b4fc; font-weight:500;">Hiradcore</span><span style="font-size:11px; color:var(--muted);">100000+</span></div>
-    </div>
-</div>
-
-<div style="text-align:center; padding:2rem 0 3rem;">
-    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:1rem;">Ready to start?</p>
-    <a href="{% url 'user:register' %}"
-        style="padding:12px 32px; background:var(--accent); color:#fff; border-radius:10px; font-size:15px; font-weight:500; text-decoration:none; transition:background 0.15s;"
+    <h1 style="font-size:clamp(32px,6vw,52px); font-weight:600; color:var(--text); line-height:1.15; margin-bottom:1.1rem; letter-spacing:-0.03em;">
+      Learn smarter.<br>
+      <span style="color:var(--accent);">Level up faster.</span>
+    </h1>
+    <p style="font-size:16px; color:var(--muted); line-height:1.7; max-width:460px; margin:0 auto 2rem;">
+      A digital library, smart notes, structured roadmaps and gamification — built for students and teachers.
+    </p>
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <a href="{% url 'user:register' %}"
+        style="padding:12px 28px; background:var(--accent); color:#fff; border-radius:10px; font-size:14px; font-weight:500; text-decoration:none; transition:background 0.15s; box-shadow:0 4px 14px rgba(99,102,241,0.3);"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-        Join HiradHub
-    </a>
-</div>
+        Get started — free
+      </a>
+      <a href="{% url 'user:login' %}"
+        style="padding:12px 28px; background:var(--surface); border:0.5px solid var(--border); color:var(--text); border-radius:10px; font-size:14px; text-decoration:none; transition:border-color 0.15s;"
+        onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+        Sign in
+      </a>
+    </div>
+  </div>
 
+  <!-- Feature cards -->
+  <div class="anim anim-2" style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:2rem;">
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.4rem;">
+      <div style="width:40px;height:40px;background:#1e1d3a;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;">Digital Library</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6;">Books, videos and podcasts — organized by category and school grade.</p>
+    </div>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.4rem;">
+      <div style="width:40px;height:40px;background:#1e1d3a;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;">Learning Roadmaps</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6;">Step-by-step learning paths created by teachers. Track your progress.</p>
+    </div>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.4rem;">
+      <div style="width:40px;height:40px;background:#1e2020;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </div>
+      <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px;">Gamification</p>
+      <p style="font-size:12px;color:var(--muted);line-height:1.6;">Earn points, unlock titles and compete on the leaderboard.</p>
+    </div>
+  </div>
+
+  <!-- Rank system -->
+  <div class="anim anim-3" style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:2rem;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; flex-wrap:wrap; gap:8px;">
+      <div>
+        <p style="font-size:15px; font-weight:500; color:var(--text);">10-level rank system</p>
+        <p style="font-size:12px; color:var(--muted); margin-top:2px;">Complete steps and activities to climb the ranks</p>
+      </div>
+      <span style="font-size:12px; padding:4px 12px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Students & Teachers</span>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:6px;">
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">1</span><span style="font-size:12px;color:var(--text);">Newcomer</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">2</span><span style="font-size:12px;color:var(--text);">Reader</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">3</span><span style="font-size:12px;color:var(--text);">Curious</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">4</span><span style="font-size:12px;color:var(--text);">Connoisseur</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">5</span><span style="font-size:12px;color:var(--text);">Researcher</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">6</span><span style="font-size:12px;color:var(--text);">Analyst</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">7</span><span style="font-size:12px;color:var(--text);">Erudite</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">8</span><span style="font-size:12px;color:var(--text);">Intellectual</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--surface2);border-radius:7px;"><span style="font-size:10px;font-weight:500;color:var(--accent);">9</span><span style="font-size:12px;color:var(--text);">Thinker</span></div>
+      <div style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:#1e1d3a;border-radius:7px;border:0.5px solid #4338CA;"><span style="font-size:10px;font-weight:500;color:var(--accent);">10</span><span style="font-size:12px;color:#a5b4fc;font-weight:500;">Hiradcore</span></div>
+    </div>
+  </div>
+
+  <!-- Two roles -->
+  <div class="anim anim-4" style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:2rem;">
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.4rem;">
+      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+        <span style="font-size:18px;">🎓</span> For Students
+      </p>
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Follow learning roadmaps
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Read books, watch videos
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Take notes and share them
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#86efac" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Compete on leaderboard
+        </div>
+      </div>
+      <a href="{% url 'user:register_student' %}" style="display:block; margin-top:1rem; padding:8px; background:#1e2d1e; color:#86efac; border-radius:8px; font-size:13px; text-align:center; text-decoration:none; transition:background 0.15s;"
+        onmouseover="this.style.background='#2d3d2d'" onmouseout="this.style.background='#1e2d1e'">
+        Register as Student →
+      </a>
+    </div>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.4rem;">
+      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+        <span style="font-size:18px;">📚</span> For Teachers
+      </p>
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Upload books, videos, podcasts
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Create structured roadmaps
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Earn teacher rank points
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Separate teacher leaderboard
+        </div>
+      </div>
+      <a href="{% url 'user:register_teacher' %}" style="display:block; margin-top:1rem; padding:8px; background:#1e1d3a; color:#a5b4fc; border-radius:8px; font-size:13px; text-align:center; text-decoration:none; transition:background 0.15s;"
+        onmouseover="this.style.background='#2d2b52'" onmouseout="this.style.background='#1e1d3a'">
+        Register as Teacher →
+      </a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="anim anim-5" style="text-align:center; padding:1.5rem 0 3rem;">
+    <a href="{% url 'user:register' %}"
+      style="padding:12px 32px; background:var(--accent); color:#fff; border-radius:10px; font-size:14px; font-weight:500; text-decoration:none; box-shadow:0 4px 14px rgba(99,102,241,0.3); transition:background 0.15s;"
+      onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
+      Join HiradHub today
+    </a>
+  </div>
+
+</div>
 {% endif %}
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    function switchTab(name, btn) {
-        document.querySelectorAll('.widget-tab').forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('panel-note').style.display = name === 'note' ? 'block' : 'none';
-        document.getElementById('panel-tasks').style.display = name === 'tasks' ? 'block' : 'none';
-    }
-
-    const STORAGE_KEY = 'hiradhub_tasks';
-    function loadTasks() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { return []; } }
-    function saveTasks(tasks) { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); }
-
-    function renderTasks() {
-        const tasks = loadTasks();
-        const list = document.getElementById('task-list');
-        const count = document.getElementById('task-count');
-        if (!list) return;
-        const remaining = tasks.filter(t => !t.done).length;
-        count.textContent = remaining + ' task' + (remaining !== 1 ? 's' : '') + ' remaining';
-        if (tasks.length === 0) {
-            list.innerHTML = '<p style="font-size:13px; color:var(--muted); text-align:center; padding:1rem 0;">No tasks yet.</p>';
-            return;
-        }
-        list.innerHTML = tasks.map((task, i) => `
-            <div class="task-item ${task.done ? 'done' : ''}">
-                <div class="task-checkbox ${task.done ? 'checked' : ''}" onclick="toggleTask(${i})">
-                    ${task.done ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
-                </div>
-                <span class="task-text">${escHtml(task.text)}</span>
-                <div class="task-del" onclick="deleteTask(${i})">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function escHtml(str) {
-        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    }
-    function addTask() {
-        const input = document.getElementById('task-input');
-        if (!input) return;
-        const text = input.value.trim();
-        if (!text) return;
-        const tasks = loadTasks();
-        tasks.unshift({ text, done: false, created: Date.now() });
-        saveTasks(tasks);
-        input.value = '';
-        renderTasks();
-    }
-    function toggleTask(i) { const t = loadTasks(); t[i].done = !t[i].done; saveTasks(t); renderTasks(); }
-    function deleteTask(i) { const t = loadTasks(); t.splice(i,1); saveTasks(t); renderTasks(); }
-    function clearDone() { saveTasks(loadTasks().filter(t => !t.done)); renderTasks(); }
-
-    document.addEventListener('DOMContentLoaded', renderTasks);
+function switchTab(name, btn) {
+  document.querySelectorAll('.widget-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-note').style.display = name === 'note' ? 'block' : 'none';
+  document.getElementById('panel-tasks').style.display = name === 'tasks' ? 'block' : 'none';
+}
+const SK = 'hiradhub_tasks';
+function loadTasks() { try { return JSON.parse(localStorage.getItem(SK)) || []; } catch { return []; } }
+function saveTasks(t) { localStorage.setItem(SK, JSON.stringify(t)); }
+function renderTasks() {
+  const tasks = loadTasks(), list = document.getElementById('task-list'), count = document.getElementById('task-count');
+  if (!list) return;
+  count.textContent = tasks.filter(t => !t.done).length + ' remaining';
+  if (!tasks.length) { list.innerHTML = '<p style="font-size:11px;color:var(--muted);text-align:center;padding:0.6rem 0;">No tasks.</p>'; return; }
+  list.innerHTML = tasks.map((t, i) => `<div class="task-item ${t.done?'done':''}"><div class="task-checkbox ${t.done?'checked':''}" onclick="toggleTask(${i})">${t.done?'<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><span class="task-text">${t.text.replace(/</g,'&lt;')}</span><div class="task-del" onclick="deleteTask(${i})"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></div>`).join('');
+}
+function addTask() { const inp = document.getElementById('task-input'); const text = inp.value.trim(); if (!text) return; const t = loadTasks(); t.unshift({text, done: false}); saveTasks(t); inp.value = ''; renderTasks(); }
+function toggleTask(i) { const t = loadTasks(); t[i].done = !t[i].done; saveTasks(t); renderTasks(); }
+function deleteTask(i) { const t = loadTasks(); t.splice(i, 1); saveTasks(t); renderTasks(); }
+function clearDone() { saveTasks(loadTasks().filter(t => !t.done)); renderTasks(); }
+document.addEventListener('DOMContentLoaded', renderTasks);
 </script>
 {% endblock %}
