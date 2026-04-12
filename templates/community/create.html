@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Delete Community — HiradHub{% endblock %}
+{% block content %}
+<div style="max-width:480px; margin:0 auto; text-align:center; padding:4rem 0;">
+  <div style="width:52px;height:52px;background:#1a0808;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+  </div>
+  <p style="font-size:18px;font-weight:500;color:var(--text);margin-bottom:8px;">Delete "{{ community.name }}"?</p>
+  <p style="font-size:14px;color:var(--muted);margin-bottom:2rem;line-height:1.6;">
+    This will permanently delete the community and remove all {{ community.member_count }} members. Posts themselves won't be deleted.
+  </p>
+  <div style="display:flex;gap:10px;justify-content:center;">
+    <form method="POST">
+      {% csrf_token %}
+      <button type="submit"
+        style="padding:10px 22px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;">
+        Yes, delete
+      </button>
+    </form>
+    <a href="{% url 'community:detail' community.slug %}"
+      style="padding:10px 22px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:14px;color:var(--muted);text-decoration:none;">
+      Cancel
+    </a>
+  </div>
+</div>
+{% endblock %}
