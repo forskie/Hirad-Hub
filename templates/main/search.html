@@ -5,7 +5,7 @@
 <div style="max-width:760px; margin:0 auto;">
 
   <!-- Search bar -->
-  <form method="GET" action="{% url 'main:search' %}" style="margin-bottom:2rem;">
+  <form method="GET" action="{% url 'main:search' %}" style="margin-bottom:1.75rem;">
     <div style="display:flex; align-items:center; gap:8px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:10px 16px; transition:border-color 0.15s;"
       onfocusin="this.style.borderColor='var(--accent)'" onfocusout="this.style.borderColor='var(--border)'">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;">
@@ -21,40 +21,41 @@
   </form>
 
   {% if q %}
-    {% with total=results.users|length|add:results.posts|length|add:results.notes|length|add:results.books|length %}
+    {% with users=results.users posts=results.posts notes=results.notes books=results.books %}
 
-    <p style="font-size:13px; color:var(--muted); margin-bottom:1.5rem;">
-      {% if total %}{{ total }} result{{ total|pluralize }} for "{{ q }}"{% else %}No results for "{{ q }}"{% endif %}
-    </p>
-
-    {% if total == 0 %}
+    {% if not users and not posts and not notes and not books %}
+      <!-- Nothing found -->
       <div style="text-align:center; padding:4rem 0;">
         <div style="width:52px; height:52px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
         <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">Nothing found</p>
-        <p style="font-size:13px; color:var(--muted);">Try a different search term.</p>
+        <p style="font-size:13px; color:var(--muted);">Try a different search term for "{{ q }}".</p>
       </div>
 
     {% else %}
 
+      <p style="font-size:13px; color:var(--muted); margin-bottom:1.5rem;">
+        Results for "<span style="color:var(--text);">{{ q }}</span>"
+      </p>
+
       <!-- Users -->
-      {% if results.users %}
+      {% if users %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Users</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Users</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          {% for user in results.users %}
-          <a href="{% url 'user:profile_others' user.username %}"
+          {% for u in users %}
+          <a href="{% url 'user:profile_others' u.username %}"
             style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
             onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
             <div style="width:36px; height:36px; border-radius:50%; background:#1e1d3a; border:1.5px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; color:#a5b4fc; flex-shrink:0;">
-              {{ user.username|first|upper }}
+              {{ u.username|first|upper }}
             </div>
             <div style="flex:1; min-width:0;">
               <p style="font-size:14px; font-weight:500; color:var(--text);">
-                {% if user.first_name %}{{ user.first_name }} {{ user.last_name }}{% else %}{{ user.username }}{% endif %}
+                {% if u.first_name %}{{ u.first_name }} {{ u.last_name }}{% else %}{{ u.username }}{% endif %}
               </p>
-              <p style="font-size:12px; color:var(--muted);">@{{ user.username }} · Lv.{{ user.level }} · {{ user.title }}</p>
+              <p style="font-size:12px; color:var(--muted);">@{{ u.username }} · Lv.{{ u.level }} · {{ u.title }}</p>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
@@ -64,11 +65,11 @@
       {% endif %}
 
       <!-- Posts -->
-      {% if results.posts %}
+      {% if posts %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Posts</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Posts</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          {% for post in results.posts %}
+          {% for post in posts %}
           <a href="{% url 'post:detail' post.pk %}"
             style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
             onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -84,11 +85,11 @@
       {% endif %}
 
       <!-- Notes -->
-      {% if results.notes %}
+      {% if notes %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Notes</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Notes</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          {% for note in results.notes %}
+          {% for note in notes %}
           <a href="{% url 'note:detail' note.pk %}"
             style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
             onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -105,11 +106,11 @@
       {% endif %}
 
       <!-- Books -->
-      {% if results.books %}
+      {% if books %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Books</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Books</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
-          {% for book in results.books %}
+          {% for book in books %}
           <a href="{% url 'library:book_detail' book.pk %}"
             style="display:flex; align-items:center; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
             onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -131,8 +132,8 @@
     {% endwith %}
 
   {% else %}
-    <!-- Empty state — no query -->
     <div style="text-align:center; padding:4rem 0;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1" style="margin-bottom:1rem;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <p style="font-size:15px; color:var(--muted);">Type something to search across HiradHub.</p>
     </div>
   {% endif %}
