@@ -22,24 +22,24 @@
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
           <p style="font-size:18px; font-weight:600; color:var(--text);">{{ teacher.get_full_name|default:teacher.username }}</p>
           {% if teacher.role == 'director' %}
-          <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;">Director</span>
+          <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:20px;" data-i18n="prof.director">Director</span>
           {% else %}
-          <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:20px;">Teacher</span>
+          <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:20px;" data-i18n="prof.teacher">Teacher</span>
           {% endif %}
           {% if profile and profile.is_verified %}
           <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:2px 8px; background:#052e16; color:#86efac; border-radius:20px;">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Verified
+            <span data-i18n="prof.verified">Verified</span>
           </span>
           {% elif profile %}
-          <span style="font-size:11px; padding:2px 8px; background:#1a1100; color:#fcd34d; border-radius:20px;">Pending verification</span>
+          <span style="font-size:11px; padding:2px 8px; background:#1a1100; color:#fcd34d; border-radius:20px;" data-i18n="prof.pending">Pending verification</span>
           {% endif %}
         </div>
         <p style="font-size:13px; color:var(--muted); margin-bottom:6px;">@{{ teacher.username }}</p>
         {% if profile and profile.school %}
         <p style="font-size:13px; color:var(--muted); display:flex; align-items:center; gap:5px;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          {% if profile.school.number %}School #{{ profile.school.number }} — {% endif %}{{ profile.school.name }}{% if profile.school.city %}, {{ profile.school.city }}{% endif %}
+          {% if profile.school.number %}<span data-i18n="others.school_num">School #</span>{{ profile.school.number }} — {% endif %}{{ profile.school.name }}{% if profile.school.city %}, {{ profile.school.city }}{% endif %}
         </p>
         {% endif %}
         {% if teacher.bio %}
@@ -56,7 +56,7 @@
             <a href="{% url 'user:verify_teacher' teacher.username %}"
               style="padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; display:block; text-align:center; transition:background 0.15s;"
               onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-              Verify teacher
+              <span data-i18n="tp.verify_teacher">Verify teacher</span>
             </a>
             {% endif %}
           {% endif %}
@@ -69,7 +69,7 @@
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(80px,1fr)); gap:10px; margin-top:1.25rem; padding-top:1.25rem; border-top:0.5px solid var(--border);">
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:500; color:var(--accent);">{{ profile.teacher_score }}</p>
-        <p style="font-size:11px; color:var(--muted);">Score</p>
+        <p style="font-size:11px; color:var(--muted);" data-i18n="prof.score">Score</p>
       </div>
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.teacher_level }}</p>
@@ -77,22 +77,22 @@
       </div>
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.materials_uploaded }}</p>
-        <p style="font-size:11px; color:var(--muted);">Materials</p>
+        <p style="font-size:11px; color:var(--muted);" data-i18n="tp.stat_materials">Materials</p>
       </div>
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.total_likes_received }}</p>
-        <p style="font-size:11px; color:var(--muted);">Likes</p>
+        <p style="font-size:11px; color:var(--muted);" data-i18n="prof.stat_likes">Likes</p>
       </div>
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:500; color:var(--text);">{{ profile.total_students_helped }}</p>
-        <p style="font-size:11px; color:var(--muted);">Helped</p>
+        <p style="font-size:11px; color:var(--muted);" data-i18n="prof.stat_helped">Helped</p>
       </div>
       {% if teacher.role == 'director' %}
       {% with dp=teacher.director_profile %}
       {% if dp %}
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:500; color:var(--text);">{{ dp.teachers_verified }}</p>
-        <p style="font-size:11px; color:var(--muted);">Verified teachers</p>
+        <p style="font-size:11px; color:var(--muted);" data-i18n="tp.verified_teachers">Verified teachers</p>
       </div>
       {% endif %}
       {% endwith %}
@@ -102,7 +102,7 @@
     <!-- Rank progress bar -->
     <div style="margin-top:1rem;">
       <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-        <span style="font-size:12px; color:var(--muted);">Teacher rank progress</span>
+        <span style="font-size:12px; color:var(--muted);" data-i18n="tp.rank_progress">Teacher rank progress</span>
         <span style="font-size:12px; color:var(--accent);">{{ profile.teacher_title }}</span>
       </div>
       <div style="height:4px; background:var(--surface2); border-radius:2px; overflow:hidden;">
@@ -118,17 +118,17 @@
     <button onclick="showTab('books')" id="tab-books"
       style="font-size:13px; padding:8px 16px; color:var(--accent); border:none; border-bottom:2px solid var(--accent); background:none; cursor:pointer; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:5px;">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      Books <span style="font-size:11px; color:var(--muted);">({{ books|length }})</span>
+      <span data-i18n="lib.books">Books</span> <span style="font-size:11px; color:var(--muted);">({{ books|length }})</span>
     </button>
     <button onclick="showTab('videos')" id="tab-videos"
       style="font-size:13px; padding:8px 16px; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; cursor:pointer; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:5px;">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-      Videos <span style="font-size:11px; color:var(--muted);">({{ videos|length }})</span>
+      <span data-i18n="lib.videos">Videos</span> <span style="font-size:11px; color:var(--muted);">({{ videos|length }})</span>
     </button>
     <button onclick="showTab('podcasts')" id="tab-podcasts"
       style="font-size:13px; padding:8px 16px; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; cursor:pointer; font-family:'Sora',sans-serif; display:flex; align-items:center; gap:5px;">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
-      Podcasts <span style="font-size:11px; color:var(--muted);">({{ podcasts|length }})</span>
+      <span data-i18n="lib.podcasts">Podcasts</span> <span style="font-size:11px; color:var(--muted);">({{ podcasts|length }})</span>
     </button>
   </div>
 
@@ -150,7 +150,7 @@
       {% endfor %}
     </div>
     {% else %}
-    <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No books uploaded yet.</p>
+    <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="tp.empty_books">No books uploaded yet.</p>
     {% endif %}
   </div>
 
@@ -178,7 +178,7 @@
       {% endfor %}
     </div>
     {% else %}
-    <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No videos uploaded yet.</p>
+    <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="tp.empty_videos">No videos uploaded yet.</p>
     {% endif %}
   </div>
 
@@ -206,14 +206,14 @@
       {% endfor %}
     </div>
     {% else %}
-    <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">No podcasts uploaded yet.</p>
+    <p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="tp.empty_podcasts">No podcasts uploaded yet.</p>
     {% endif %}
   </div>
 
   {% else %}
   <!-- No materials yet -->
   <div style="text-align:center; padding:3rem 0;">
-    <p style="font-size:13px; color:var(--muted);">No materials uploaded yet.</p>
+    <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_materials">No materials uploaded yet.</p>
   </div>
   {% endif %}
 

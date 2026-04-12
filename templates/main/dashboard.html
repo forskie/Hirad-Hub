@@ -9,41 +9,60 @@
   <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:1.5rem;">
     <div>
       <h1 style="font-size:20px; font-weight:500; color:var(--text);">
-        Good day, {{ request.user.first_name|default:request.user.username }}
+        <span data-i18n="dash.good_day">Good day</span>, {{ request.user.first_name|default:request.user.username }}
       </h1>
       <p style="font-size:12px; color:var(--muted); margin-top:3px;">
-        {% if request.user.role == 'teacher' and request.user.teacher_profile %}
-          {{ request.user.teacher_profile.teacher_title }} · Lv.{{ request.user.teacher_profile.teacher_level }} · Teacher
+        {% if request.user.role == 'director' %}
+          <span data-i18n="nav.role_director">Director</span>{% if director_profile and director_profile.school %} · {{ director_profile.school.name }}{% endif %}
+        {% elif request.user.role == 'teacher' and request.user.teacher_profile %}
+          {{ request.user.teacher_profile.teacher_title }} · Lv.{{ request.user.teacher_profile.teacher_level }} · <span data-i18n="dash.teacher_suffix">Teacher</span>
         {% else %}
           {{ request.user.title }} · Lv.{{ request.user.level }}
         {% endif %}
       </p>
     </div>
+    {% if request.user.role != 'director' %}
     <span style="font-size:12px; padding:4px 12px; background:#1e1d3a; color:#a5b4fc; border-radius:20px; font-weight:500;">
-      Rank #{{ rank }}
+      <span data-i18n="dash.rank_label">Rank</span> #{{ rank }}
     </span>
+    {% endif %}
   </div>
 
+  {% if request.user.role == 'director' %}
+  <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:1.25rem;">
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;" data-i18n="dash.teachers_verified">Teachers verified</p>
+      <p style="font-size:22px; font-weight:500; color:var(--accent);">{% if director_profile %}{{ director_profile.teachers_verified }}{% else %}—{% endif %}</p>
+    </div>
+    <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
+      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;" data-i18n="dash.director_quick">Quick links</p>
+      <p style="font-size:12px; color:var(--text); line-height:1.6;">
+        <a href="{% url 'user:pending_teachers' %}" style="color:var(--accent); text-decoration:none;" data-i18n="dash.pending_link">Pending teachers</a><br/>
+        <a href="{% url 'community:list' %}" style="color:var(--accent); text-decoration:none;" data-i18n="dash.communities_link">Communities</a>
+      </p>
+    </div>
+  </div>
+  {% else %}
   <!-- Stat cards -->
   <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:1.25rem;">
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
-      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Score</p>
+      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;" data-i18n="prof.score">Score</p>
       <p style="font-size:22px; font-weight:500; color:var(--accent);">
         {% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_score }}{% else %}{{ request.user.score }}{% endif %}
       </p>
     </div>
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
-      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Level</p>
+      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;" data-i18n="gen.level">Level</p>
       <p style="font-size:22px; font-weight:500; color:var(--text);">
         {% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_level }}{% else %}{{ request.user.level }}{% endif %}
       </p>
     </div>
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
-      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Posts</p>
+      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;" data-i18n="prof.posts">Posts</p>
       <p style="font-size:22px; font-weight:500; color:var(--text);">{{ dash.post_count }}</p>
     </div>
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
-      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;">Notes</p>
+      <p style="font-size:11px; color:var(--muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.04em;" data-i18n="prof.notes">Notes</p>
       <p style="font-size:22px; font-weight:500; color:var(--text);">{{ dash.note_count }}</p>
     </div>
   </div>
@@ -52,30 +71,31 @@
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; margin-bottom:1.25rem;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
       <p style="font-size:13px; color:var(--text); font-weight:500;">
-        Progress — {% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_title }}{% else %}{{ request.user.title }}{% endif %}
+        <span data-i18n="dash.progress_prefix">Progress —</span> {% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_title }}{% else %}{{ request.user.title }}{% endif %}
       </p>
       <span style="font-size:12px; color:var(--accent);">
-        {% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_score }}{% else %}{{ request.user.score }}{% endif %} pts
+        {% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_score }}{% else %}{{ request.user.score }}{% endif %} <span data-i18n="gen.pts">pts</span>
       </span>
     </div>
     <div style="height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; margin-bottom:6px;">
       <div style="height:100%; width:{% if request.user.role == 'teacher' and request.user.teacher_profile %}{% widthratio request.user.teacher_profile.teacher_score 10000 100 %}{% else %}{% widthratio request.user.score 20000 100 %}{% endif %}%; background:linear-gradient(90deg, var(--accent), #818cf8); border-radius:3px; max-width:100%;"></div>
     </div>
-    <p style="font-size:11px; color:var(--muted);">Complete steps, write notes and upload materials to earn points</p>
+    <p style="font-size:11px; color:var(--muted);" data-i18n="dash.progress_hint">Complete steps, write notes and upload materials to earn points</p>
   </div>
+  {% endif %}
 
   <!-- Two columns -->
   <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; margin-bottom:1.25rem;">
 
     <!-- Recent activity -->
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
-      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:1rem;">Recent activity</p>
+      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:1rem;" data-i18n="dash.recent_activity">Recent activity</p>
       <div style="display:flex; flex-direction:column; gap:6px;">
         {% for post in request.user.posts.all|slice:":3" %}
         <a href="{% url 'post:detail' post.pk %}"
           style="display:flex; align-items:center; gap:8px; padding:7px 9px; background:var(--surface2); border-radius:7px; text-decoration:none; transition:background 0.15s;"
           onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
-          <span style="font-size:10px; padding:2px 6px; background:#1e2d1e; color:#86efac; border-radius:4px; flex-shrink:0;">post</span>
+          <span style="font-size:10px; padding:2px 6px; background:#1e2d1e; color:#86efac; border-radius:4px; flex-shrink:0;" data-i18n="dash.activity_post">post</span>
           <span style="font-size:12px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ post.text|truncatechars:35 }}</span>
           <span style="font-size:10px; color:var(--muted); flex-shrink:0;">{{ post.created_at|timesince|slice:":5" }}</span>
         </a>
@@ -84,15 +104,15 @@
         <a href="{% url 'note:detail' note.pk %}"
           style="display:flex; align-items:center; gap:8px; padding:7px 9px; background:var(--surface2); border-radius:7px; text-decoration:none; transition:background 0.15s;"
           onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
-          <span style="font-size:10px; padding:2px 6px; background:#1e1d3a; color:#a5b4fc; border-radius:4px; flex-shrink:0;">note</span>
+          <span style="font-size:10px; padding:2px 6px; background:#1e1d3a; color:#a5b4fc; border-radius:4px; flex-shrink:0;" data-i18n="dash.activity_note">note</span>
           <span style="font-size:12px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ note.title|truncatechars:35 }}</span>
           <span style="font-size:10px; color:var(--muted); flex-shrink:0;">{{ note.updated_at|timesince|slice:":5" }}</span>
         </a>
         {% endfor %}
         {% if not request.user.posts.all and not request.user.notes.all %}
         <div style="text-align:center; padding:1.5rem 0;">
-          <p style="font-size:12px; color:var(--muted);">No activity yet.</p>
-          <a href="{% url 'post:create' %}" style="font-size:12px; color:var(--accent); text-decoration:none;">Write your first post →</a>
+          <p style="font-size:12px; color:var(--muted);" data-i18n="dash.no_activity">No activity yet.</p>
+          <a href="{% url 'post:create' %}" style="font-size:12px; color:var(--accent); text-decoration:none;" data-i18n="dash.write_first_post">Write your first post →</a>
         </div>
         {% endif %}
       </div>
@@ -101,8 +121,8 @@
     <!-- Top users -->
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem;">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem;">
-        <p style="font-size:13px; font-weight:500; color:var(--text);">Top students</p>
-        <a href="{% url 'main:leaderboard' %}" style="font-size:12px; color:var(--accent); text-decoration:none;">Full →</a>
+        <p style="font-size:13px; font-weight:500; color:var(--text);" data-i18n="dash.top_students">Top students</p>
+        <a href="{% url 'main:leaderboard' %}" style="font-size:12px; color:var(--accent); text-decoration:none;" data-i18n="dash.full">Full →</a>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px;">
         {% for u in top_users %}
@@ -118,7 +138,7 @@
           <span style="font-size:11px; color:var(--muted); flex-shrink:0;">{{ u.score }}</span>
         </a>
         {% empty %}
-        <p style="font-size:12px; color:var(--muted); text-align:center; padding:1rem 0;">No data yet.</p>
+        <p style="font-size:12px; color:var(--muted); text-align:center; padding:1rem 0;" data-i18n="dash.no_data">No data yet.</p>
         {% endfor %}
       </div>
     </div>
@@ -131,25 +151,25 @@
       style="flex:1; min-width:130px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      New note
+      <span data-i18n="dash.new_note">New note</span>
     </a>
     <a href="{% url 'post:create' %}"
       style="flex:1; min-width:130px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      New post
+      <span data-i18n="dash.new_post">New post</span>
     </a>
     <a href="{% url 'roadmap:list' %}"
       style="flex:1; min-width:130px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M1 12h4M19 12h4"/></svg>
-      Roadmaps
+      <span data-i18n="nav.roadmaps">Roadmaps</span>
     </a>
     <a href="{% url 'library:home' %}"
       style="flex:1; min-width:130px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; font-size:13px; color:var(--text); text-decoration:none; transition:border-color 0.15s;"
       onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      Library
+      <span data-i18n="nav.library">Library</span>
     </a>
   </div>
 

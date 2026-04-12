@@ -22,9 +22,9 @@
                     <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv. {{ user.level }}</span>
                     <span style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{ user.title }}</span>
                     {% if user.role == 'teacher' %}
-                    <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;">Teacher</span>
+                    <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;" data-i18n="prof.teacher">Teacher</span>
                     {% elif user.role == 'director' %}
-                    <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;">Director</span>
+                    <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;" data-i18n="prof.director">Director</span>
                     {% endif %}
                 </div>
                 <p style="font-size:13px; color:var(--muted);">@{{ user.username }}</p>
@@ -36,16 +36,16 @@
             <div style="display:flex; gap:1.5rem; text-align:center; flex-shrink:0;">
                 <div>
                     <p style="font-size:16px; font-weight:500; color:var(--accent);">{{ user.score }}</p>
-                    <p style="font-size:11px; color:var(--muted);">Score</p>
+                    <p style="font-size:11px; color:var(--muted);" data-i18n="prof.score">Score</p>
                 </div>
                 <div>
                     <p style="font-size:16px; font-weight:500; color:var(--text);">{{ user.posts.count }}</p>
-                    <p style="font-size:11px; color:var(--muted);">Posts</p>
+                    <p style="font-size:11px; color:var(--muted);" data-i18n="prof.posts">Posts</p>
                 </div>
                 <div>
                     <!-- FIX: was user.note_set.count — related_name='notes' -->
                     <p style="font-size:16px; font-weight:500; color:var(--text);">{{ user.notes.count }}</p>
-                    <p style="font-size:11px; color:var(--muted);">Notes</p>
+                    <p style="font-size:11px; color:var(--muted);" data-i18n="prof.notes">Notes</p>
                 </div>
             </div>
         </div>
@@ -55,11 +55,11 @@
     <div style="display:flex; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem;">
         <button onclick="showTab('posts')" id="tab-posts"
             style="font-size:13px; padding:8px 16px; color:var(--accent); border:none; border-bottom:2px solid var(--accent); background:none; cursor:pointer; font-family:'Sora',sans-serif;">
-            Posts
+            <span data-i18n="prof.tab_posts">Posts</span>
         </button>
         <button onclick="showTab('notes')" id="tab-notes"
             style="font-size:13px; padding:8px 16px; color:var(--muted); border:none; border-bottom:2px solid transparent; background:none; cursor:pointer; font-family:'Sora',sans-serif;">
-            Public notes
+            <span data-i18n="others.tab_public_notes">Public notes</span>
         </button>
     </div>
 
@@ -80,9 +80,9 @@
                     {% endif %}
                     <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:8px;">{{ post.text|truncatechars:120 }}</p>
                     <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                        <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} ago</span>
+                        <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} <span data-i18n="gen.ago">ago</span></span>
                         <span style="font-size:11px; color:var(--muted);">♥ {{ post.count_likes }}</span>
-                        <span style="font-size:11px; color:var(--muted);">{{ post.count_comments }} comments</span>
+                        <span style="font-size:11px; color:var(--muted);">{{ post.count_comments }} <span data-i18n="prof.comments_word">comments</span></span>
                     </div>
                 </div>
             </a>
@@ -90,7 +90,7 @@
         </div>
         {% else %}
         <div style="text-align:center; padding:3rem 0;">
-            <p style="font-size:13px; color:var(--muted);">No posts yet.</p>
+            <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_posts">No posts yet.</p>
         </div>
         {% endif %}
     </div>
@@ -109,7 +109,7 @@
                     onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
                     <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:6px; line-height:1.4;">{{ note.title|truncatechars:40 }}</p>
                     <p style="font-size:12px; color:var(--muted); line-height:1.5;">{{ note.content|striptags|truncatechars:80 }}</p>
-                    <p style="font-size:11px; color:var(--muted); margin-top:8px;">{{ note.created_at|timesince }} ago</p>
+                    <p style="font-size:11px; color:var(--muted); margin-top:8px;">{{ note.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
                 </div>
             </a>
             {% endif %}
@@ -117,7 +117,7 @@
         </div>
         {% else %}
         <div style="text-align:center; padding:3rem 0;">
-            <p style="font-size:13px; color:var(--muted);">No public notes.</p>
+            <p style="font-size:13px; color:var(--muted);" data-i18n="others.no_public_notes">No public notes.</p>
         </div>
         {% endif %}
     </div>

@@ -8,10 +8,17 @@ class UserAdmin(UserAdmin):
     list_filter = ('role', 'is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     ordering = ('username',)
-    
+
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'role', 'password1', 'password2'),
+        }),
+    )
+
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone_number', 'profile_picture', 'bio')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone_number', 'profile_picture', 'bio', 'role')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Gamification', {'fields': ('score', 'level', 'title')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),

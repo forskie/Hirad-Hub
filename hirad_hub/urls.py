@@ -11,6 +11,7 @@ urlpatterns = [
     path('note/', include('note.urls')),
     path('library/', include('library.urls')),
     path('roadmap/', include('roadmap.urls')),
+    path('community/', include('community.urls')),
 ]
 
 if settings.DEBUG:

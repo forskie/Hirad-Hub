@@ -10,6 +10,12 @@ from .decorators import community_create_required, can_create_community
 from post.models import Post
 from library.models import Topic
 
+# Must not match URL segments under /community/<slug>/ (join, leave, …) or the /community/create/ route.
+RESERVED_COMMUNITY_SLUGS = frozenset({
+    'create', 'join', 'leave', 'delete', 'post', 'new', 'edit', 'admin', 'api',
+    'approve', 'reject', 'list',
+})
+
 
 def community_list(request):
     q = request.GET.get('q', '').strip()
@@ -83,12 +89,12 @@ def community_create(request):
 
         if not name:
             return render(request, 'community/create.html', {
-                'error': 'Name is required.', 'topics': topics, 'form': request.POST,
+                'error': 'Name is required.', 'topics': topics,
             })
 
-        base_slug = slugify(name)
+        base_slug = slugify(name) or 'community'
         slug = base_slug
-        if Community.objects.filter(slug=slug).exists():
+        if slug in RESERVED_COMMUNITY_SLUGS or Community.objects.filter(slug=slug).exists():
             slug = f'{base_slug}-{uuid.uuid4().hex[:6]}'
 
         community = Community.objects.create(

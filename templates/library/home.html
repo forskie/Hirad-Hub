@@ -100,17 +100,21 @@
   <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:1.5rem; flex-wrap:wrap;">
     <div>
       <h1 style="font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.02em;">
-        {% if active_category %}{{ active_category.name }}{% else %}Library{% endif %}
+        {% if active_category %}{{ active_category.name }}{% else %}<span data-i18n="lib.title">Library</span>{% endif %}
       </h1>
       <p style="font-size:13px; color:var(--muted); margin-top:3px;">
-        {% if active_category %}{{ active_category.description|default:"Browse materials" }}{% else %}Choose a section to start learning{% endif %}
+        {% if active_category %}
+          {% if active_category.description %}{{ active_category.description }}{% else %}<span data-i18n="lib.browse_default">Browse materials</span>{% endif %}
+        {% else %}
+          <span data-i18n="lib.sub_default">Choose a section to start learning</span>
+        {% endif %}
       </p>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       {% if active_category %}
         <a href="{% url 'library:home' %}"
           style="padding:7px 14px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">
-          ← All sections
+          <span data-i18n="lib.all_sections">← All sections</span>
         </a>
       {% endif %}
       {% if request.user.is_authenticated and request.user.role in 'teacher,admin,director' %}
@@ -118,7 +122,7 @@
         style="display:flex; align-items:center; gap:6px; padding:8px 16px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Upload material
+        <span data-i18n="lib.upload_btn">Upload material</span>
       </button>
       {% endif %}
     </div>
@@ -153,13 +157,13 @@
           </div>
         {% endif %}
         <div style="display:flex; align-items:center; justify-content:space-between; padding-top:10px; border-top:0.5px solid var(--border);">
-          <span style="font-size:12px; color:var(--muted);">Explore →</span>
+          <span style="font-size:12px; color:var(--muted);" data-i18n="lib.explore_arrow">Explore →</span>
         </div>
       </a>
       {% endfor %}
     </div>
   {% else %}
-    <p> No categories or materials yet </p>
+    <p data-i18n="lib.empty_cats">No categories or materials yet</p>
   {% endif %}
 
   {% else %}
@@ -168,7 +172,7 @@
   <!-- Subcategory pills if parent selected -->
   {% if active_category.children.all %}
   <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1.25rem;">
-    <a href="?category={{ active_category.slug }}" class="pill {% if not request.GET.sub %}active{% endif %}">All</a>
+    <a href="?category={{ active_category.slug }}" class="pill {% if not request.GET.sub %}active{% endif %}" data-i18n="lib.all">All</a>
     {% for child in active_category.children.all %}
       <a href="?category={{ child.slug }}" class="pill">{{ child.name }}</a>
     {% endfor %}
@@ -178,15 +182,15 @@
   <!-- Type + sort bar -->
   <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:1.25rem; flex-wrap:wrap;">
     <div style="display:flex; gap:6px; flex-wrap:wrap;">
-      <a href="?category={{ active_category.slug }}" class="pill {% if not material_type %}active{% endif %}">All</a>
-      <a href="?category={{ active_category.slug }}&type=book" class="pill {% if material_type == 'book' %}active{% endif %}">Books</a>
-      <a href="?category={{ active_category.slug }}&type=video" class="pill {% if material_type == 'video' %}active{% endif %}">Videos</a>
-      <a href="?category={{ active_category.slug }}&type=podcast" class="pill {% if material_type == 'podcast' %}active{% endif %}">Podcasts</a>
+      <a href="?category={{ active_category.slug }}" class="pill {% if not material_type %}active{% endif %}" data-i18n="lib.all">All</a>
+      <a href="?category={{ active_category.slug }}&type=book" class="pill {% if material_type == 'book' %}active{% endif %}" data-i18n="lib.books">Books</a>
+      <a href="?category={{ active_category.slug }}&type=video" class="pill {% if material_type == 'video' %}active{% endif %}" data-i18n="lib.videos">Videos</a>
+      <a href="?category={{ active_category.slug }}&type=podcast" class="pill {% if material_type == 'podcast' %}active{% endif %}" data-i18n="lib.podcasts">Podcasts</a>
     </div>
     <select onchange="window.location.href=this.value"
       style="padding:6px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;">
-      <option value="?category={{ active_category.slug }}{% if material_type %}&type={{ material_type }}{% endif %}&sort=new" {% if sort == 'new' %}selected{% endif %}>Newest</option>
-      <option value="?category={{ active_category.slug }}{% if material_type %}&type={{ material_type }}{% endif %}&sort=popular" {% if sort == 'popular' %}selected{% endif %}>Popular</option>
+      <option value="?category={{ active_category.slug }}{% if material_type %}&type={{ material_type }}{% endif %}&sort=new" {% if sort == 'new' %}selected{% endif %} data-i18n="lib.sort_new">Newest</option>
+      <option value="?category={{ active_category.slug }}{% if material_type %}&type={{ material_type }}{% endif %}&sort=popular" {% if sort == 'popular' %}selected{% endif %} data-i18n="lib.sort_popular">Popular</option>
     </select>
   </div>
 
@@ -207,7 +211,7 @@
         </div>
         <div class="lib-body">
           <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span class="lib-badge badge-book">Book</span>
+            <span class="lib-badge badge-book" data-i18n="lib.badge_book">Book</span>
             {% if book.grade %}<span style="font-size:10px; color:var(--muted);">Gr.{{ book.grade }}</span>{% elif book.pages %}<span style="font-size:10px; color:var(--muted);">{{ book.pages }}p</span>{% endif %}
           </div>
           <p class="lib-title">{{ book.title }}</p>
@@ -248,7 +252,7 @@
         </div>
         <div class="lib-body">
           <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span class="lib-badge badge-video">Video</span>
+            <span class="lib-badge badge-video" data-i18n="lib.badge_video">Video</span>
             {% if video.duration %}<span style="font-size:10px; color:var(--muted);">{{ video.duration }}</span>{% endif %}
           </div>
           <p class="lib-title">{{ video.title }}</p>
@@ -284,7 +288,7 @@
         </div>
         <div class="lib-body">
           <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span class="lib-badge badge-podcast">Podcast</span>
+            <span class="lib-badge badge-podcast" data-i18n="lib.badge_podcast">Podcast</span>
             {% if podcast.duration %}<span style="font-size:10px; color:var(--muted);">{{ podcast.duration }}</span>{% endif %}
           </div>
           <p class="lib-title">{{ podcast.title }}</p>

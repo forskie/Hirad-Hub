@@ -18,7 +18,7 @@
                     {{ comment.user.get_full_name|default:comment.user.username }}
                 </a>
                 <span style="font-size:11px; color:var(--muted);">
-                    {{ comment.created_at|timesince }} ago
+                    {{ comment.created_at|timesince }} <span data-i18n="post.ago">ago</span>
                 </span>
             </div>
 
@@ -68,11 +68,11 @@
             {% csrf_token %}
             <input type="hidden" name="parent_id" value="{{ comment.pk }}" />
             <div style="display:flex; gap:6px;">
-                <input type="text" name="text" placeholder="Reply..."
+                <input type="text" name="text" data-i18n="cmt.reply_ph" data-i18n-attr="placeholder" placeholder="Reply..."
                     style="flex:1; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;" />
                 <button type="submit"
                     style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); cursor:pointer;">
-                    Reply
+                    <span data-i18n="cmt.reply_btn">Reply</span>
                 </button>
             </div>
         </form>
@@ -82,7 +82,7 @@
 </div>
 
 {% empty %}
-<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;">
+<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="cmt.empty_first">
     No comments yet. Be the first.
 </p>
 {% endfor %}

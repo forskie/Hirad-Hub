@@ -12,7 +12,7 @@
                 <polyline points="15 18 9 12 15 6" />
             </svg>
         </a>
-        <p style="font-size:16px; font-weight:500; color:var(--text);">Edit profile</p>
+        <p style="font-size:16px; font-weight:500; color:var(--text);" data-i18n="edit.title">Edit profile</p>
     </div>
 
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
@@ -43,18 +43,18 @@
                         style="display:inline-block; padding:7px 14px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); cursor:pointer; transition:background 0.15s;"
                         onmouseover="this.style.background='var(--border)'"
                         onmouseout="this.style.background='var(--surface2)'">
-                        Change photo
+                        <span data-i18n="edit.change_photo">Change photo</span>
                     </label>
                     <input type="file" name="profile_picture" id="id_profile_picture" accept="image/*"
                         style="display:none;" onchange="previewAvatar(this)" />
-                    <p style="font-size:11px; color:var(--muted); margin-top:5px;">JPG, PNG up to 5MB</p>
+                    <p style="font-size:11px; color:var(--muted); margin-top:5px;" data-i18n="edit.avatar_hint">JPG, PNG up to 5MB</p>
                 </div>
             </div>
 
             <!-- Name row -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1rem;">
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">First
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.first_name">First
                         name</label>
                     <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}"
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
@@ -64,7 +64,7 @@
                         {{ form.first_name.errors|join:", " }}</p>{% endif %}
                 </div>
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Last
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.last_name">Last
                         name</label>
                     <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}"
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
@@ -76,7 +76,7 @@
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Email</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.email">Email</label>
                 <input type="email" name="email" value="{{ form.email.value|default:'' }}"
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
                     onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
@@ -85,7 +85,7 @@
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Phone
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="edit.phone_label">Phone
                     number</label>
                 <input type="text" name="phone_number" value="{{ form.phone_number.value|default:'' }}"
                     placeholder="+992XXXXXXXXX"
@@ -96,8 +96,8 @@
             </div>
 
             <div style="margin-bottom:1.5rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Bio</label>
-                <textarea name="bio" rows="3" placeholder="Tell something about yourself..."
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="edit.bio">Bio</label>
+                <textarea name="bio" rows="3" data-i18n="edit.bio_ph" data-i18n-attr="placeholder" placeholder="Tell something about yourself..."
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.6;"
                     onfocus="this.style.borderColor='var(--accent)'"
                     onblur="this.style.borderColor='var(--border)'">{{ form.bio.value|default:'' }}</textarea>
@@ -110,12 +110,12 @@
                     style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                     onmouseover="this.style.background='var(--accent-h)'"
                     onmouseout="this.style.background='var(--accent)'">
-                    Save changes
+                    <span data-i18n="edit.save_changes">Save changes</span>
                 </button>
                 <a href="{% url 'user:profile' %}"
                     style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:background 0.15s;"
                     onmouseover="this.style.background='var(--border)'"
-                    onmouseout="this.style.background='var(--surface2)'">
+                    onmouseout="this.style.background='var(--surface2)'" data-i18n="gen.cancel">
                     Cancel
                 </a>
             </div>

@@ -5,19 +5,19 @@
 <div style="max-width:680px; margin:0 auto;">
 
   <div style="margin-bottom:1.5rem;">
-    <h1 style="font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.02em;">Leaderboard</h1>
-    <p style="font-size:13px; color:var(--muted); margin-top:3px;">Rankings updated in real time</p>
+    <h1 style="font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.02em;" data-i18n="lb.title">Leaderboard</h1>
+    <p style="font-size:13px; color:var(--muted); margin-top:3px;" data-i18n="lb.subtitle">Rankings updated in real time</p>
   </div>
 
   <!-- Tabs -->
   <div style="display:flex; border-bottom:0.5px solid var(--border); margin-bottom:1.5rem;">
     <a href="?tab=students"
       style="font-size:13px; padding:8px 18px; text-decoration:none; border-bottom:2px solid {% if tab == 'students' or not tab %}var(--accent){% else %}transparent{% endif %}; color:{% if tab == 'students' or not tab %}var(--accent){% else %}var(--muted){% endif %};">
-      🎓 Students
+      <span data-i18n="lb.tab_students">🎓 Students</span>
     </a>
     <a href="?tab=teachers"
       style="font-size:13px; padding:8px 18px; text-decoration:none; border-bottom:2px solid {% if tab == 'teachers' %}var(--accent){% else %}transparent{% endif %}; color:{% if tab == 'teachers' %}var(--accent){% else %}var(--muted){% endif %};">
-      📚 Teachers
+      <span data-i18n="lb.tab_teachers">📚 Teachers</span>
     </a>
   </div>
 
@@ -28,7 +28,7 @@
         {{ request.user.username|first|upper }}
       </div>
       <div>
-        <p style="font-size:13px; font-weight:500; color:#a5b4fc;">Your position</p>
+        <p style="font-size:13px; font-weight:500; color:#a5b4fc;" data-i18n="lb.your_position">Your position</p>
         <p style="font-size:11px; color:#6366f1;">
           {% if tab == 'teachers' and request.user.role == 'teacher' %}
             {{ request.user.teacher_profile.teacher_title }}
@@ -41,7 +41,7 @@
     <div style="display:flex; align-items:center; gap:1.5rem;">
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:600; color:#a5b4fc;">#{{ user_rank }}</p>
-        <p style="font-size:11px; color:#6366f1;">Rank</p>
+        <p style="font-size:11px; color:#6366f1;" data-i18n="lb.rank_short">Rank</p>
       </div>
       <div style="text-align:center;">
         <p style="font-size:18px; font-weight:600; color:#a5b4fc;">
@@ -51,7 +51,7 @@
             {{ request.user.score }}
           {% endif %}
         </p>
-        <p style="font-size:11px; color:#6366f1;">Score</p>
+        <p style="font-size:11px; color:#6366f1;" data-i18n="prof.score">Score</p>
       </div>
     </div>
   </div>
@@ -83,13 +83,13 @@
         <div style="flex:1; min-width:0;">
           <div style="display:flex; align-items:center; gap:5px;">
             <p style="font-size:13px; font-weight:500; color:{% if leader.user == request.user %}#a5b4fc{% else %}var(--text){% endif %}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ u.get_full_name|default:u.username }}</p>
-            {% if leader.user == request.user %}<span style="font-size:10px; padding:1px 5px; background:var(--accent); color:#fff; border-radius:10px; flex-shrink:0;">you</span>{% endif %}
+            {% if leader.user == request.user %}<span style="font-size:10px; padding:1px 5px; background:var(--accent); color:#fff; border-radius:10px; flex-shrink:0;" data-i18n="lb.you">you</span>{% endif %}
           </div>
           <p style="font-size:11px; color:var(--muted);">{{ title }} · Lv.{{ level }}</p>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <p style="font-size:13px; font-weight:500; color:{% if forloop.counter <= 3 %}#f59e0b{% else %}var(--text){% endif %};">{{ score }}</p>
-          <p style="font-size:10px; color:var(--muted);">pts</p>
+          <p style="font-size:10px; color:var(--muted);" data-i18n="gen.pts">pts</p>
         </div>
       </a>
       {% endwith %}
@@ -110,19 +110,19 @@
         <div style="flex:1; min-width:0;">
           <div style="display:flex; align-items:center; gap:5px;">
             <p style="font-size:13px; font-weight:500; color:{% if leader == request.user %}#a5b4fc{% else %}var(--text){% endif %}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ leader.get_full_name|default:leader.username }}</p>
-            {% if leader == request.user %}<span style="font-size:10px; padding:1px 5px; background:var(--accent); color:#fff; border-radius:10px; flex-shrink:0;">you</span>{% endif %}
+            {% if leader == request.user %}<span style="font-size:10px; padding:1px 5px; background:var(--accent); color:#fff; border-radius:10px; flex-shrink:0;" data-i18n="lb.you">you</span>{% endif %}
           </div>
           <p style="font-size:11px; color:var(--muted);">{{ leader.title }} · Lv.{{ leader.level }}</p>
         </div>
         <div style="text-align:right; flex-shrink:0;">
           <p style="font-size:13px; font-weight:500; color:{% if forloop.counter <= 3 %}#f59e0b{% else %}var(--text){% endif %};">{{ leader.score }}</p>
-          <p style="font-size:10px; color:var(--muted);">pts</p>
+          <p style="font-size:10px; color:var(--muted);" data-i18n="gen.pts">pts</p>
         </div>
       </a>
     {% endif %}
     {% empty %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted);">No entries yet.</p>
+      <p style="font-size:13px; color:var(--muted);" data-i18n="lb.no_entries">No entries yet.</p>
     </div>
     {% endfor %}
   </div>

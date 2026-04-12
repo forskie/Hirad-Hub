@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+{% load static %}
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -17,626 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-
-    <style>
-        :root {
-            --bg: #F9FAFB;
-            --surface: #FFFFFF;
-            --surface2: #F3F4F6;
-            --border: #E5E7EB;
-            --text: #111827;
-            --muted: #6B7280;
-            --accent: #6366F1;
-            --accent-h: #4F46E5;
-        }
-
-        html.dark {
-            --bg: #0A0A0B;
-            --surface: #111827;
-            --surface2: #1F2937;
-            --border: #1F2937;
-            --text: #F9FAFB;
-            --muted: #9CA3AF;
-            --accent: #6366F1;
-            --accent-h: #818CF8;
-        }
-
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Sora', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.2s, color 0.2s;
-            font-size: 15px;
-        }
-
-        /* ── Navbar ── */
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            height: 56px;
-            background: var(--surface);
-            border-bottom: 0.5px solid var(--border);
-            display: flex;
-            align-items: center;
-            padding: 0 2rem;
-            gap: 1.5rem;
-        }
-
-        .nav-logo {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            text-decoration: none;
-            margin-right: auto;
-            flex-shrink: 0;
-            letter-spacing: -0.02em;
-        }
-
-        .nav-logo span {
-            color: var(--accent);
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            color: var(--muted);
-            text-decoration: none;
-            padding: 6px 10px;
-            border-radius: 8px;
-            transition: color 0.15s, background 0.15s;
-            white-space: nowrap;
-        }
-
-        .nav-link:hover {
-            color: var(--text);
-            background: var(--surface2);
-        }
-
-        .nav-link.active {
-            color: var(--accent);
-            background: #eef2ff;
-        }
-
-        html.dark .nav-link.active {
-            background: #1e1d3a;
-        }
-
-        .nav-link svg {
-            flex-shrink: 0;
-        }
-
-        /* ── Search ── */
-        .search-wrap {
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .search-form {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--surface2);
-            border: 0.5px solid var(--border);
-            border-radius: 8px;
-            padding: 6px 12px;
-            transition: border-color 0.15s;
-        }
-
-        .search-form:focus-within {
-            border-color: var(--accent);
-        }
-
-        .search-form input {
-            background: none;
-            border: none;
-            outline: none;
-            font-size: 13px;
-            color: var(--text);
-            width: 160px;
-            font-family: 'Sora', sans-serif;
-        }
-
-        .search-form input::placeholder {
-            color: var(--muted);
-        }
-
-        /* Search results dropdown */
-        .search-results {
-            display: none;
-            position: absolute;
-            top: calc(100% + 6px);
-            left: 0;
-            right: 0;
-            min-width: 280px;
-            background: var(--surface);
-            border: 0.5px solid var(--border);
-            border-radius: 10px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            z-index: 300;
-            overflow: hidden;
-        }
-
-        .search-results.open {
-            display: block;
-        }
-
-        .search-result-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 14px;
-            text-decoration: none;
-            transition: background 0.1s;
-            border-bottom: 0.5px solid var(--border);
-        }
-
-        .search-result-item:last-child {
-            border-bottom: none;
-        }
-
-        .search-result-item:hover {
-            background: var(--surface2);
-        }
-
-        .search-result-section {
-            padding: 6px 14px 4px;
-            font-size: 10px;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-weight: 500;
-            background: var(--surface2);
-        }
-
-        .search-empty {
-            padding: 14px;
-            font-size: 13px;
-            color: var(--muted);
-            text-align: center;
-        }
-
-        /* ── Theme toggle ── */
-        .theme-btn {
-            width: 34px;
-            height: 34px;
-            flex-shrink: 0;
-            border-radius: 8px;
-            border: 0.5px solid var(--border);
-            background: var(--surface2);
-            cursor: pointer;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.15s, color 0.15s;
-        }
-
-        .theme-btn:hover {
-            color: var(--text);
-            background: var(--border);
-        }
-
-        /* ── Dropdown — JS controlled ── */
-        .avatar-btn {
-            width: 34px;
-            height: 34px;
-            flex-shrink: 0;
-            border-radius: 50%;
-            background: #1e1d3a;
-            border: 1.5px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 500;
-            color: #A5B4FC;
-            cursor: pointer;
-            overflow: hidden;
-            user-select: none;
-        }
-
-        .avatar-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: calc(100% + 6px);
-            background: var(--surface);
-            border: 0.5px solid var(--border);
-            border-radius: 12px;
-            min-width: 200px;
-            padding: 4px;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-            z-index: 200;
-        }
-
-        .dropdown-menu.open {
-            display: block;
-        }
-
-        .dropdown-header {
-            padding: 10px 12px 8px;
-            border-bottom: 0.5px solid var(--border);
-            margin-bottom: 4px;
-        }
-
-        .dropdown-header p:first-child {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text);
-        }
-
-        .dropdown-header p:last-child {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 9px 12px;
-            font-size: 13px;
-            color: var(--text);
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background 0.1s;
-        }
-
-        .dropdown-item:hover {
-            background: var(--surface2);
-        }
-
-        .dropdown-item.danger {
-            color: #EF4444;
-        }
-
-        .dropdown-item.danger:hover {
-            background: #fef2f2;
-        }
-
-        html.dark .dropdown-item.danger:hover {
-            background: #1a0808;
-        }
-
-        .dropdown-divider {
-            border: none;
-            border-top: 0.5px solid var(--border);
-            margin: 4px 0;
-        }
-
-        /* ── Auth buttons ── */
-        .btn-ghost {
-            font-size: 14px;
-            color: var(--muted);
-            text-decoration: none;
-            padding: 7px 14px;
-            border-radius: 8px;
-            transition: background 0.15s, color 0.15s;
-        }
-
-        .btn-ghost:hover {
-            background: var(--surface2);
-            color: var(--text);
-        }
-
-        .btn-primary {
-            font-size: 14px;
-            font-weight: 500;
-            color: #fff;
-            background: var(--accent);
-            text-decoration: none;
-            padding: 7px 16px;
-            border-radius: 8px;
-            transition: background 0.15s;
-            white-space: nowrap;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-h);
-        }
-
-        /* ── Messages ── */
-        .messages {
-            padding: 1rem 2rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .message {
-            padding: 11px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .message.success {
-            background: #f0fdf4;
-            color: #15803d;
-            border: 0.5px solid #bbf7d0;
-        }
-
-        .message.error {
-            background: #fef2f2;
-            color: #b91c1c;
-            border: 0.5px solid #fecaca;
-        }
-
-        .message.warning {
-            background: #fffbeb;
-            color: #b45309;
-            border: 0.5px solid #fde68a;
-        }
-
-        .message.info {
-            background: #eef2ff;
-            color: #4338ca;
-            border: 0.5px solid #c7d2fe;
-        }
-
-        html.dark .message.success {
-            background: #052e16;
-            color: #86efac;
-            border-color: #166534;
-        }
-
-        html.dark .message.error {
-            background: #1a0808;
-            color: #fca5a5;
-            border-color: #7f1d1d;
-        }
-
-        html.dark .message.warning {
-            background: #1a1100;
-            color: #fcd34d;
-            border-color: #78350f;
-        }
-
-        html.dark .message.info {
-            background: #1e1d3a;
-            color: #a5b4fc;
-            border-color: #3730a3;
-        }
-
-        /* ── Main ── */
-        main {
-            flex: 1;
-            width: 100%;
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 2rem 2rem;
-            animation: fadeUp 0.18s ease;
-        }
-
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(5px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ── Footer ── */
-        footer {
-            border-top: 0.5px solid var(--border);
-            background: var(--surface);
-            padding: 16px 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        footer span,
-        footer a {
-            font-size: 13px;
-            color: var(--muted);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            color: var(--accent);
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 1.5rem;
-        }
-
-        /* ── Mobile ── */
-        .hamburger {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--muted);
-            padding: 4px;
-        }
-
-        .mobile-menu {
-            display: none;
-            flex-direction: column;
-            background: var(--surface);
-            border-bottom: 0.5px solid var(--border);
-            padding: 10px 1.5rem;
-        }
-
-        .mobile-menu.open {
-            display: flex;
-        }
-
-        .mobile-menu a {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-            color: var(--muted);
-            text-decoration: none;
-            padding: 12px 0;
-            border-bottom: 0.5px solid var(--border);
-            transition: color 0.15s;
-        }
-
-        .mobile-menu a:last-child {
-            border: none;
-        }
-
-        .mobile-menu a:hover,
-        .mobile-menu a.active {
-            color: var(--accent);
-        }
-
-        .mobile-search {
-            margin-top: 8px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--surface2);
-            border: 0.5px solid var(--border);
-            border-radius: 8px;
-            padding: 10px 12px;
-        }
-
-        .mobile-search input {
-            background: none;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            color: var(--text);
-            width: 100%;
-            font-family: 'Sora', sans-serif;
-        }
-
-        .mobile-search input::placeholder {
-            color: var(--muted);
-        }
-
-        /* ── Responsive ── */
-        @media (max-width: 900px) {
-            .navbar {
-                padding: 0 1.25rem;
-                gap: 1rem;
-            }
-
-            main {
-                padding: 1.5rem 1.25rem;
-            }
-
-            .messages {
-                padding: 1rem 1.25rem 0;
-            }
-
-            footer {
-                padding: 14px 1.25rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-
-            .nav-links,
-            .search-wrap {
-                display: none !important;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            main {
-                padding: 1rem 1rem;
-            }
-
-            .messages {
-                padding: 0.75rem 1rem 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                font-size: 14px;
-            }
-
-            .navbar {
-                height: 50px;
-            }
-
-            main {
-                padding: 0.75rem 0.75rem;
-            }
-
-            footer {
-                padding: 12px 1rem;
-            }
-
-            .footer-links {
-                display: none;
-            }
-        }
-
-        @media (min-width: 1400px) {
-            main {
-                max-width: 1400px;
-            }
-
-            .navbar {
-                padding: 0 3rem;
-            }
-
-            footer {
-                padding: 16px 3rem;
-            }
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-    </style>
-
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -645,45 +26,59 @@
     <!-- NAVBAR -->
     <header class="navbar">
         <a href="{% url 'main:home' %}" class="nav-logo"><span>Hirad</span>Hub</a>
-
-        <nav class="nav-links">
+                <!-- LANGUAGE SWITCH -->
+                <div class="lang-switch">
+                    <button onclick="I18N.set('ru')" data-lang="ru" class="lang-btn">RU</button>
+                    <button onclick="I18N.set('tg')" data-lang="tg" class="lang-btn">TJ</button>
+                    <button onclick="I18N.set('en')" data-lang="en" class="lang-btn">EN</button>
+                </div>
+                    <nav class="nav-links">
             <a href="{% url 'library:home' %}" class="nav-link {% block nav_library %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                 </svg>
-                Library
+                <span data-i18n="nav.library">Library</span>
             </a>
             <a href="{% url 'post:list' %}" class="nav-link {% block nav_posts %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
-                Posts
+                <span data-i18n="nav.posts">Posts</span>
             </a>
             <a href="{% url 'note:list' %}" class="nav-link {% block nav_notes %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
                 </svg>
-                Notes
+                <span data-i18n="nav.notes">Notes</span>
+            </a>
+            <a href="{% url 'community:list' %}" class="nav-link {% block nav_community %}{% endblock %}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span data-i18n="nav.communities">Communities</span>
             </a>
             <a href="{% url 'main:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7" />
-                    <rect x="14" y="3" width="7" height="7" />
-                    <rect x="14" y="14" width="7" height="7" />
-                    <rect x="3" y="14" width="7" height="7" />
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
                 </svg>
-                Dashboard
+                <span data-i18n="nav.dashboard">Dashboard</span>
             </a>
             <a href="{% url 'roadmap:list' %}" class="nav-link {% block nav_roadmap %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
                 </svg>
-                Roadmaps
+                <span data-i18n="nav.roadmaps">Roadmaps</span>
             </a>
-        </nav>
+            </nav>
 
         <!-- Search -->
         <div class="search-wrap">
@@ -693,13 +88,15 @@
                     <circle cx="11" cy="11" r="8" />
                     <path d="m21 21-4.35-4.35" />
                 </svg>
-                <input type="text" id="search-input" name="q" placeholder="Search..."
+                <input type="text" id="search-input" name="q" 
+                    data-i18n="nav.search" data-i18n-attr="placeholder"
+                    placeholder="Search..."
                     value="{{ request.GET.q|default:'' }}" />
             </form>
             <div class="search-results" id="search-results"></div>
         </div>
 
-        <button class="theme-btn" id="theme-toggle" title="Toggle theme">
+        <button class="theme-btn" id="theme-toggle" data-i18n="theme.toggle" data-i18n-attr="title" title="Toggle theme">
             <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="2" style="display:none;">
                 <circle cx="12" cy="12" r="5" />
@@ -723,38 +120,51 @@
             </div>
             <div class="dropdown-menu" id="dropdown-menu">
                 <div class="dropdown-header">
-                        <p>{{ request.user.get_full_name|default:request.user.username }}</p>
-                        <p>{% if request.user.role == 'teacher' and request.user.teacher_profile %}{{ request.user.teacher_profile.teacher_title }} · Lv.{{ request.user.teacher_profile.teacher_level }}{% else %}{{ request.user.title }} · Lv.{{ request.user.level }}{% endif %}</p>  
+                    <p>{{ user.get_full_name|default:user.username }}</p>
+                    <p>
+                        {% if user.role == 'director' %}
+                            <span style="font-size:11px; color:var(--muted);" data-i18n="nav.role_director">Director</span>
+                        {% elif user.role == 'teacher' %}
+                            {% if user.teacher_profile %}
+                                {{ user.teacher_profile.teacher_title }} · Lv.{{ user.teacher_profile.teacher_level }}
+                            {% else %}
+                                {{ user.title }} · Lv.{{ user.level }}
+                            {% endif %}
+                        {% else %}
+                            {{ user.title }} · Lv.{{ user.level }}
+                        {% endif %}
+                    </p>
                 </div>
                 <a href="{% url 'user:profile' %}" class="dropdown-item">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                        <circle cx="12" cy="7" r="4" />
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    Profile
+                    <span data-i18n="nav.profile">Profile</span>
                 </a>
                 <a href="{% url 'user:edit_profile' %}" class="dropdown-item">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                     </svg>
-                    Edit profile
+                    <span data-i18n="nav.edit_profile">Edit profile</span>
                 </a>
                 <hr class="dropdown-divider">
                 <a href="{% url 'user:logout' %}" class="dropdown-item danger">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                        <polyline points="16 17 21 12 16 7" />
-                        <line x1="21" y1="12" x2="9" y2="12" />
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
                     </svg>
-                    Logout
+                    <span data-i18n="nav.logout">Logout</span>
                 </a>
-            </div>
+                </div>
+ 
         </div>
         {% else %}
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-            <a href="{% url 'user:login' %}" class="btn-ghost">Login</a>
-            <a href="{% url 'user:register' %}" class="btn-primary">Register</a>
+            <a href="{% url 'user:login' %}" class="btn-ghost" data-i18n="nav.login">Login</a>
+            <a href="{% url 'user:register' %}" class="btn-primary" data-i18n="nav.register">Register</a>
         </div>
         {% endif %}
 
@@ -775,27 +185,33 @@
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
             </svg>
-            <input type="text" name="q" placeholder="Search..." />
+            <input type="text" name="q" data-i18n="nav.search" data-i18n-attr="placeholder" placeholder="Search..." />
         </form>
         <a href="{% url 'library:home' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
             </svg>
-            Library
+            <span data-i18n="nav.library">Library</span>
         </a>
         <a href="{% url 'post:list' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
             </svg>
-            Posts
+            <span data-i18n="nav.posts">Posts</span>
         </a>
         <a href="{% url 'note:list' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <polyline points="14 2 14 8 20 8" />
             </svg>
-            Notes
+            <span data-i18n="nav.notes">Notes</span>
+        </a>
+        <a href="{% url 'community:list' %}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            </svg>
+            <span data-i18n="nav.communities">Communities</span>
         </a>
         <a href="{% url 'main:dashboard' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -804,14 +220,14 @@
                 <rect x="14" y="14" width="7" height="7" />
                 <rect x="3" y="14" width="7" height="7" />
             </svg>
-            Dashboard
+            <span data-i18n="nav.dashboard">Dashboard</span>
         </a>
         <a href="{% url 'roadmap:list' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
             </svg>
-            Roadmaps
+            <span data-i18n="nav.roadmaps">Roadmaps</span>
         </a>
         {% if user.is_authenticated %}
         <a href="{% url 'user:profile' %}">
@@ -819,7 +235,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                 <circle cx="12" cy="7" r="4" />
             </svg>
-            Profile
+            <span data-i18n="nav.profile">Profile</span>
         </a>
         <a href="{% url 'user:logout' %}" style="color:#EF4444;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
@@ -827,11 +243,11 @@
                 <polyline points="16 17 21 12 16 7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
             </svg>
-            Logout
+            <span data-i18n="nav.logout">Logout</span>
         </a>
         {% else %}
-        <a href="{% url 'user:login' %}">Login</a>
-        <a href="{% url 'user:register' %}" style="color:var(--accent);font-weight:500;">Register</a>
+        <a href="{% url 'user:login' %}"><span data-i18n="nav.login">Login</span></a>
+        <a href="{% url 'user:register' %}" style="color:var(--accent);font-weight:500;"><span data-i18n="nav.register">Register</span></a>
         {% endif %}
     </div>
 
@@ -849,194 +265,16 @@
 
     <!-- FOOTER -->
     <footer>
-        <span><span style="color:var(--accent);font-weight:500;">Hirad</span>Hub — Educational Platform</span>
+        <span><span style="color:var(--accent);font-weight:500;">Hirad</span>Hub — <span data-i18n="footer.brand">Educational Platform</span></span>
         <div class="footer-links">
-            <a href="{% url 'library:home' %}">Library</a>
-            <a href="{% url 'post:list' %}">Posts</a>
-            <a href="{% url 'main:leaderboard' %}">Leaderboard</a>
+            <a href="{% url 'library:home' %}" data-i18n="footer.library">Library</a>
+            <a href="{% url 'post:list' %}" data-i18n="footer.posts">Posts</a>
+            <a href="{% url 'main:leaderboard' %}" data-i18n="footer.leaderboard">Leaderboard</a>
         </div>
     </footer>
 
-    <script>
-        // ── Theme ──
-        const html = document.documentElement;
-        const btn = document.getElementById('theme-toggle');
-        const sun = document.getElementById('icon-sun');
-        const moon = document.getElementById('icon-moon');
 
-        function applyTheme(t) {
-            if (t === 'dark') {
-                html.classList.add('dark');
-                sun.style.display = 'block';
-                moon.style.display = 'none';
-            } else {
-                html.classList.remove('dark');
-                sun.style.display = 'none';
-                moon.style.display = 'block';
-            }
-        }
-        const saved = localStorage.getItem('hh-theme') ||
-            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        applyTheme(saved);
-        btn.addEventListener('click', () => {
-            const next = html.classList.contains('dark') ? 'light' : 'dark';
-            localStorage.setItem('hh-theme', next);
-            applyTheme(next);
-        });
-
-        // ── Mobile menu ──
-        document.getElementById('hamburger').addEventListener('click', () => {
-            document.getElementById('mobile-menu').classList.toggle('open');
-        });
-
-        // ── Active nav link ──
-        document.querySelectorAll('.nav-link').forEach(link => {
-            if (window.location.href.startsWith(link.href)) link.classList.add('active');
-        });
-
-        // ── Dropdown — JS controlled (надёжнее hover) ──
-        const avatarBtn = document.getElementById('avatar-btn');
-        const dropdownMenu = document.getElementById('dropdown-menu');
-
-        if (avatarBtn && dropdownMenu) {
-            let closeTimer = null;
-
-            function openDropdown() {
-                clearTimeout(closeTimer);
-                dropdownMenu.classList.add('open');
-            }
-            function scheduleClose() {
-                closeTimer = setTimeout(() => dropdownMenu.classList.remove('open'), 150);
-            }
-
-            // Открывается при наведении на аватарку или меню
-            avatarBtn.addEventListener('mouseenter', openDropdown);
-            avatarBtn.addEventListener('mouseleave', scheduleClose);
-            dropdownMenu.addEventListener('mouseenter', openDropdown);
-            dropdownMenu.addEventListener('mouseleave', scheduleClose);
-
-            // Также открывается по клику (для тач устройств)
-            avatarBtn.addEventListener('click', () => {
-                dropdownMenu.classList.toggle('open');
-            });
-
-            // Закрывается при клике вне
-            document.addEventListener('click', (e) => {
-                if (!avatarBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                    dropdownMenu.classList.remove('open');
-                }
-            });
-        }
-
-        // ── Live search ──
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-        let searchTimer = null;
-
-        if (searchInput && searchResults) {
-
-            searchInput.addEventListener('input', () => {
-                clearTimeout(searchTimer);
-                const q = searchInput.value.trim();
-
-                if (!q) {
-                    searchResults.classList.remove('open');
-                    searchResults.innerHTML = '';
-                    return;
-                }
-
-                searchTimer = setTimeout(async () => {
-                    try {
-                        const res = await fetch(`/search/?q=${encodeURIComponent(q)}&format=json`);
-                        const data = await res.json();
-                        renderSearchResults(data, q);
-                    } catch {
-                        searchResults.classList.remove('open');
-                    }
-                }, 300);
-            });
-
-            function renderSearchResults(data, q) {
-                const { users = [], posts = [], notes = [], books = [] } = data;
-                const total = users.length + posts.length + notes.length + books.length;
-
-                if (total === 0) {
-                    searchResults.innerHTML = `<div class="search-empty">No results for "${q}"</div>`;
-                    searchResults.classList.add('open');
-                    return;
-                }
-
-                let html = '';
-
-                if (users.length) {
-                    html += `<div class="search-result-section">Users</div>`;
-                    users.forEach(u => {
-                        html += `<a href="/user/profile/${u.username}/" class="search-result-item">
-                <div style="width:28px;height:28px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;color:#a5b4fc;flex-shrink:0;">
-                  ${u.username[0].toUpperCase()}
-                </div>
-                <div>
-                  <p style="font-size:13px;font-weight:500;color:var(--text);">${u.full_name || u.username}</p>
-                  <p style="font-size:11px;color:var(--muted);">@${u.username} · Lv.${u.level}</p>
-                </div>
-              </a>`;
-                    });
-                }
-
-                if (posts.length) {
-                    html += `<div class="search-result-section">Posts</div>`;
-                    posts.forEach(p => {
-                        html += `
-              <a href="/post/${p.id}/" class="search-result-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.text}</p>
-              </a>`;
-                    });
-                }
-
-                if (notes.length) {
-                    html += `<div class="search-result-section">Notes</div>`;
-                    notes.forEach(n => {
-                        html += `
-              <a href="/note/${n.id}" class="search-result-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                <p style="font-size:13px;color:var(--text);">${n.title}</p>
-              </a>`;
-                    });
-                }
-
-                if (books.length) {
-                    html += `<div class="search-result-section">Books</div>`;
-                    books.forEach(b => {
-                        html += `
-                <a href="/library/books/${b.id}/" class="search-result-item">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                <p style="font-size:13px;color:var(--text);">${b.title}</p>
-                </a>`;
-                    });
-                }
-
-                searchResults.innerHTML = html;
-                searchResults.classList.add('open');
-            }
-
-            // Закрыть при клике вне поиска
-            document.addEventListener('click', (e) => {
-                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-                    searchResults.classList.remove('open');
-                }
-            });
-
-            // Enter — переход на страницу поиска
-            searchInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    window.location.href = `/search/?q=${encodeURIComponent(searchInput.value)}`;
-                }
-            });
-        }
-    </script>
-
+    <script src="{% static 'js/base.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 

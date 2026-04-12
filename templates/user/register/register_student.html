@@ -11,8 +11,8 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     </a>
     <div>
-      <h1 style="font-size:18px; font-weight:600; color:var(--text);">Create student account</h1>
-      <p style="font-size:12px; color:var(--muted); margin-top:2px;">Start learning on HiradHub</p>
+      <h1 style="font-size:18px; font-weight:600; color:var(--text);" data-i18n="auth.reg_student_h1">Create student account</h1>
+      <p style="font-size:12px; color:var(--muted); margin-top:2px;" data-i18n="auth.reg_student_sub">Start learning on HiradHub</p>
     </div>
   </div>
 
@@ -29,14 +29,14 @@
       <!-- Name row -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1rem;">
         <div>
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">First name</label>
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.first_name">First name</label>
           <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" placeholder="Bilol"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.first_name.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
           {% if form.first_name.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.first_name.errors|join:", " }}</p>{% endif %}
         </div>
         <div>
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Last name</label>
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.last_name">Last name</label>
           <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" placeholder="Force"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.last_name.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
@@ -45,24 +45,24 @@
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Email</label>
-        <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="your@email.com"
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.email">Email</label>
+        <input type="email" name="email" value="{{ form.email.value|default:'' }}" data-i18n="auth.email_ph" data-i18n-attr="placeholder" placeholder="your@email.com"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.email.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         {% if form.email.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.email.errors|join:", " }}</p>{% endif %}
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Password</label>
-        <input type="password" name="password1" placeholder="••••••••"
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.password">Password</label>
+        <input type="password" name="password1" data-i18n="auth.pass_dots" data-i18n-attr="placeholder" placeholder="••••••••"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.password1.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         {% if form.password1.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.password1.errors|join:", " }}</p>{% endif %}
       </div>
 
       <div style="margin-bottom:1.5rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Confirm password</label>
-        <input type="password" name="password2" placeholder="••••••••"
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.confirm_pass">Confirm password</label>
+        <input type="password" name="password2" data-i18n="auth.pass_dots" data-i18n-attr="placeholder" placeholder="••••••••"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.password2.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         {% if form.password2.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.password2.errors|join:", " }}</p>{% endif %}
@@ -71,14 +71,14 @@
       <button type="submit"
         style="width:100%; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-        Create account
+        <span data-i18n="auth.create_account">Create account</span>
       </button>
     </form>
   </div>
 
   <p style="text-align:center; font-size:13px; color:var(--muted); margin-top:1.25rem;">
-    Already have an account?
-    <a href="{% url 'user:login' %}" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign in</a>
+    <span data-i18n="auth.has_account">Already have an account?</span>
+    <a href="{% url 'user:login' %}" style="color:var(--accent); text-decoration:none; font-weight:500;" data-i18n="auth.sign_in_btn">Sign in</a>
   </p>
 
 </div>

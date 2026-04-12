@@ -14,8 +14,8 @@
         </svg>
     </div>
 
-    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;">Delete this post?</p>
-    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;">This action cannot be undone.
+    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;" data-i18n="post.del.title">Delete this post?</p>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;" data-i18n="post.del.warn">This action cannot be undone.
         The post and all its comments will be permanently removed.</p>
 
     {% if post.text %}
@@ -31,12 +31,12 @@
             <button type="submit"
                 style="padding:9px 20px; background:#ef4444; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                 onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
-                Yes, delete
+                <span data-i18n="post.del.yes">Yes, delete</span>
             </button>
         </form>
         <a href="{% url 'post:list' %}"
             style="padding:9px 20px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:background 0.15s;"
-            onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
+            onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'" data-i18n="gen.cancel">
             Cancel
         </a>
     </div>

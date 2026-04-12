@@ -9,6 +9,9 @@ from .forms import CustomUserCreationForm, CustomUserLoginForm, CustomUserUpdate
 from django.contrib.auth.decorators import login_required
 from user.decorators import teacher_required
 from library.models import Book, Podcast, Video
+from community.models import Community, CommunityMembership
+
+
 
 def register(request):
     return redirect('user:register_choice')
@@ -51,7 +54,22 @@ LEVEL_THRESHOLDS = [0, 1000, 5000, 10000, 20000, 35000, 45000, 55000, 70000, 100
 @login_required
 def profile_view(request):
     user = request.user
- 
+    communities = []
+    pending_teachers = []
+    pending_count = 0
+
+    if user.role == 'director':
+        communities = Community.objects.filter(creator=user).order_by('-created_at')
+        pending_qs = TeacherProfile.objects.filter(
+            is_verified=False, user__role='teacher'
+        ).select_related('user', 'school')
+        try:
+            if user.director_profile.school:
+                pending_qs = pending_qs.filter(school=user.director_profile.school)
+        except Exception:
+            pass
+        pending_teachers = pending_qs
+        pending_count = pending_qs.count()
     from post.models import Post, Favorite
     from django.contrib.contenttypes.models import ContentType
     post_ct = ContentType.objects.get_for_model(Post)
@@ -107,6 +125,9 @@ def profile_view(request):
         'teacher_books':     teacher_books,
         'teacher_videos':    teacher_videos,
         'teacher_podcasts':  teacher_podcasts,
+        'communities':      communities,
+        'pending_teachers': pending_teachers,
+        'pending_count':    pending_count,
     })
  
 
@@ -209,10 +230,15 @@ def teacher_dashboard(request):
 
 @login_required
 def verify_teacher(request, username):
+    from django.contrib import messages
+
     if request.user.role not in ['director', 'admin']:
         return redirect('main:home')
 
-    teacher = get_object_or_404(CustomUser, username=username, role='teacher')
+    teacher = get_object_or_404(CustomUser, username=username)
+    if teacher.role != 'teacher':
+        messages.error(request, 'This action applies to teacher accounts only.')
+        return redirect('user:pending_teachers')
 
     try:
         profile = teacher.teacher_profile
@@ -247,7 +273,7 @@ def pending_teachers(request):
         return redirect('main:home')
 
     teachers = TeacherProfile.objects.filter(
-        is_verified=False
+        is_verified=False, user__role='teacher'
     ).select_related('user', 'school').order_by('created_at')
 
     if request.user.role == 'director':

@@ -14,16 +14,25 @@ User = get_user_model()
 
 @login_required
 def dashboard(request):
+    from user.models import DirectorProfile
+
     dash, _ = Dashboard.objects.get_or_create(user=request.user)
-    rank = User.objects.filter(score__gt=request.user.score).count() + 1
-    top_users = User.objects.order_by('-score')[:5]
-    recent_posts = Post.objects.filter(author=request.user).order_by('-created_at')[:5]
-    return render(request, 'main/dashboard.html',
-                {'dash': dash, 
-                'rank': rank,
-                'top_users': top_users,
-                'recent_posts': recent_posts
-                })
+    user = request.user
+    ctx = {
+        'dash': dash,
+        'top_users': User.objects.order_by('-score')[:5],
+        'recent_posts': Post.objects.filter(author=user).order_by('-created_at')[:5],
+    }
+    if user.role == 'director':
+        ctx['rank'] = None
+        try:
+            ctx['director_profile'] = user.director_profile
+        except DirectorProfile.DoesNotExist:
+            ctx['director_profile'] = None
+    else:
+        ctx['rank'] = User.objects.filter(score__gt=user.score).count() + 1
+        ctx['director_profile'] = None
+    return render(request, 'main/dashboard.html', ctx)
 
 
 def home(request):
@@ -32,7 +41,14 @@ def home(request):
     
     if request.user.is_authenticated:
         from roadmap.models import UserProgress, Roadmap
- 
+        from user.models import DirectorProfile
+
+        if request.user.role == 'director':
+            try:
+                ctx['director_profile'] = request.user.director_profile
+            except DirectorProfile.DoesNotExist:
+                ctx['director_profile'] = None
+
         last_progress = (
             UserProgress.objects
             .filter(user=request.user, completed=False)

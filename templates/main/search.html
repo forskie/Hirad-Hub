@@ -11,11 +11,11 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <input type="text" name="q" value="{{ q }}" placeholder="Search users, posts, notes, books..."
+      <input type="text" name="q" value="{{ q }}" data-i18n="search.placeholder_long" data-i18n-attr="placeholder" placeholder="Search users, posts, notes, books..."
         autofocus
         style="flex:1; background:none; border:none; outline:none; font-size:15px; color:var(--text); font-family:'Sora',sans-serif;"/>
       {% if q %}
-        <a href="{% url 'main:search' %}" style="color:var(--muted); text-decoration:none; font-size:13px; flex-shrink:0;">Clear</a>
+        <a href="{% url 'main:search' %}" style="color:var(--muted); text-decoration:none; font-size:13px; flex-shrink:0;" data-i18n="search.clear">Clear</a>
       {% endif %}
     </div>
   </form>
@@ -29,20 +29,20 @@
         <div style="width:52px; height:52px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
-        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">Nothing found</p>
-        <p style="font-size:13px; color:var(--muted);">Try a different search term for "{{ q }}".</p>
+        <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;" data-i18n="search.nothing_found">Nothing found</p>
+        <p id="search-try-hint" style="font-size:13px; color:var(--muted);" data-q="{{ q|escape }}"></p>
       </div>
 
     {% else %}
 
       <p style="font-size:13px; color:var(--muted); margin-bottom:1.5rem;">
-        Results for "<span style="color:var(--text);">{{ q }}</span>"
+        <span data-i18n="search.results_intro">Results for</span> "<span style="color:var(--text);">{{ q }}</span>"
       </p>
 
       <!-- Users -->
       {% if users %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Users</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;" data-i18n="search.users">Users</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
           {% for u in users %}
           <a href="{% url 'user:profile_others' u.username %}"
@@ -67,7 +67,7 @@
       <!-- Posts -->
       {% if posts %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Posts</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;" data-i18n="search.posts">Posts</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
           {% for post in posts %}
           <a href="{% url 'post:detail' post.pk %}"
@@ -76,7 +76,7 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             <div style="flex:1; min-width:0;">
               <p style="font-size:13px; color:var(--text); line-height:1.6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ post.text|truncatechars:100 }}</p>
-              <p style="font-size:11px; color:var(--muted); margin-top:3px;">by {{ post.author.username }} · {{ post.created_at|timesince }} ago</p>
+              <p style="font-size:11px; color:var(--muted); margin-top:3px;"><span data-i18n="gen.by">by</span> {{ post.author.username }} · {{ post.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
             </div>
           </a>
           {% endfor %}
@@ -87,7 +87,7 @@
       <!-- Notes -->
       {% if notes %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Notes</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;" data-i18n="search.notes">Notes</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
           {% for note in notes %}
           <a href="{% url 'note:detail' note.pk %}"
@@ -96,9 +96,9 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             <div style="flex:1; min-width:0;">
               <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ note.title }}</p>
-              <p style="font-size:11px; color:var(--muted);">by {{ note.author.username }} · {{ note.created_at|timesince }} ago</p>
+              <p style="font-size:11px; color:var(--muted);"><span data-i18n="gen.by">by</span> {{ note.author.username }} · {{ note.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
             </div>
-            <span style="font-size:11px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px; flex-shrink:0;">public</span>
+            <span style="font-size:11px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px; flex-shrink:0;" data-i18n="gen.public">public</span>
           </a>
           {% endfor %}
         </div>
@@ -108,7 +108,7 @@
       <!-- Books -->
       {% if books %}
       <div style="margin-bottom:2rem;">
-        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">Books</p>
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;" data-i18n="search.books">Books</p>
         <div style="display:flex; flex-direction:column; gap:8px;">
           {% for book in books %}
           <a href="{% url 'library:book_detail' book.pk %}"
@@ -119,7 +119,7 @@
             </div>
             <div style="flex:1; min-width:0;">
               <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ book.title }}</p>
-              <p style="font-size:12px; color:var(--muted);">{{ book.author|default:"No author" }}{% if book.level %} · {{ book.get_level_display }}{% endif %}</p>
+              <p style="font-size:12px; color:var(--muted);">{% if book.author %}{{ book.author }}{% else %}<span data-i18n="search.no_author">No author</span>{% endif %}{% if book.level %} · {{ book.get_level_display }}{% endif %}</p>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
@@ -134,9 +134,27 @@
   {% else %}
     <div style="text-align:center; padding:4rem 0;">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1" style="margin-bottom:1rem;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <p style="font-size:15px; color:var(--muted);">Type something to search across HiradHub.</p>
+      <p style="font-size:15px; color:var(--muted);" data-i18n="search.type_prompt">Type something to search across HiradHub.</p>
     </div>
   {% endif %}
 
 </div>
+{% endblock %}
+
+{% block extra_js %}
+{% if q %}
+<script>
+(function () {
+  function fillTryHint() {
+    var el = document.getElementById('search-try-hint');
+    if (!el || typeof I18N === 'undefined') return;
+    var q = el.getAttribute('data-q') || '';
+    el.textContent = I18N.t('search.try_hint', { q: q });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fillTryHint);
+  else fillTryHint();
+  window.addEventListener('hh-lang', fillTryHint);
+})();
+</script>
+{% endif %}
 {% endblock %}

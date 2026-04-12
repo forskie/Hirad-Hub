@@ -11,15 +11,15 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     </a>
     <div>
-      <h1 style="font-size:18px; font-weight:600; color:var(--text);">Teacher registration</h1>
-      <p style="font-size:12px; color:var(--muted); margin-top:2px;">Your account will be reviewed before activation</p>
+      <h1 style="font-size:18px; font-weight:600; color:var(--text);" data-i18n="auth.teacher_reg_title">Teacher registration</h1>
+      <p style="font-size:12px; color:var(--muted); margin-top:2px;" data-i18n="auth.teacher_reg_review">Your account will be reviewed before activation</p>
     </div>
   </div>
 
   <!-- Info banner -->
   <div style="background:#1e1d3a; border:0.5px solid #3730a3; border-radius:10px; padding:12px 14px; margin-bottom:1.25rem; display:flex; align-items:flex-start; gap:10px;">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a5b4fc" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    <p style="font-size:13px; color:#a5b4fc; line-height:1.6;">After registration your account will be verified by an admin or school director. You can log in immediately but upload access will be granted after verification.</p>
+    <p style="font-size:13px; color:#a5b4fc; line-height:1.6;" data-i18n="auth.teacher_info_banner">After registration your account will be verified by an admin or school director. You can log in immediately but upload access will be granted after verification.</p>
   </div>
 
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
@@ -37,14 +37,14 @@
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1rem;">
         <div>
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">First name</label>
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.first_name">First name</label>
           <input type="text" name="first_name" value="{{ form.first_name.value|default:'' }}" placeholder="Ahmad"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.first_name.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
           {% if form.first_name.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.first_name.errors|join:", " }}</p>{% endif %}
         </div>
         <div>
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Last name</label>
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.last_name">Last name</label>
           <input type="text" name="last_name" value="{{ form.last_name.value|default:'' }}" placeholder="Karimov"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.last_name.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
@@ -53,15 +53,15 @@
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Email</label>
-        <input type="email" name="email" value="{{ form.email.value|default:'' }}" placeholder="teacher@school.tj"
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.email">Email</label>
+        <input type="email" name="email" value="{{ form.email.value|default:'' }}" data-i18n="auth.email_ph" data-i18n-attr="placeholder" placeholder="teacher@school.tj"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.email.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         {% if form.email.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.email.errors|join:", " }}</p>{% endif %}
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Phone number (optional)</label>
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.phone_optional_label">Phone number (optional)</label>
         <input type="text" name="phone_number" value="{{ form.phone_number.value|default:'' }}" placeholder="+992XXXXXXXXX"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
@@ -70,15 +70,15 @@
 
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:1.25rem;">
         <div>
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Password</label>
-          <input type="password" name="password1" placeholder="••••••••"
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.password">Password</label>
+          <input type="password" name="password1" data-i18n="auth.pass_dots" data-i18n-attr="placeholder" placeholder="••••••••"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.password1.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
           {% if form.password1.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.password1.errors|join:", " }}</p>{% endif %}
         </div>
         <div>
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Confirm password</label>
-          <input type="password" name="password2" placeholder="••••••••"
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.confirm_pass">Confirm password</label>
+          <input type="password" name="password2" data-i18n="auth.pass_dots" data-i18n-attr="placeholder" placeholder="••••••••"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid {% if form.password2.errors %}#fecaca{% else %}var(--border){% endif %}; border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
           {% if form.password2.errors %}<p style="font-size:11px; color:#ef4444; margin-top:3px;">{{ form.password2.errors|join:", " }}</p>{% endif %}
@@ -87,14 +87,14 @@
 
       <!-- School info -->
       <div style="border-top:0.5px solid var(--border); padding-top:1.25rem; margin-bottom:1rem;">
-        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;">School info</p>
+        <p style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;" data-i18n="auth.section_school">School info</p>
 
         <div style="margin-bottom:1rem;">
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">School (optional)</label>
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.school_optional_label">School (optional)</label>
           <select name="school"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-            <option value="">— Select school —</option>
+            <option value="" data-i18n="auth.select_school">— Select school —</option>
             {% for school in form.school.field.queryset %}
               <option value="{{ school.pk }}" {% if form.school.value == school.pk|stringformat:"s" %}selected{% endif %}>
                 {% if school.number %}#{{ school.number }} — {% endif %}{{ school.name }}{% if school.city %} ({{ school.city }}){% endif %}
@@ -104,8 +104,8 @@
         </div>
 
         <div style="margin-bottom:0;">
-          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;">Subject (optional)</label>
-          <input type="text" name="subject" value="{{ form.subject.value|default:'' }}" placeholder="e.g. Mathematics, Physics, History"
+          <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:5px;" data-i18n="auth.subject_optional_label">Subject (optional)</label>
+          <input type="text" name="subject" value="{{ form.subject.value|default:'' }}" data-i18n="auth.subject_ph" data-i18n-attr="placeholder" placeholder="e.g. Mathematics, Physics, History"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
@@ -114,14 +114,14 @@
       <button type="submit"
         style="width:100%; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s; margin-top:1.25rem;"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-        Submit for verification
+        <span data-i18n="auth.submit_verification">Submit for verification</span>
       </button>
     </form>
   </div>
 
   <p style="text-align:center; font-size:13px; color:var(--muted); margin-top:1.25rem;">
-    Already have an account?
-    <a href="{% url 'user:login' %}" style="color:var(--accent); text-decoration:none; font-weight:500;">Sign in</a>
+    <span data-i18n="auth.has_account">Already have an account?</span>
+    <a href="{% url 'user:login' %}" style="color:var(--accent); text-decoration:none; font-weight:500;" data-i18n="auth.sign_in_btn">Sign in</a>
   </p>
 
 </div>
