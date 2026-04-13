@@ -17,7 +17,7 @@
       <div>
         <h1 style="font-size:18px; font-weight:500; color:var(--text); line-height:1.3;">{{ roadmap.title }}</h1>
         <p style="font-size:12px; color:var(--muted); margin-top:3px;">
-          by {{ roadmap.creator.get_full_name|default:roadmap.creator.username }}
+          автор: {{ roadmap.creator.get_full_name|default:roadmap.creator.username }}
           {% if roadmap.topic %} · {{ roadmap.topic.name }}{% endif %}
         </p>
       </div>
@@ -30,7 +30,7 @@
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
       </svg>
-      Edit
+      Редактировать
     </a>
     {% endif %}
   </div>
@@ -46,7 +46,7 @@
   {% if user.is_authenticated and steps %}
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem 1.25rem; margin-bottom:1.25rem;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-      <p style="font-size:13px; font-weight:500; color:var(--text);">Your progress</p>
+      <p style="font-size:13px; font-weight:500; color:var(--text);">Ваш прогресс</p>
       <span style="font-size:13px; color:var(--accent); font-weight:500;">
         {{ completed_count|default:0 }} / {{ steps|length }}
       </span>
@@ -57,7 +57,7 @@
       {% endif %}
     </div>
     {% if completed_count == steps|length and steps|length > 0 %}
-    <p style="font-size:12px; color:#22C55E; margin-top:6px; font-weight:500;">✓ Roadmap completed!</p>
+    <p style="font-size:12px; color:#22C55E; margin-top:6px; font-weight:500;">✓ Дорожная карта пройдена!</p>
     {% endif %}
   </div>
   {% endif %}
@@ -98,7 +98,7 @@
               {{ step.title }}
             </p>
             {% if progress and progress.completed %}
-            <span style="font-size:10px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px;">done</span>
+            <span style="font-size:10px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:5px;">готово</span>
             {% endif %}
           </div>
 
@@ -132,7 +132,7 @@
               <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
               <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
             </svg>
-            Open material
+            Открыть материал
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
               <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -144,7 +144,7 @@
         <!-- Completed timestamp -->
         {% if progress and progress.completed and progress.completed_at %}
         <div style="flex-shrink:0; text-align:right;">
-          <p style="font-size:10px; color:var(--muted);">{{ progress.completed_at|timesince }} ago</p>
+          <p style="font-size:10px; color:var(--muted);">{{ progress.completed_at|timesince }} назад</p>
         </div>
         {% endif %}
 
@@ -157,11 +157,11 @@
 
   {% else %}
   <div style="text-align:center; padding:4rem 0;">
-    <p style="font-size:14px; color:var(--muted);">No steps yet.</p>
+    <p style="font-size:14px; color:var(--muted);">Пока нет шагов.</p>
     {% if user == roadmap.creator %}
     <a href="{% url 'roadmap:edit' roadmap.pk %}"
       style="display:inline-block; margin-top:12px; padding:8px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">
-      Add steps →
+      Добавить шаги →
     </a>
     {% endif %}
   </div>
@@ -170,10 +170,10 @@
   <!-- Not logged in CTA -->
   {% if not user.is_authenticated %}
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.1rem; text-align:center;">
-    <p style="font-size:14px; color:var(--text); margin-bottom:8px;">Log in to track your progress</p>
+    <p style="font-size:14px; color:var(--text); margin-bottom:8px;">Войдите, чтобы отслеживать прогресс</p>
     <a href="{% url 'user:login' %}"
       style="padding:8px 20px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;">
-      Log in
+      Войти
     </a>
   </div>
   {% endif %}

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}New Community — HiradHub{% endblock %}
+{% block title %}Новое сообщество — HiradHub{% endblock %}
 {% block nav_community %}active{% endblock %}
 {% block content %}
 <div style="max-width:640px; margin:0 auto;">
@@ -32,8 +32,8 @@
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description (optional)</label>
-        <textarea name="description" rows="3" maxlength="5000" placeholder="What is this community about?"
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Описание (необязательно)</label>
+        <textarea name="description" rows="3" maxlength="5000" placeholder="О чём это сообщество?"
           style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.7; transition:border-color 0.15s;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">{{ request.POST.description|default:'' }}</textarea>
       </div>
@@ -43,7 +43,7 @@
         <select name="topic"
           style="width:100%; padding:10px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer; transition:border-color 0.15s;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-          <option value="" data-i18n="gen.no_topic">— No topic —</option>
+          <option value="" data-i18n="gen.no_topic">— Без темы —</option>
           {% for topic in topics %}
           <option value="{{ topic.pk }}" {% if request.POST.topic == topic.pk|stringformat:"s" %}selected{% endif %}>{{ topic.name }}</option>
           {% endfor %}
@@ -67,7 +67,7 @@
         </button>
         <a href="{% url 'community:list' %}"
           style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;" data-i18n="gen.cancel">
-          Cancel
+          Отмена
         </a>
       </div>
     </form>

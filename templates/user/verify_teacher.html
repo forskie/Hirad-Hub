@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Verify Teacher — HiradHub{% endblock %}
+{% block title %}Подтвердить учителя — HiradHub{% endblock %}
 
 {% block content %}
 <div style="max-width:480px; margin:4rem auto; text-align:center;">
@@ -44,12 +44,12 @@
       <button type="submit"
         style="padding:10px 24px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'" data-i18n="verify.confirm_btn">
-        Confirm verification
+        Подтвердить
       </button>
     </form>
     <a href="{% url 'user:pending_teachers' %}"
       style="padding:10px 20px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;" data-i18n="gen.cancel">
-      Cancel
+      Отмена
     </a>
   </div>
 

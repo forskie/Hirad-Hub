@@ -62,11 +62,19 @@ def post_detail(request, pk):
     post.increment_views()
     comments = post.comments.select_related('user').filter(parent=None).prefetch_related('replies')
     liked = False
-    other_posts = Post.objects.filter(author=post.author).exclude(pk=post.pk).order_by('-created_at')[:5]
+    user_communities = []
     if request.user.is_authenticated:
-        ct = ContentType.objects.get_for_model(Post)
-        liked = Like.objects.filter(user=request.user, content_type=ct, object_id=post.pk).exists()
-    return render(request, 'post/detail.html', {'post': post, 'comments': comments, 'liked': liked, 'other_posts': other_posts})
+        from community.models import CommunityMembership
+        user_communities = CommunityMembership.objects.filter(
+            user=request.user, is_approved=True
+        ).select_related('community')
+
+    return render(request, 'post/detail.html', {
+        'post': post,
+        'comments': comments,
+        'liked': liked,
+        'user_communities': user_communities,
+    })
 
 @login_required
 def post_create(request):

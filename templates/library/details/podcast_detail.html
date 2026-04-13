@@ -7,7 +7,7 @@
 
   <a href="{% url 'library:home' %}" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:1.25rem;transition:color 0.15s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Library
+    Библиотека
   </a>
 
   <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.25rem;">
@@ -27,7 +27,7 @@
             <span style="font-size:11px;padding:2px 8px;background:var(--surface2);color:var(--muted);border-radius:6px;">{{ podcast.get_level_display }}</span>
           {% endif %}
           {% if podcast.grade %}
-            <span style="font-size:11px;padding:2px 8px;background:#1a1200;color:#fcd34d;border-radius:6px;">Grade {{ podcast.grade }}</span>
+            <span style="font-size:11px;padding:2px 8px;background:#1a1200;color:#fcd34d;border-radius:6px;">Класс {{ podcast.grade }}</span>
           {% endif %}
           {% if podcast.category %}
             <a href="{% url 'library:home' %}?category={{ podcast.category.slug }}" style="font-size:11px;padding:2px 8px;background:#1e1d3a;color:#a5b4fc;border-radius:6px;text-decoration:none;">
@@ -40,7 +40,7 @@
         </div>
       </div>
       {% if request.user == podcast.creator %}
-        <a href="{% url 'library:edit_added_podcast' podcast.pk %}" style="padding:7px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;flex-shrink:0;">Edit</a>
+        <a href="{% url 'library:edit_added_podcast' podcast.pk %}" style="padding:7px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;flex-shrink:0;">Редактировать</a>
       {% endif %}
     </div>
 
@@ -64,7 +64,7 @@
   <!-- Progress -->
   {% if interaction %}
   <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;">
-    <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">Listen progress</p>
+    <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">Прогресс прослушивания</p>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
       <div style="flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;">
         <div style="height:100%;width:{{ interaction.progress|floatformat:0 }}%;background:var(--accent);border-radius:2px;"></div>
@@ -75,21 +75,21 @@
       {% csrf_token %}
       <input type="range" name="progress" min="0" max="100" value="{{ interaction.progress|floatformat:0 }}" style="flex:1;accent-color:var(--accent);" oninput="this.nextElementSibling.textContent=this.value+'%'"/>
       <span style="font-size:12px;color:var(--muted);min-width:36px;">{{ interaction.progress|floatformat:0 }}%</span>
-      <button type="submit" style="padding:6px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);cursor:pointer;font-family:'Sora',sans-serif;">Save</button>
+      <button type="submit" style="padding:6px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);cursor:pointer;font-family:'Sora',sans-serif;">Сохранить</button>
     </form>
-    {% if interaction.completed %}<p style="font-size:12px;color:#22c55e;margin-top:8px;">✓ Completed</p>{% endif %}
+    {% if interaction.completed %}<p style="font-size:12px;color:#22c55e;margin-top:8px;">✓ Завершено</p>{% endif %}
   </div>
   {% endif %}
 
   <!-- Comments -->
   <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;">
-    <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:1rem;">Comments ({{ podcast.count_comments }})</p>
+    <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:1rem;">Комментарии ({{ podcast.count_comments }})</p>
     {% if request.user.is_authenticated %}
     <form hx-post="{% url 'library:add_comment' 'podcast' podcast.pk %}" hx-target="#comments-list" hx-swap="outerHTML" hx-on::after-request="this.reset()" style="margin-bottom:1rem;">
       {% csrf_token %}
-      <textarea name="text" rows="2" placeholder="Write a comment..." style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;resize:none;line-height:1.6;margin-bottom:6px;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      <textarea name="text" rows="2" placeholder="Напишите комментарий..." style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;resize:none;line-height:1.6;margin-bottom:6px;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
       <div style="display:flex;justify-content:flex-end;">
-        <button type="submit" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;">Post</button>
+        <button type="submit" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;">Отправить</button>
       </div>
     </form>
     {% endif %}

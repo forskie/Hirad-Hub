@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Search{% if q %} — {{ q }}{% endif %} — HiradHub{% endblock %}
+{% block title %}Поиск{% if q %} — {{ q }}{% endif %} — HiradHub{% endblock %}
 
 {% block content %}
 <div style="max-width:760px; margin:0 auto;">
@@ -11,7 +11,7 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
-      <input type="text" name="q" value="{{ q }}" data-i18n="search.placeholder_long" data-i18n-attr="placeholder" placeholder="Search users, posts, notes, books..."
+      <input type="text" name="q" value="{{ q }}" data-i18n="search.placeholder_long" data-i18n-attr="placeholder" placeholder="Поиск пользователей, постов, заметок, книг..."
         autofocus
         style="flex:1; background:none; border:none; outline:none; font-size:15px; color:var(--text); font-family:'Sora',sans-serif;"/>
       {% if q %}
@@ -55,7 +55,14 @@
               <p style="font-size:14px; font-weight:500; color:var(--text);">
                 {% if u.first_name %}{{ u.first_name }} {{ u.last_name }}{% else %}{{ u.username }}{% endif %}
               </p>
-              <p style="font-size:12px; color:var(--muted);">@{{ u.username }} · Lv.{{ u.level }} · {{ u.title }}</p>
+              <p style="font-size:12px; color:var(--muted);">
+                @{{ u.username }}
+                {% if u.role == 'director' %}
+                  · <span data-i18n="nav.role_director">Director</span>
+                {% else %}
+                  · Lv.{{ u.level }} · {{ u.title }}
+                {% endif %}
+              </p>
             </div>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
           </a>
@@ -77,6 +84,29 @@
             <div style="flex:1; min-width:0;">
               <p style="font-size:13px; color:var(--text); line-height:1.6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ post.text|truncatechars:100 }}</p>
               <p style="font-size:11px; color:var(--muted); margin-top:3px;"><span data-i18n="gen.by">by</span> {{ post.author.username }} · {{ post.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Roadmaps -->
+      {% if roadmaps %}
+      <div style="margin-bottom:2rem;">
+        <p style="font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; font-weight:500; margin-bottom:10px;" data-i18n="search.roadmaps">Roadmaps</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          {% for roadmap in roadmaps %}
+          <a href="{% url 'roadmap:detail' roadmap.pk %}"
+            style="display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:10px; text-decoration:none; transition:border-color 0.15s;"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0; margin-top:2px;">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+            <div style="flex:1; min-width:0;">
+              <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ roadmap.title }}</p>
+              <p style="font-size:11px; color:var(--muted);"><span data-i18n="gen.by">by</span> {{ roadmap.creator.username }} · {{ roadmap.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
             </div>
           </a>
           {% endfor %}

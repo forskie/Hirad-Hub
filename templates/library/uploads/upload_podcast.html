@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Upload Podcast — HiradHub{% endblock %}
+{% block title %}Загрузить подкаст — HiradHub{% endblock %}
 {% block nav_library %}active{% endblock %}
 
 {% block content %}
@@ -8,7 +8,7 @@
     <a href="{% url 'library:home' %}" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;text-decoration:none;color:var(--muted);" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     </a>
-    <p style="font-size:16px; font-weight:500; color:var(--text);">Upload podcast</p>
+    <p style="font-size:16px; font-weight:500; color:var(--text);">Загрузить подкаст</p>
   </div>
 
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
@@ -21,26 +21,26 @@
       {% endif %}
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Title</label>
-        <input type="text" name="title" placeholder="Podcast title" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Заголовок</label>
+        <input type="text" name="title" placeholder="Название подкаста" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Author</label>
-        <input type="text" name="author" placeholder="Author or channel name" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
+        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Автор</label>
+        <input type="text" name="author" placeholder="Автор или название канала" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Description (optional)</label>
-        <textarea name="description" rows="3" placeholder="Short description..." style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Описание (необязательно)</label>
+        <textarea name="description" rows="3" placeholder="Короткое описание..." style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
       </div>
 
       <!-- Category + Grade -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem;">
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Category (optional)</label>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Категория (необязательно)</label>
           <select name="category" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;cursor:pointer;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-            <option value="">— no category —</option>
+            <option value="">— без категории —</option>
             {% for cat in categories %}
               <option value="{{ cat.pk }}">{{ cat.icon }} {{ cat.name }}</option>
               {% for child in cat.children.all %}
@@ -50,32 +50,32 @@
           </select>
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">School grade (optional)</label>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Класс (необязательно)</label>
           <select name="grade" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;cursor:pointer;">
-            <option value="">— not school —</option>
-            {% for g in grades %}<option value="{{ g }}">Grade {{ g }}</option>{% endfor %}
+            <option value="">— не школа —</option>
+            {% for g in grades %}<option value="{{ g }}">Класс {{ g }}</option>{% endfor %}
           </select>
         </div>
       </div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem;">
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Level</label>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Уровень</label>
           <select name="level" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;cursor:pointer;">
-            <option value="">— select —</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
+            <option value="">— выбрать —</option>
+            <option value="beginner">Начинающий</option>
+            <option value="intermediate">Средний</option>
+            <option value="advanced">Продвинутый</option>
           </select>
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Duration (HH:MM:SS)</label>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Длительность (ЧЧ:ММ:СС)</label>
           <input type="text" name="duration" placeholder="00:45:00" style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Topics (optional)</label>
+        <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Темы (необязательно)</label>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           {% for topic in topics %}
           <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
@@ -88,26 +88,26 @@
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;">
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Audio file</label>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Аудиофайл</label>
           <label for="id_audio_file" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>
-            <span id="audio-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choose audio</span>
+            <span id="audio-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Выберите аудио</span>
           </label>
-          <input type="file" name="audio_file" id="id_audio_file" accept="audio/*" style="display:none;" onchange="document.getElementById('audio-label').textContent=this.files[0]?this.files[0].name:'Choose audio'"/>
+          <input type="file" name="audio_file" id="id_audio_file" accept="audio/*" style="display:none;" onchange="document.getElementById('audio-label').textContent=this.files[0]?this.files[0].name:'Выберите аудио'"/>
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Thumbnail (optional)</label>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;">Обложка (необязательно)</label>
           <label for="id_thumbnail" style="display:flex;align-items:center;gap:8px;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:border-color 0.15s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <span id="thumb-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choose image</span>
+            <span id="thumb-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Выберите изображение</span>
           </label>
-          <input type="file" name="thumbnail" id="id_thumbnail" accept="image/*" style="display:none;" onchange="document.getElementById('thumb-label').textContent=this.files[0]?this.files[0].name:'Choose image'"/>
+          <input type="file" name="thumbnail" id="id_thumbnail" accept="image/*" style="display:none;" onchange="document.getElementById('thumb-label').textContent=this.files[0]?this.files[0].name:'Выберите изображение'"/>
         </div>
       </div>
 
       <div style="display:flex;gap:10px;">
-        <button type="submit" style="flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;" onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">Upload podcast</button>
-        <a href="{% url 'library:home' %}" style="padding:10px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;">Cancel</a>
+        <button type="submit" style="flex:1;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;" onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">Загрузить подкаст</button>
+        <a href="{% url 'library:home' %}" style="padding:10px 16px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;">Отмена</a>
       </div>
     </form>
   </div>

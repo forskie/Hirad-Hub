@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Edit Podcast — HiradHub{% endblock %}
+{% block title %}Редактировать подкаст — HiradHub{% endblock %}
 {% block nav_library %}active{% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
                 <polyline points="15 18 9 12 15 6" />
             </svg>
         </a>
-        <p style="font-size:16px; font-weight:500; color:var(--text);">Edit podcast</p>
+        <p style="font-size:16px; font-weight:500; color:var(--text);">Редактировать подкаст</p>
     </div>
 
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
@@ -21,21 +21,21 @@
             {% csrf_token %}
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Title</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Заголовок</label>
                 <input type="text" name="title" value="{{ podcast.title }}"
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
                     onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Author</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Автор</label>
                 <input type="text" name="author" value="{{ podcast.author }}"
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
                     onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Описание</label>
                 <textarea name="description" rows="3"
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.6;"
                     onfocus="this.style.borderColor='var(--accent)'"
@@ -44,19 +44,19 @@
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1rem;">
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Level</label>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Уровень</label>
                     <select name="level"
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer;">
-                        <option value="">— select —</option>
-                        <option value="beginner" {% if podcast.level=='beginner' %}selected{% endif %}>Beginner</option>
+                        <option value="">— выбрать —</option>
+                        <option value="beginner" {% if podcast.level=='beginner' %}selected{% endif %}>Начинающий</option>
                         <option value="intermediate" {% if podcast.level=='intermediate' %}selected{% endif %}>
-                            Intermediate</option>
-                        <option value="advanced" {% if podcast.level=='advanced' %}selected{% endif %}>Advanced</option>
+                            Средний</option>
+                        <option value="advanced" {% if podcast.level=='advanced' %}selected{% endif %}>Продвинутый</option>
                     </select>
                 </div>
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Duration
-                        (HH:MM:SS)</label>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Длительность
+                        (ЧЧ:ММ:СС)</label>
                     <input type="text" name="duration" value="{{ podcast.duration|default:'' }}" placeholder="00:45:00"
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
                         onfocus="this.style.borderColor='var(--accent)'"
@@ -65,7 +65,7 @@
             </div>
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Topics</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Темы</label>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;">
                     {% for topic in topics %}
                     <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
@@ -80,8 +80,8 @@
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:1.5rem;">
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Replace audio
-                        (optional)</label>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Заменить аудио
+                        (необязательно)</label>
                     <label for="id_audio_file"
                         style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
                         onmouseover="this.style.borderColor='var(--accent)'"
@@ -92,15 +92,15 @@
                             <circle cx="6" cy="18" r="3" />
                             <circle cx="18" cy="16" r="3" />
                         </svg>
-                        <span id="audio-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choose
-                            new audio</span>
+                        <span id="audio-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Выберите
+                            новое аудио</span>
                     </label>
                     <input type="file" name="audio_file" id="id_audio_file" accept="audio/*" style="display:none;"
-                        onchange="document.getElementById('audio-label').textContent=this.files[0]?this.files[0].name:'Choose new audio'" />
+                        onchange="document.getElementById('audio-label').textContent=this.files[0]?this.files[0].name:'Выберите новое аудио'" />
                 </div>
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Replace
-                        thumbnail (optional)</label>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Заменить
+                        обложку (необязательно)</label>
                     <label for="id_thumbnail"
                         style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
                         onmouseover="this.style.borderColor='var(--accent)'"
@@ -111,11 +111,11 @@
                             <circle cx="8.5" cy="8.5" r="1.5" />
                             <polyline points="21 15 16 10 5 21" />
                         </svg>
-                        <span id="thumb-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Choose
-                            image</span>
+                        <span id="thumb-label" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Выберите
+                            изображение</span>
                     </label>
                     <input type="file" name="thumbnail" id="id_thumbnail" accept="image/*" style="display:none;"
-                        onchange="document.getElementById('thumb-label').textContent=this.files[0]?this.files[0].name:'Choose image'" />
+                        onchange="document.getElementById('thumb-label').textContent=this.files[0]?this.files[0].name:'Выберите изображение'" />
                 </div>
             </div>
 
@@ -124,10 +124,10 @@
                     style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                     onmouseover="this.style.background='var(--accent-h)'"
                     onmouseout="this.style.background='var(--accent)'">
-                    Save changes
+                    Сохранить изменения
                 </button>
                 <a href="{% url 'library:podcast_detail' podcast.pk %}"
-                    style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">Cancel</a>
+                    style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">Отмена</a>
             </div>
         </form>
     </div>

@@ -86,7 +86,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="15 18 9 12 15 6" />
         </svg>
-        My notes
+        Мои заметки
     </a>
 
     <div style="display:grid; grid-template-columns:1fr 220px; gap:1.25rem; align-items:start;">
@@ -101,10 +101,10 @@
                     <div style="display:flex; gap:6px; flex-shrink:0;">
                         {% if note.is_public %}
                         <span
-                            style="font-size:11px; padding:3px 8px; background:#052e16; color:#86efac; border-radius:6px;">public</span>
+                            style="font-size:11px; padding:3px 8px; background:#052e16; color:#86efac; border-radius:6px;">публичная</span>
                         {% else %}
                         <span
-                            style="font-size:11px; padding:3px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">private</span>
+                            style="font-size:11px; padding:3px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">приватная</span>
                         {% endif %}
                         {% if note.author == request.user %}
                         <a href="{% url 'note:edit' note.pk %}"
@@ -115,7 +115,7 @@
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
-                            Edit
+                            Редактировать
                         </a>
                         {% endif %}
                     </div>
@@ -162,7 +162,7 @@
                         <path
                             d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                     </svg>
-                    {{ note.count_likes }} likes
+                    {{ note.count_likes }} лайков
                 </span>
                 {% endif %}
                 {% if note.author == request.user %}
@@ -173,7 +173,7 @@
                         <polyline points="3 6 5 6 21 6" />
                         <path d="M19 6l-1 14H6L5 6" />
                     </svg>
-                    Delete
+                    Удалить
                 </a>
                 {% endif %}
             </div>
@@ -181,20 +181,20 @@
             <!-- Comments -->
             <div
                 style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem;">
-                <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Comments
+                <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Комментарии
                     ({{ note.count_comments }})</p>
 
                 {% if request.user.is_authenticated %}
                 <form hx-post="{% url 'note:add_comment' note.pk %}" hx-target="#comments-list" hx-swap="outerHTML"
                     hx-on::after-request="this.reset()" style="margin-bottom:1rem;">
                     {% csrf_token %}
-                    <textarea name="text" rows="2" placeholder="Write a comment..."
+                    <textarea name="text" rows="2" placeholder="Напишите комментарий..."
                         style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:none; line-height:1.6; margin-bottom:6px;"
                         onfocus="this.style.borderColor='var(--accent)'"
                         onblur="this.style.borderColor='var(--border)'"></textarea>
                     <div style="display:flex; justify-content:flex-end;">
                         <button type="submit"
-                            style="padding:6px 14px; background:var(--accent); color:#fff; border:none; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif;">Post</button>
+                            style="padding:6px 14px; background:var(--accent); color:#fff; border:none; border-radius:7px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif;">Отправить</button>
                     </div>
                 </form>
                 {% endif %}
@@ -209,7 +209,7 @@
             <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
                 <p
                     style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase;">
-                    Materials</p>
+                    Материалы</p>
                 <div style="display:flex; flex-direction:column; gap:6px;">
                     {% for book in note.materials.all %}
                     <a href="{% url 'library:book_detail' book.pk %}"
@@ -230,19 +230,19 @@
             <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem;">
                 <p
                     style="font-size:12px; color:var(--muted); margin-bottom:10px; font-weight:500; letter-spacing:0.04em; text-transform:uppercase;">
-                    Details</p>
+                    Детали</p>
                 <div style="display:flex; flex-direction:column; gap:8px;">
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Created</span><span style="color:var(--text);">
+                            style="color:var(--muted);">Создано</span><span style="color:var(--text);">
                             {{ note.created_at|date:"M d, Y" }}</span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Updated</span><span style="color:var(--text);">
+                            style="color:var(--muted);">Обновлено</span><span style="color:var(--text);">
                             {{ note.updated_at|date:"M d, Y" }}</span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Likes</span><span style="color:var(--text);">
+                            style="color:var(--muted);">Лайки</span><span style="color:var(--text);">
                             {{ note.count_likes }}</span></div>
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span
-                            style="color:var(--muted);">Comments</span><span style="color:var(--text);">
+                            style="color:var(--muted);">Комментарии</span><span style="color:var(--text);">
                             {{ note.count_comments }}</span></div>
                 </div>
             </div>

@@ -31,7 +31,7 @@ def note_list(request):
 
     notes = notes.order_by('-updated_at')
 
-    folders = NoteFolder.objects.filter(owner=request.user).order_by('name') if request.user.role == 'student' else NoteFolder.objects.none()
+    folders = NoteFolder.objects.filter(owner=request.user).order_by('name')
 
     return render(request, 'note/list.html', {
         'notes': notes,
@@ -149,4 +149,12 @@ def move_to_folder(request, pk):
         else:
             note.folder = None
         note.save(update_fields=['folder'])
+    return redirect('note:list')
+
+
+@login_required
+def delete_folder(request, pk):
+    folder = get_object_or_404(NoteFolder, pk=pk, owner=request.user)
+    if request.method == 'POST':
+        folder.delete()
     return redirect('note:list')

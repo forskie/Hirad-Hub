@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}New Note — HiradHub{% endblock %}
+{% block title %}Новая заметка — HiradHub{% endblock %}
 {% block nav_notes %}active{% endblock %}
 {% load static %}
 {% block extra_css %}
@@ -58,7 +58,7 @@
 
             <!-- Title -->
             <div style="margin-bottom:1rem;">
-                <input type="text" name="title" placeholder="Note title..."
+                <input type="text" name="title" placeholder="Заголовок заметки..."
                     style="width:100%; padding:0; background:none; border:none; outline:none; font-size:20px; font-weight:500; color:var(--text); font-family:'Sora',sans-serif; border-bottom:0.5px solid var(--border); padding-bottom:10px; margin-bottom:0;"
                     onfocus="this.style.borderBottomColor='var(--accent)'"
                     onblur="this.style.borderBottomColor='var(--border)'" />
@@ -66,7 +66,7 @@
 
             <!-- TinyMCE -->
             <div style="margin-bottom:1rem;">
-                <textarea name="content" id="id_content" data-i18n="note.content_ph" data-i18n-attr="placeholder" placeholder="Start writing..."></textarea>
+                <textarea name="content" id="id_content" data-i18n="note.content_ph" data-i18n-attr="placeholder" placeholder="Начните писать..."></textarea>
             </div>
         </div>
 
@@ -78,8 +78,8 @@
             <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                 <input type="checkbox" name="is_public" id="id_is_public"
                     style="accent-color:var(--accent); width:14px; height:14px;" />
-                <span style="font-size:13px; color:var(--text);">Make public</span>
-                <span style="font-size:11px; color:var(--muted);">— visible to others</span>
+                <span style="font-size:13px; color:var(--text);">Сделать публичной</span>
+                <span style="font-size:11px; color:var(--muted);">— видно другим</span>
             </label>
 
             <!-- Image upload -->
@@ -119,7 +119,7 @@
                 <span data-i18n="note.save_note">Save note</span>
             </button>
             <a href="{% url 'note:list' %}"
-                style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;" data-i18n="gen.cancel">Cancel</a>
+                style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;" data-i18n="gen.cancel">Отмена</a>
         </div>
     </form>
 </div>

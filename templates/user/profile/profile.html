@@ -54,6 +54,17 @@
             {% if teacher_profile.school.number %}<span data-i18n="others.school_num">School #</span>{{ teacher_profile.school.number }} — {% endif %}{{ teacher_profile.school.name }}{% if teacher_profile.school.city %}, {{ teacher_profile.school.city }}{% endif %}
           </p>
         {% endif %}
+        {% if user.role == 'director' and director_profile %}
+          <p style="font-size:12px; color:var(--muted); margin-top:5px; display:flex; align-items:center; gap:5px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span data-i18n="gen.school">School</span>:
+            {% if director_profile.school %}
+              {% if director_profile.school.number %}<span data-i18n="others.school_num">School #</span>{{ director_profile.school.number }} — {% endif %}{{ director_profile.school.name }}{% if director_profile.school.city %}, {{ director_profile.school.city }}{% endif %}
+            {% else %}
+              <span data-i18n="gen.not_set">Not set</span>
+            {% endif %}
+          </p>
+        {% endif %}
       </div>
 
       <!-- Stats + edit -->
@@ -84,7 +95,7 @@
           {% endif %}
           <div>
             <p style="font-size:15px; font-weight:500; color:var(--text);">{{ communities|length }}</p>
-            <p style="font-size:11px; color:var(--muted);" data-i18n="nav.communities">Communities</p>
+            <p style="font-size:11px; color:var(--muted);">Школьный чат</p>
           </div>
         </div>
         {% endif %}
@@ -264,8 +275,8 @@
           onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
           <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:7px;">{{ post.text|truncatechars:120 }}</p>
           <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            <span style="font-size:11px; color:var(--muted);">by {{ post.author.username }}</span>
-            <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} ago</span>
+            <span style="font-size:11px; color:var(--muted);">автор: {{ post.author.username }}</span>
+            <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} назад</span>
             <span style="font-size:11px; color:var(--muted);">♥ {{ post.count_likes }}</span>
           </div>
         </div>
@@ -394,7 +405,7 @@
     </div>
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;" data-i18n="prof.communities_empty">No communities created yet.</p>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">Нет школьного чата (сообщества) где вы администратор.</p>
       <a href="{% url 'community:create' %}" style="padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.create_community">Create community</a>
     </div>
     {% endif %}

@@ -7,7 +7,7 @@
 
   <a href="{% url 'library:home' %}" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);text-decoration:none;margin-bottom:1.25rem;transition:color 0.15s;" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-    Library
+    Библиотека
   </a>
 
   <div style="display:grid;grid-template-columns:1fr 240px;gap:1.25rem;align-items:start;">
@@ -20,16 +20,16 @@
           </div>
           <div style="flex:1;">
             <p style="font-size:17px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.4;">{{ book.title }}</p>
-            <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">by {{ book.author }}</p>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:8px;">автор: {{ book.author }}</p>
             <div style="display:flex;flex-wrap:wrap;gap:6px;">
               {% if book.level %}
                 <span style="font-size:11px;padding:2px 8px;background:var(--surface2);color:var(--muted);border-radius:6px;">{{ book.get_level_display }}</span>
               {% endif %}
               {% if book.pages %}
-                <span style="font-size:11px;padding:2px 8px;background:var(--surface2);color:var(--muted);border-radius:6px;">{{ book.pages }} pages</span>
+                <span style="font-size:11px;padding:2px 8px;background:var(--surface2);color:var(--muted);border-radius:6px;">{{ book.pages }} стр.</span>
               {% endif %}
               {% if book.grade %}
-                <span style="font-size:11px;padding:2px 8px;background:#1a1200;color:#fcd34d;border-radius:6px;">Grade {{ book.grade }}</span>
+                <span style="font-size:11px;padding:2px 8px;background:#1a1200;color:#fcd34d;border-radius:6px;">Класс {{ book.grade }}</span>
               {% endif %}
               {% if book.category %}
                 <a href="{% url 'library:home' %}?category={{ book.category.slug }}" style="font-size:11px;padding:2px 8px;background:#1e1d3a;color:#a5b4fc;border-radius:6px;text-decoration:none;">
@@ -53,10 +53,10 @@
           {% endif %}
           <a href="{{ book.file.url }}" target="_blank" style="display:flex;align-items:center;gap:6px;padding:7px 14px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;margin-left:auto;" onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download
+            Скачать
           </a>
           {% if request.user == book.creator %}
-            <a href="{% url 'library:edit_added_book' book.pk %}" style="padding:7px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;">Edit</a>
+            <a href="{% url 'library:edit_added_book' book.pk %}" style="padding:7px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;">Редактировать</a>
           {% endif %}
         </div>
       </div>
@@ -64,7 +64,7 @@
       <!-- Progress -->
       {% if interaction %}
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.25rem;">
-        <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">Reading progress</p>
+        <p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;">Прогресс чтения</p>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
           <div style="flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;">
             <div style="height:100%;width:{{ interaction.progress|floatformat:0 }}%;background:var(--accent);border-radius:2px;"></div>
@@ -75,21 +75,21 @@
           {% csrf_token %}
           <input type="range" name="progress" min="0" max="100" value="{{ interaction.progress|floatformat:0 }}" style="flex:1;accent-color:var(--accent);" oninput="this.nextElementSibling.textContent=this.value+'%'"/>
           <span style="font-size:12px;color:var(--muted);min-width:36px;">{{ interaction.progress|floatformat:0 }}%</span>
-          <button type="submit" style="padding:6px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);cursor:pointer;font-family:'Sora',sans-serif;">Save</button>
+          <button type="submit" style="padding:6px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);cursor:pointer;font-family:'Sora',sans-serif;">Сохранить</button>
         </form>
-        {% if interaction.completed %}<p style="font-size:12px;color:#22c55e;margin-top:8px;">✓ Completed</p>{% endif %}
+        {% if interaction.completed %}<p style="font-size:12px;color:#22c55e;margin-top:8px;">✓ Завершено</p>{% endif %}
       </div>
       {% endif %}
 
       <!-- Comments -->
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1.25rem;">
-        <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:1rem;">Comments ({{ book.count_comments }})</p>
+        <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:1rem;">Комментарии ({{ book.count_comments }})</p>
         {% if request.user.is_authenticated %}
         <form hx-post="{% url 'library:add_comment' 'book' book.pk %}" hx-target="#comments-list" hx-swap="outerHTML" hx-on::after-request="this.reset()" style="margin-bottom:1rem;">
           {% csrf_token %}
-          <textarea name="text" rows="2" placeholder="Write a comment..." style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;resize:none;line-height:1.6;margin-bottom:6px;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          <textarea name="text" rows="2" placeholder="Напишите комментарий..." style="width:100%;padding:9px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;resize:none;line-height:1.6;margin-bottom:6px;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
           <div style="display:flex;justify-content:flex-end;">
-            <button type="submit" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;">Post</button>
+            <button type="submit" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;">Отправить</button>
           </div>
         </form>
         {% endif %}
@@ -100,36 +100,36 @@
     <!-- Sidebar -->
     <div style="position:sticky;top:70px;">
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem;">
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:500;">Details</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;font-weight:500;">Детали</p>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="color:var(--muted);">Added</span>
+            <span style="color:var(--muted);">Добавлено</span>
             <span style="color:var(--text);">{{ book.created_at|date:"M d, Y" }}</span>
           </div>
           {% if book.category %}
           <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="color:var(--muted);">Category</span>
+            <span style="color:var(--muted);">Категория</span>
             <a href="{% url 'library:home' %}?category={{ book.category.slug }}" style="color:var(--accent);text-decoration:none;">{{ book.category.name }}</a>
           </div>
           {% endif %}
           {% if book.grade %}
           <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="color:var(--muted);">Grade</span>
+            <span style="color:var(--muted);">Класс</span>
             <span style="color:var(--text);">{{ book.grade }}</span>
           </div>
           {% endif %}
           {% if book.pages %}
           <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="color:var(--muted);">Pages</span>
+            <span style="color:var(--muted);">Страницы</span>
             <span style="color:var(--text);">{{ book.pages }}</span>
           </div>
           {% endif %}
           <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="color:var(--muted);">Likes</span>
+            <span style="color:var(--muted);">Лайки</span>
             <span style="color:var(--text);">{{ book.count_likes }}</span>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:12px;">
-            <span style="color:var(--muted);">Comments</span>
+            <span style="color:var(--muted);">Комментарии</span>
             <span style="color:var(--text);">{{ book.count_comments }}</span>
           </div>
         </div>

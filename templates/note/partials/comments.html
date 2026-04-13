@@ -10,7 +10,7 @@
                 <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
                     <span style="font-size:12px; font-weight:500; color:var(--text);">
                         {{ comment.user.get_full_name|default:comment.user.username }}</span>
-                    <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }} ago</span>
+                    <span style="font-size:11px; color:var(--muted);">{{ comment.created_at|timesince }} назад</span>
                 </div>
                 <p style="font-size:13px; color:var(--text); line-height:1.6;">{{ comment.text }}</p>
             </div>
@@ -33,7 +33,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="parent_id" value="{{ comment.pk }}" />
                 <div style="display:flex; gap:6px;">
-                    <input type="text" name="text" placeholder="Reply..."
+                    <input type="text" name="text" placeholder="Ответить..."
                         style="flex:1; padding:7px 10px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); outline:none; font-family:'Sora',sans-serif;"
                         onfocus="this.style.borderColor='var(--accent)'"
                         onblur="this.style.borderColor='var(--border)'" />
@@ -41,7 +41,7 @@
                         style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
                         onmouseover="this.style.background='var(--accent)';this.style.color='#fff';this.style.borderColor='var(--accent)'"
                         onmouseout="this.style.background='var(--surface2)';this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
-                        Reply
+                        Ответить
                     </button>
                 </div>
             </form>
@@ -49,6 +49,6 @@
         </div>
     </div>
     {% empty %}
-    <p style="font-size:13px; color:var(--muted); text-align:center; padding:1.5rem 0;">No comments yet.</p>
+    <p style="font-size:13px; color:var(--muted); text-align:center; padding:1.5rem 0;">Пока нет комментариев.</p>
     {% endfor %}
 </div>

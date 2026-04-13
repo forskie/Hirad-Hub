@@ -128,7 +128,7 @@
       <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:9px; padding:9px 12px; margin-bottom:1rem; display:flex; align-items:center; gap:8px; transition:border-color 0.15s;"
         onfocusin="this.style.borderColor='var(--accent)'" onfocusout="this.style.borderColor='var(--border)'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="text" data-i18n="post.search_users_ph" data-i18n-attr="placeholder" placeholder="Search users..."
+        <input type="text" data-i18n="post.search_users_ph" data-i18n-attr="placeholder" placeholder="Поиск пользователей..."
           hx-get="{% url 'post:search_users' %}"
           hx-trigger="keyup changed delay:300ms"
           hx-target="#user-search-results"
@@ -239,18 +239,18 @@
               <!-- Vote/answer count column -->
               <div style="flex-shrink:0;text-align:center;padding-top:2px;">
                 <p style="font-size:16px;font-weight:500;color:{% if post.is_answered %}#22c55e{% else %}var(--muted){% endif %};">{{ post.count_comments }}</p>
-                <p style="font-size:10px;color:var(--muted);">ans.</p>
+                <p style="font-size:10px;color:var(--muted);">отв.</p>
               </div>
               <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;flex-wrap:wrap;">
                   <span class="type-badge type-question">
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    Question
+                    Вопрос
                   </span>
                   {% if post.is_answered %}
-                  <span style="font-size:10px;padding:2px 7px;background:#052e16;color:#86efac;border-radius:10px;border:0.5px solid #166534;">✓ Answered</span>
+                  <span style="font-size:10px;padding:2px 7px;background:#052e16;color:#86efac;border-radius:10px;border:0.5px solid #166534;">✓ Отвечено</span>
                   {% else %}
-                  <span class="type-badge badge-unanswered">Needs answer</span>
+                  <span class="type-badge badge-unanswered">Нужен ответ</span>
                   {% endif %}
                 </div>
                 <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
@@ -262,7 +262,7 @@
                   <a href="?topic={{ topic.slug }}" style="font-size:10px;padding:2px 7px;background:#1a1200;color:#fcd34d;border-radius:5px;text-decoration:none;">{{ topic.name }}</a>
                   {% endfor %}
                   {% endif %}
-                  <a href="{% url 'user:profile_others' post.author.username %}" style="font-size:11px;color:var(--muted);text-decoration:none;margin-left:auto;">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} ago</a>
+                  <a href="{% url 'user:profile_others' post.author.username %}" style="font-size:11px;color:var(--muted);text-decoration:none;margin-left:auto;">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} назад</a>
                   {% if post.author == request.user %}
                   <a href="{% url 'post:delete' post.pk %}" style="color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
@@ -283,7 +283,7 @@
                 <div style="width:26px;height:26px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;color:#a5b4fc;flex-shrink:0;overflow:hidden;">
                   {% if post.author.profile_picture %}<img src="{{ post.author.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;"/>{% else %}{{ post.author.username|first|upper }}{% endif %}
                 </div>
-                <span style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} ago</span>
+                <span style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ post.author.get_full_name|default:post.author.username }} · {{ post.created_at|timesince }} назад</span>
               </a>
               {% if post.author == request.user %}
               <a href="{% url 'post:delete' post.pk %}" style="color:var(--muted);text-decoration:none;flex-shrink:0;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='var(--muted)'">

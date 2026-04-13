@@ -4,6 +4,7 @@ from .models import Dashboard
 from post.models import Post
 from library.models import Book, Video, Podcast
 from note.models import Note
+from roadmap.models import Roadmap
 
 
 from django.contrib.auth import get_user_model
@@ -20,7 +21,8 @@ def dashboard(request):
     user = request.user
     ctx = {
         'dash': dash,
-        'top_users': User.objects.order_by('-score')[:5],
+        # "Top students" should only contain students (not teachers/directors/admins)
+        'top_users': User.objects.filter(role='student').order_by('-score')[:5],
         'recent_posts': Post.objects.filter(author=user).order_by('-created_at')[:5],
     }
     if user.role == 'director':
@@ -102,12 +104,18 @@ def search(request):
     fmt = request.GET.get('format')
     if not q:
         if fmt == 'json':
-            return JsonResponse({'users': [], 'posts': [], 'books': [], 'videos': [], 'podcasts': [], 'notes': []})
+            return JsonResponse({'users': [], 'posts': [], 'books': [], 'videos': [], 'podcasts': [], 'notes': [], 'roadmaps': []})
         return render(request, 'main/search.html', {'q': q, 'results': {}})
-    users = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)).values('username', 'first_name', 'last_name', 'level', 'title')[:6]
+    users = User.objects.filter(
+        Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q)
+    ).values('username', 'first_name', 'last_name', 'level', 'title', 'role')[:6]
     posts = Post.objects.filter(Q(text__icontains=q)).select_related('author').order_by('-created_at')[:6]
     notes = Note.objects.filter(Q(title__icontains=q) | Q(content__icontains=q), is_public=True).select_related('author').order_by('-created_at')[:6]
     books = Book.objects.filter(Q(title__icontains=q) | Q(author__icontains=q)).order_by('-created_at')[:6]
+    roadmaps = Roadmap.objects.filter(
+        Q(title__icontains=q) | Q(description__icontains=q),
+        is_public=True,
+    ).order_by('-created_at')[:6]
 
     if fmt == 'json':
         return JsonResponse({
@@ -115,13 +123,20 @@ def search(request):
                 'username': u['username'],
                 'full_name': f"{u['first_name']} {u['last_name']}".strip(),
                 'level': u['level'],
-                'title': u['title']
+                'title': u['title'],
+                'role': u['role'],
             }
                 for u in users  
             ],
 
             'posts': [{'id': p.pk, 'text': p.text[:60]}
                 for p in posts
+            ],
+            'roadmaps': [{
+                'id': r.pk,
+                'title': r.title,
+            }
+            for r in roadmaps
             ],
             'notes': [{
                 'id': n.pk,
@@ -140,6 +155,7 @@ def search(request):
                                                 'results': {
                                                                 'users': users,
                                                                 'posts': posts,
+                                                                'roadmaps': roadmaps,
                                                                 'notes': notes,
                                                                 'books': books,
                                                             }})

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}404 — HiradHub{% endblock %}
+
+{% block content %}
+<div style="
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+">
+
+  <div style="
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    background: var(--surface, #111);
+    border: 1px solid var(--border, #222);
+    border-radius: 16px;
+    padding: 2.5rem;
+  ">
+
+    <div style="font-size: 72px; font-weight: 700; color: var(--text); line-height: 1;">
+      404
+    </div>
+
+    <div style="margin-top: 1rem; font-size: 18px; color: var(--text); font-weight: 600;">
+      {% trans "Страница не найдена" %}
+    </div>
+
+    <div style="margin-top: 0.75rem; font-size: 14px; color: var(--muted, #888);">
+      URL не существует или был перемещён
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <a href="/" style="
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        background: var(--primary, #4f46e5);
+        color: white;
+        font-weight: 500;
+      ">
+        На главную
+      </a>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

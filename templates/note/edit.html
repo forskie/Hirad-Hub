@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Edit Note — HiradHub{% endblock %}
+{% block title %}Редактировать заметку — HiradHub{% endblock %}
 {% block nav_notes %}active{% endblock %}
 
 {% block extra_css %}
@@ -40,7 +40,7 @@
                 <polyline points="15 18 9 12 15 6" />
             </svg>
         </a>
-        <p style="font-size:16px; font-weight:500; color:var(--text);">Edit note</p>
+        <p style="font-size:16px; font-weight:500; color:var(--text);">Редактировать заметку</p>
     </div>
 
     <form method="POST" enctype="multipart/form-data" novalidate>
@@ -71,7 +71,7 @@
                 <input type="checkbox" name="is_public" id="id_is_public"
                     style="accent-color:var(--accent); width:14px; height:14px;" {% if note.is_public %} checked
                     {%endif%} />
-                <span style="font-size:13px; color:var(--text);">Make public</span>
+                <span style="font-size:13px; color:var(--text);">Сделать публичной</span>
             </label>
 
             {% if note.img %}
@@ -79,7 +79,7 @@
                 <img src="{{ note.img.url }}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;" />
                 <label for="id_img" style="font-size:13px; color:var(--muted); cursor:pointer; transition:color 0.15s;"
                     onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
-                    <span id="img-label">Replace image</span>
+                    <span id="img-label">Заменить изображение</span>
                 </label>
             </div>
             {% else %}
@@ -91,15 +91,15 @@
                     <circle cx="8.5" cy="8.5" r="1.5" />
                     <polyline points="21 15 16 10 5 21" />
                 </svg>
-                <span id="img-label">Add cover image</span>
+                <span id="img-label">Добавить обложку</span>
             </label>
             {% endif %}
             <input type="file" name="img" id="id_img" accept="image/*" style="display:none;"
-                onchange="document.getElementById('img-label').textContent=this.files[0]?this.files[0].name:'Replace image'" />
+                onchange="document.getElementById('img-label').textContent=this.files[0]?this.files[0].name:'Заменить изображение'" />
 
             {% if topics %}
             <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-                <span style="font-size:12px; color:var(--muted);">Topics:</span>
+                <span style="font-size:12px; color:var(--muted);">Темы:</span>
                 {% for topic in topics %}
                 <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
                     <input type="checkbox" name="topics" value="{{ topic.pk }}"
@@ -117,10 +117,10 @@
                 style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                 onmouseover="this.style.background='var(--accent-h)'"
                 onmouseout="this.style.background='var(--accent)'">
-                Save changes
+                Сохранить изменения
             </button>
             <a href="{% url 'note:detail' note.pk %}"
-                style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">Cancel</a>
+                style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;">Отмена</a>
         </div>
     </form>
 </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 {% load static %}
 <head>
     <meta charset="UTF-8" />
@@ -26,199 +26,208 @@
     <!-- NAVBAR -->
     <header class="navbar">
         <a href="{% url 'main:home' %}" class="nav-logo"><span>Hirad</span>Hub</a>
-                <!-- LANGUAGE SWITCH -->
-                <div class="lang-switch">
-                    <button onclick="I18N.set('ru')" data-lang="ru" class="lang-btn">RU</button>
-                    <button onclick="I18N.set('tg')" data-lang="tg" class="lang-btn">TJ</button>
-                    <button onclick="I18N.set('en')" data-lang="en" class="lang-btn">EN</button>
-                </div>
-                    <nav class="nav-links">
+
+        <!-- Nav links — only for authenticated users -->
+        {% if user.is_authenticated %}
+        <nav class="nav-links">
             <a href="{% url 'library:home' %}" class="nav-link {% block nav_library %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                 </svg>
                 <span data-i18n="nav.library">Library</span>
             </a>
             <a href="{% url 'post:list' %}" class="nav-link {% block nav_posts %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                 </svg>
                 <span data-i18n="nav.posts">Posts</span>
             </a>
-            <a href="{% url 'note:list' %}" class="nav-link {% block nav_notes %}{% endblock %}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                </svg>
-                <span data-i18n="nav.notes">Notes</span>
-            </a>
             <a href="{% url 'community:list' %}" class="nav-link {% block nav_community %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
                 <span data-i18n="nav.communities">Communities</span>
             </a>
             <a href="{% url 'main:dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
+                    <rect x="3" y="3" width="7" height="7"/>
+                    <rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/>
+                    <rect x="3" y="14" width="7" height="7"/>
                 </svg>
                 <span data-i18n="nav.dashboard">Dashboard</span>
             </a>
             <a href="{% url 'roadmap:list' %}" class="nav-link {% block nav_roadmap %}{% endblock %}">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                    <circle cx="12" cy="12" r="3"/>
+                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
                 </svg>
                 <span data-i18n="nav.roadmaps">Roadmaps</span>
             </a>
-            </nav>
+        </nav>
+        {% endif %}
 
-        <!-- Search -->
+        <!-- Search — only for authenticated users -->
+        {% if user.is_authenticated %}
         <div class="search-wrap">
             <form class="search-form" id="search-form" autocomplete="off">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                     style="color:var(--muted);flex-shrink:0;">
-                    <circle cx="11" cy="11" r="8" />
-                    <path d="m21 21-4.35-4.35" />
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="m21 21-4.35-4.35"/>
                 </svg>
-                <input type="text" id="search-input" name="q" 
+                <input type="text" id="search-input" name="q"
                     data-i18n="nav.search" data-i18n-attr="placeholder"
-                    placeholder="Search..."
+                    placeholder="Поиск..."
                     value="{{ request.GET.q|default:'' }}" />
             </form>
             <div class="search-results" id="search-results"></div>
         </div>
+        {% endif %}
 
-        <button class="theme-btn" id="theme-toggle" data-i18n="theme.toggle" data-i18n-attr="title" title="Toggle theme">
-            <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" style="display:none;">
-                <circle cx="12" cy="12" r="5" />
-                <path
-                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-            </svg>
-            <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-        </button>
+        <!-- Right side controls -->
+        <div style="display:flex; align-items:center; gap:6px; margin-left:auto; flex-shrink:0;">
 
-        {% if user.is_authenticated %}
-        <div class="dropdown" id="user-dropdown">
-            <div class="avatar-btn" id="avatar-btn">
-                {% if user.profile_picture %}
-                <img src="{{ user.profile_picture.url }}" alt="avatar" />
-                {% else %}
-                {{ request.user.username|first|upper }}
-                {% endif %}
+            <!-- Language switcher — always visible -->
+            <div class="lang-switch">
+                <button onclick="I18N.set('ru')" data-lang="ru" class="lang-btn">RU</button>
+                <button onclick="I18N.set('tg')" data-lang="tg" class="lang-btn">TJ</button>
+                <button onclick="I18N.set('en')" data-lang="en" class="lang-btn">EN</button>
             </div>
-            <div class="dropdown-menu" id="dropdown-menu">
-                <div class="dropdown-header">
-                    <p>{{ user.get_full_name|default:user.username }}</p>
-                    <p>
-                        {% if user.role == 'director' %}
-                            <span style="font-size:11px; color:var(--muted);" data-i18n="nav.role_director">Director</span>
-                        {% elif user.role == 'teacher' %}
-                            {% if user.teacher_profile %}
-                                {{ user.teacher_profile.teacher_title }} · Lv.{{ user.teacher_profile.teacher_level }}
+
+            <!-- Theme toggle -->
+            <button class="theme-btn" id="theme-toggle" title="Переключить тему">
+                <svg id="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" style="display:none;">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+            </button>
+
+            <!-- User dropdown or auth buttons -->
+            {% if user.is_authenticated %}
+            <div class="dropdown" id="user-dropdown">
+                <div class="avatar-btn" id="avatar-btn">
+                    {% if user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt="аватар"/>
+                    {% else %}
+                    {{ request.user.username|first|upper }}
+                    {% endif %}
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <div class="dropdown-header">
+                        <p>{{ user.get_full_name|default:user.username }}</p>
+                        <p>
+                            {% if user.role == 'director' %}
+                                <span data-i18n="prof.director">Director</span>
+                            {% elif user.role == 'teacher' %}
+                                {% if user.teacher_profile %}
+                                    {{ user.teacher_profile.teacher_title }} · Lv.{{ user.teacher_profile.teacher_level }}
+                                {% else %}
+                                    {{ user.title }} · Lv.{{ user.level }}
+                                {% endif %}
                             {% else %}
                                 {{ user.title }} · Lv.{{ user.level }}
                             {% endif %}
-                        {% else %}
-                            {{ user.title }} · Lv.{{ user.level }}
-                        {% endif %}
-                    </p>
+                        </p>
+                    </div>
+                    <a href="{% url 'user:profile' %}" class="dropdown-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span data-i18n="nav.profile">Profile</span>
+                    </a>
+                    <a href="{% url 'user:edit_profile' %}" class="dropdown-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        <span data-i18n="nav.edit_profile">Edit profile</span>
+                    </a>
+                    <hr class="dropdown-divider">
+                    <a href="{% url 'user:logout' %}" class="dropdown-item danger">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        <span data-i18n="nav.logout">Logout</span>
+                    </a>
                 </div>
-                <a href="{% url 'user:profile' %}" class="dropdown-item">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    <span data-i18n="nav.profile">Profile</span>
-                </a>
-                <a href="{% url 'user:edit_profile' %}" class="dropdown-item">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    <span data-i18n="nav.edit_profile">Edit profile</span>
-                </a>
-                <hr class="dropdown-divider">
-                <a href="{% url 'user:logout' %}" class="dropdown-item danger">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                    <polyline points="16 17 21 12 16 7"/>
-                    <line x1="21" y1="12" x2="9" y2="12"/>
-                    </svg>
-                    <span data-i18n="nav.logout">Logout</span>
-                </a>
-                </div>
- 
-        </div>
-        {% else %}
-        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            </div>
+            {% else %}
             <a href="{% url 'user:login' %}" class="btn-ghost" data-i18n="nav.login">Login</a>
             <a href="{% url 'user:register' %}" class="btn-primary" data-i18n="nav.register">Register</a>
-        </div>
-        {% endif %}
+            {% endif %}
 
+        </div>
+
+        <!-- Hamburger -->
         <button class="hamburger" id="hamburger">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
             </svg>
         </button>
     </header>
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobile-menu">
+        {% if user.is_authenticated %}
         <form method="GET" action="{% url 'main:search' %}" class="mobile-search">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 style="color:var(--muted);flex-shrink:0;">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
             </svg>
-            <input type="text" name="q" data-i18n="nav.search" data-i18n-attr="placeholder" placeholder="Search..." />
+            <input type="text" name="q"
+                data-i18n="nav.search" data-i18n-attr="placeholder"
+                placeholder="Поиск..."/>
         </form>
+
+        <!-- Mobile lang switcher -->
+        <div style="display:flex; gap:6px; padding:10px 0; border-bottom:0.5px solid var(--border);">
+            <button onclick="I18N.set('ru')" data-lang="ru" class="lang-btn">RU</button>
+            <button onclick="I18N.set('tg')" data-lang="tg" class="lang-btn">TJ</button>
+            <button onclick="I18N.set('en')" data-lang="en" class="lang-btn">EN</button>
+        </div>
+
         <a href="{% url 'library:home' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
             </svg>
             <span data-i18n="nav.library">Library</span>
         </a>
         <a href="{% url 'post:list' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
             <span data-i18n="nav.posts">Posts</span>
         </a>
-        <a href="{% url 'note:list' %}">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-            </svg>
-            <span data-i18n="nav.notes">Notes</span>
-        </a>
         <a href="{% url 'community:list' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
             </svg>
             <span data-i18n="nav.communities">Communities</span>
         </a>
         <a href="{% url 'main:dashboard' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7" />
-                <rect x="14" y="3" width="7" height="7" />
-                <rect x="14" y="14" width="7" height="7" />
-                <rect x="3" y="14" width="7" height="7" />
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
             </svg>
             <span data-i18n="nav.dashboard">Dashboard</span>
         </a>
@@ -229,25 +238,33 @@
             </svg>
             <span data-i18n="nav.roadmaps">Roadmaps</span>
         </a>
-        {% if user.is_authenticated %}
         <a href="{% url 'user:profile' %}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
             </svg>
             <span data-i18n="nav.profile">Profile</span>
         </a>
         <a href="{% url 'user:logout' %}" style="color:#EF4444;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
             </svg>
             <span data-i18n="nav.logout">Logout</span>
         </a>
+
         {% else %}
+        <!-- Guest mobile menu — minimal -->
+        <div style="display:flex; gap:6px; padding:10px 0; border-bottom:0.5px solid var(--border);">
+            <button onclick="I18N.set('ru')" data-lang="ru" class="lang-btn">RU</button>
+            <button onclick="I18N.set('tg')" data-lang="tg" class="lang-btn">TJ</button>
+            <button onclick="I18N.set('en')" data-lang="en" class="lang-btn">EN</button>
+        </div>
         <a href="{% url 'user:login' %}"><span data-i18n="nav.login">Login</span></a>
-        <a href="{% url 'user:register' %}" style="color:var(--accent);font-weight:500;"><span data-i18n="nav.register">Register</span></a>
+        <a href="{% url 'user:register' %}" style="color:var(--accent);font-weight:500;">
+            <span data-i18n="nav.register">Register</span>
+        </a>
         {% endif %}
     </div>
 
@@ -265,7 +282,10 @@
 
     <!-- FOOTER -->
     <footer>
-        <span><span style="color:var(--accent);font-weight:500;">Hirad</span>Hub — <span data-i18n="footer.brand">Educational Platform</span></span>
+        <span>
+            <span style="color:var(--accent);font-weight:500;">Hirad</span>Hub —
+            <span data-i18n="footer.brand">Educational Platform</span>
+        </span>
         <div class="footer-links">
             <a href="{% url 'library:home' %}" data-i18n="footer.library">Library</a>
             <a href="{% url 'post:list' %}" data-i18n="footer.posts">Posts</a>
@@ -273,9 +293,7 @@
         </div>
     </footer>
 
-
     <script src="{% static 'js/base.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
-
 </html>

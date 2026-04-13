@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Delete Note — HiradHub{% endblock %}
+{% block title %}Удалить заметку — HiradHub{% endblock %}
 {% block nav_notes %}active{% endblock %}
 
 {% block content %}
@@ -14,9 +14,9 @@
         </svg>
     </div>
 
-    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;">Delete this note?</p>
-    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;">This action cannot be undone.
-        The note and all its comments will be permanently removed.</p>
+    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;">Удалить эту заметку?</p>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;">Это действие нельзя отменить.
+        Заметка и все её комментарии будут удалены навсегда.</p>
 
     <div
         style="background:var(--surface); border:0.5px solid var(--border); border-radius:10px; padding:1rem; margin-bottom:1.75rem; text-align:left;">
@@ -31,13 +31,13 @@
             <button type="submit"
                 style="padding:9px 20px; background:#ef4444; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                 onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
-                Yes, delete
+                Да, удалить
             </button>
         </form>
         <a href="{% url 'note:detail' note.pk %}"
             style="padding:9px 20px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none; transition:background 0.15s;"
             onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
-            Cancel
+            Отмена
         </a>
     </div>
 

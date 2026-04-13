@@ -31,7 +31,7 @@ def login_view(request):
 
 def profile_view_others(request, username):
     other_user = get_object_or_404(CustomUser, username=username)
-    if other_user.role in ('teacher', 'director'):
+    if other_user.role == 'teacher':
         try:
             profile = other_user.teacher_profile
         except TeacherProfile.DoesNotExist:
@@ -46,7 +46,18 @@ def profile_view_others(request, username):
             'videos':   videos,
             'podcasts': podcasts,
         })
-    return render(request, 'user/profile/others_profile.html', {'user': other_user})
+
+    director_profile = None
+    if other_user.role == 'director':
+        try:
+            director_profile = other_user.director_profile
+        except DirectorProfile.DoesNotExist:
+            director_profile = None
+
+    return render(request, 'user/profile/others_profile.html', {
+        'profile_user': other_user,
+        'director_profile': director_profile,
+    })
 
 
 LEVEL_THRESHOLDS = [0, 1000, 5000, 10000, 20000, 35000, 45000, 55000, 70000, 100000]
@@ -59,13 +70,27 @@ def profile_view(request):
     pending_count = 0
 
     if user.role == 'director':
-        communities = Community.objects.filter(creator=user).order_by('-created_at')
+        # Director should see school chat communities where they are an admin
+        communities = (
+            Community.objects
+            .filter(
+                memberships__user=user,
+                memberships__role='admin',
+                memberships__is_approved=True,
+            )
+            .select_related('creator', 'topic')
+            .distinct()
+            .order_by('-created_at')
+        )
         pending_qs = TeacherProfile.objects.filter(
             is_verified=False, user__role='teacher'
         ).select_related('user', 'school')
         try:
-            if user.director_profile.school:
-                pending_qs = pending_qs.filter(school=user.director_profile.school)
+            director_school = user.director_profile.school
+            if director_school:
+                pending_qs = pending_qs.filter(school=director_school)
+            else:
+                pending_qs = pending_qs.none()
         except Exception:
             pass
         pending_teachers = pending_qs
@@ -245,6 +270,17 @@ def verify_teacher(request, username):
     except TeacherProfile.DoesNotExist:
         return redirect('main:home')
 
+    # Directors can verify only teachers from their own school.
+    if request.user.role == 'director':
+        try:
+            director_school = request.user.director_profile.school
+        except DirectorProfile.DoesNotExist:
+            director_school = None
+
+        if not director_school or profile.school_id != director_school.id:
+            messages.error(request, 'You can verify only teachers from your school.')
+            return redirect('user:pending_teachers')
+
     if request.method == 'POST':
         from django.utils import timezone
         profile.is_verified   = True
@@ -281,7 +317,9 @@ def pending_teachers(request):
             director_school = request.user.director_profile.school
             if director_school:
                 teachers = teachers.filter(school=director_school)
+            else:
+                teachers = teachers.none()
         except DirectorProfile.DoesNotExist:
-            pass
+            teachers = teachers.none()
 
     return render(request, 'user/pending_teachers.html', {'teachers': teachers})

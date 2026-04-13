@@ -97,8 +97,8 @@ if (searchInput && searchResults) {
     });
 
     function renderSearchResults(data, q) {
-        const { users = [], posts = [], notes = [], books = [] } = data;
-        const total = users.length + posts.length + notes.length + books.length;
+        const { users = [], posts = [], notes = [], books = [], roadmaps = [] } = data;
+        const total = users.length + posts.length + notes.length + books.length + roadmaps.length;
 
         if (total === 0) {
             const safeQ = String(q).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
@@ -112,13 +112,16 @@ if (searchInput && searchResults) {
         if (users.length) {
             html += `<div class="search-result-section">${I18N.t('search.users')}</div>`;
             users.forEach(u => {
+                const metaLine = (u.role === 'director')
+                    ? `@${u.username} · ${I18N.t('nav.role_director')}`
+                    : `@${u.username} · Lv.${u.level}`;
                 html += `<a href="/user/profile/${u.username}/" class="search-result-item">
                 <div style="width:28px;height:28px;border-radius:50%;background:#1e1d3a;border:1px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:11px;color:#a5b4fc;flex-shrink:0;">
                   ${u.username[0].toUpperCase()}
                 </div>
                 <div>
                   <p style="font-size:13px;font-weight:500;color:var(--text);">${u.full_name || u.username}</p>
-                  <p style="font-size:11px;color:var(--muted);">@${u.username} · Lv.${u.level}</p>
+                  <p style="font-size:11px;color:var(--muted);">${metaLine}</p>
                 </div>
               </a>`;
             });
@@ -131,6 +134,17 @@ if (searchInput && searchResults) {
               <a href="/post/${p.id}/" class="search-result-item">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 <p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${p.text}</p>
+              </a>`;
+            });
+        }
+
+        if (roadmaps.length) {
+            html += `<div class="search-result-section">${I18N.t('search.roadmaps')}</div>`;
+            roadmaps.forEach(r => {
+                html += `
+              <a href="/roadmap/${r.id}/" class="search-result-item">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                <p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.title}</p>
               </a>`;
             });
         }
@@ -532,6 +546,7 @@ const TRANSLATIONS = {
         "gen.yes": "Yes",
         "gen.confirm": "Confirm",
         "gen.school": "School",
+        "gen.not_set": "Not set",
 
         "nav.role_director": "Director",
         "theme.toggle": "Toggle theme",
@@ -543,6 +558,7 @@ const TRANSLATIONS = {
         "search.empty": "No results for \"{q}\"",
         "search.users": "Users",
         "search.posts": "Posts",
+        "search.roadmaps": "Roadmaps",
         "search.notes": "Notes",
         "search.books": "Books",
         "search.page_title": "Search",
@@ -1183,6 +1199,7 @@ const TRANSLATIONS = {
         "gen.yes": "Да",
         "gen.confirm": "Подтвердить",
         "gen.school": "Школа",
+        "gen.not_set": "Не указано",
 
         "nav.role_director": "Директор",
         "theme.toggle": "Сменить тему",
@@ -1194,6 +1211,7 @@ const TRANSLATIONS = {
         "search.empty": "Нет результатов по запросу «{q}»",
         "search.users": "Пользователи",
         "search.posts": "Посты",
+        "search.roadmaps": "Дорожные карты",
         "search.notes": "Заметки",
         "search.books": "Книги",
         "search.page_title": "Поиск",
@@ -1834,6 +1852,7 @@ const TRANSLATIONS = {
         "gen.yes": "Ҳа",
         "gen.confirm": "Тасдиқ",
         "gen.school": "Мактаб",
+        "gen.not_set": "Муайян нашуда",
 
         "nav.role_director": "Директор",
         "theme.toggle": "Тема",
@@ -1845,6 +1864,7 @@ const TRANSLATIONS = {
         "search.empty": "Барои «{q}» натиҷа нест",
         "search.users": "Корбарон",
         "search.posts": "Паёмҳо",
+        "search.roadmaps": "Харитаҳои роҳ",
         "search.notes": "Қайдҳо",
         "search.books": "Китобҳо",
         "search.page_title": "Ҷустуҷӯ",
@@ -2189,3 +2209,367 @@ const I18N = {
 };
 
 document.addEventListener('DOMContentLoaded', () => I18N.init());
+
+
+
+// ══════════════════════════════════════════════════
+// Добавить в конец base.js (после существующего кода)
+// ══════════════════════════════════════════════════
+
+// ── i18n translations ──
+// const TRANSLATIONS = {
+//   en: {
+//     "nav.library":"Library","nav.posts":"Posts","nav.notes":"Notes",
+//     "nav.dashboard":"Dashboard","nav.roadmaps":"Roadmaps","nav.communities":"Communities",
+//     "nav.search":"Search...","nav.login":"Login","nav.register":"Register",
+//     "nav.profile":"Profile","nav.edit_profile":"Edit profile","nav.logout":"Logout",
+//     "nav.leaderboard":"Leaderboard",
+//     "prof.director":"Director","prof.teacher":"Teacher",
+//     "footer.brand":"Educational Platform","footer.library":"Library",
+//     "footer.posts":"Posts","footer.leaderboard":"Leaderboard",
+//     "home.tagline":"Educational Platform","home.hero":"Learn. Write. Level up.",
+//     "home.hero_sub":"HiradHub brings together a digital library, smart note-taking, community posts and a gamified rank system — all in one place for students and teachers.",
+//     "home.get_started":"Get started — it's free","home.sign_in":"Sign in",
+//     "home.feat_lib":"Digital Library","home.feat_notes":"Smart Notes","home.feat_game":"Gamification",
+//     "home.feat_lib_sub":"Books, videos and podcasts uploaded by teachers. Track reading progress and rate materials.",
+//     "home.feat_notes_sub":"Rich text editor, topic tags, link to library materials. Share publicly or keep private.",
+//     "home.feat_game_sub":"Earn points for every action. Climb through 10 levels from Newcomer to Hiradcore.",
+//     "home.rank_title":"Rank system","home.rank_sub":"Complete actions to earn points and unlock new titles.",
+//     "home.ready":"Ready to start?","home.join":"Join HiradHub",
+//     "home.hey":"Hey","home.teacher_hey":"Hey, Teacher","home.director_hey":"Welcome, Director",
+//     "home.dashboard":"Dashboard →","home.continue":"Continue learning",
+//     "home.no_roadmap":"No active roadmap","home.no_roadmap_sub":"Pick a roadmap to track your progress.",
+//     "home.browse":"Browse →","home.quick_access":"Quick access",
+//     "home.books_videos":"Books & videos","home.learning_paths":"Learning paths",
+//     "home.community":"Community","home.recent_posts":"Recent posts","home.view_all":"All →",
+//     "home.your_progress":"Your progress","home.language":"Language",
+//     "home.note_title":"Title...","home.note_placeholder":"Quick thought...",
+//     "home.note_public":"Public","home.save":"Save","home.add_task":"Add task...",
+//     "home.tasks_remaining":"remaining","home.clear_done":"Clear done",
+//     "home.upload_material":"+ Upload material","home.new_roadmap":"+ New roadmap",
+//     "home.your_content":"Your content","home.books":"Books",
+//     "home.videos":"Videos","home.podcasts":"Podcasts",
+//     "home.max_level":"Max level reached","home.progress_to":"Progress to Level",
+//     "home.director_panel":"Director panel","home.pending_teachers":"Pending teachers",
+//     "home.manage_roadmaps":"Manage roadmaps","home.uploaded":"Uploaded",
+//     "home.likes":"Likes received","home.helped":"Students helped",
+//     "home.verified_badge":"Verified","home.pending_verify":"Pending verification",
+//     "home.teachers_verified":"Teachers verified",
+//     "home.open_material":"Open material",
+//     "home.write_first":"Write first post","home.create_note":"Create first note",
+//     "lib.title":"Library","lib.all":"All","lib.books":"Books","lib.videos":"Videos",
+//     "lib.podcasts":"Podcasts","lib.search":"Search materials...","lib.empty":"No materials yet.",
+//     "lib.add_material":"+ Add material","lib.level":"Level","lib.author":"Author","lib.likes":"likes",
+//     "note.title":"My Notes","note.new":"+ New note","note.new_folder":"New folder",
+//     "note.folder_name":"Folder name...","note.create":"Create","note.cancel":"Cancel",
+//     "note.all":"All","note.from_roadmap":"From roadmap","note.from_material":"From material",
+//     "note.simple":"Simple","note.folders":"Folders","note.all_notes":"All notes",
+//     "note.private":"private","note.public":"public","note.roadmap":"Roadmap",
+//     "note.material":"Material","note.step":"Step","note.no_notes":"No notes yet.",
+//     "note.create_first":"Create first note","note.no_roadmap":"No roadmap notes yet.",
+//     "note.no_material":"No notes linked to materials yet.","note.no_simple":"No simple notes yet.",
+//     "note.move_folder":"Move to folder","note.no_folder":"— No folder",
+//     "post.title":"Community","post.write":"Write","post.all":"All",
+//     "post.questions":"Questions","post.articles":"Articles",
+//     "post.needs_answer":"Needs answer","post.answered":"✓ Answered",
+//     "post.save":"Save","post.overview":"Overview","post.top_students":"Top students",
+//     "post.topics":"Topics","post.write_post":"+ Write post",
+//     "post.search_users":"Search users...","post.ans":"ans.",
+//     "post.no_posts":"No posts yet.","post.be_first":"Be the first",
+//     "post.no_questions":"No questions yet.","post.no_articles":"No articles yet.",
+//     "post.page":"Page","post.of":"of","post.ago":"ago",
+//     "post.type_post":"Post","post.type_question":"Question","post.type_article":"Article",
+//     "post.create.title":"New post","post.create.type":"Type",
+//     "post.create.text":"What's on your mind?","post.create.q_text":"What do you want to know?",
+//     "post.create.a_text":"Write your article...","post.create.image":"Image (optional)",
+//     "post.create.video":"Video (optional)","post.create.topics":"Topics (optional)",
+//     "post.create.publish":"Publish","post.create.ask":"Ask question",
+//     "post.create.publish_article":"Publish article","post.create.cancel":"Cancel",
+//     "road.title":"Roadmaps","road.create":"+ New roadmap","road.all":"All topics",
+//     "road.steps":"steps","road.your_progress":"Your progress",
+//     "road.completed":"✓ Roadmap completed!","road.open_material":"Open material",
+//     "road.no_steps":"No steps yet.","road.add_steps":"Add steps →",
+//     "road.login_cta":"Log in to track your progress","road.log_in":"Log in",
+//     "road.edit":"Edit","road.done":"done","road.step":"Step",
+//     "road.public":"Public","road.draft":"draft",
+//     "road.no_roadmaps":"No roadmaps yet.","road.create_first":"Create first roadmap",
+//     "comm.title":"Communities","comm.subtitle":"Spaces created by students, teachers and directors",
+//     "comm.new":"New community","comm.level_req_s":"Reach level 5 to create a community",
+//     "comm.level_req_t":"Reach Teacher level 3 to create a community",
+//     "comm.search":"Search communities...","comm.all":"All","comm.private":"Private",
+//     "comm.joined":"Joined","comm.members":"members","comm.posts":"posts","comm.ago":"ago",
+//     "comm.join":"Join","comm.join_request":"Request to join","comm.leave":"Leave",
+//     "comm.delete":"Delete","comm.pending":"pending request",
+//     "comm.approve":"Approve","comm.reject":"Reject",
+//     "comm.add_post":"Add post to community","comm.post_id":"Post ID...",
+//     "comm.add":"Add post","comm.add_note":"You can only add your own posts.",
+//     "comm.about":"About","comm.created":"Created","comm.type":"Type","comm.topic":"Topic",
+//     "comm.public":"Public","comm.pinned":"Pinned","comm.no_posts":"No posts yet.",
+//     "comm.no_comm":"No communities yet.","comm.create_first":"Create first community",
+//     "comm.create_title":"New community","comm.name":"Name","comm.desc":"Description (optional)",
+//     "comm.topic_opt":"Topic (optional)","comm.avatar":"Community avatar (optional)",
+//     "comm.private_chk":"Private community","comm.private_sub":"— members need approval",
+//     "comm.create_btn":"Create community","comm.who_can":"Who can create communities:",
+//     "comm.rules":"Students at level 5+ · Teachers at level 3+ · Directors always",
+//     "comm.view_post":"View post →",
+//     "prof.edit":"Edit profile","prof.score":"Score","prof.posts":"Posts","prof.notes":"Notes",
+//     "prof.tab_posts":"Posts","prof.tab_notes":"Notes","prof.tab_favs":"Favorites",
+//     "prof.tab_materials":"Materials","prof.no_posts":"No posts yet.",
+//     "prof.no_notes":"No notes yet.","prof.no_favs":"No favorites yet.",
+//     "prof.no_materials":"No materials uploaded yet.",
+//     "prof.write_first":"Write first post","prof.create_first":"Create first note",
+//     "prof.upload":"Upload material","prof.verified":"Verified",
+//     "prof.pending":"Pending verification",
+//     "gen.save":"Save","gen.cancel":"Cancel","gen.delete":"Delete","gen.edit":"Edit",
+//     "gen.back":"Back","gen.ago":"ago","gen.by":"by","gen.pts":"pts","gen.no_topic":"— No topic —",
+//   },
+
+//   ru: {
+//     "nav.library":"Библиотека","nav.posts":"Посты","nav.notes":"Заметки",
+//     "nav.dashboard":"Дашборд","nav.roadmaps":"Роадмапы","nav.communities":"Сообщества",
+//     "nav.search":"Поиск...","nav.login":"Войти","nav.register":"Регистрация",
+//     "nav.profile":"Профиль","nav.edit_profile":"Редактировать профиль","nav.logout":"Выйти",
+//     "nav.leaderboard":"Рейтинг",
+//     "prof.director":"Директор","prof.teacher":"Учитель",
+//     "footer.brand":"Образовательная платформа","footer.library":"Библиотека",
+//     "footer.posts":"Посты","footer.leaderboard":"Рейтинг",
+//     "home.tagline":"Образовательная платформа","home.hero":"Учись. Пиши. Развивайся.",
+//     "home.hero_sub":"HiradHub объединяет цифровую библиотеку, заметки, сообщество и систему рангов — всё в одном месте для учеников и учителей.",
+//     "home.get_started":"Начать бесплатно","home.sign_in":"Войти",
+//     "home.feat_lib":"Цифровая библиотека","home.feat_notes":"Умные заметки","home.feat_game":"Геймификация",
+//     "home.feat_lib_sub":"Книги, видео и подкасты от учителей. Следи за прогрессом чтения.",
+//     "home.feat_notes_sub":"Редактор текста, теги, привязка к материалам. Делись или оставь приватными.",
+//     "home.feat_game_sub":"Зарабатывай очки за каждое действие. 10 уровней от Новичка до Hiradcore.",
+//     "home.rank_title":"Система рангов","home.rank_sub":"Выполняй действия, зарабатывай очки и открывай новые титулы.",
+//     "home.ready":"Готов начать?","home.join":"Присоединиться",
+//     "home.hey":"Привет","home.teacher_hey":"Привет, учитель","home.director_hey":"Добро пожаловать, директор",
+//     "home.dashboard":"Дашборд →","home.continue":"Продолжить обучение",
+//     "home.no_roadmap":"Нет активного роадмапа","home.no_roadmap_sub":"Выбери роадмап чтобы отслеживать прогресс.",
+//     "home.browse":"Смотреть →","home.quick_access":"Быстрый доступ",
+//     "home.books_videos":"Книги и видео","home.learning_paths":"Пути обучения",
+//     "home.community":"Сообщество","home.recent_posts":"Последние посты","home.view_all":"Все →",
+//     "home.your_progress":"Ваш прогресс","home.language":"Язык",
+//     "home.note_title":"Заголовок...","home.note_placeholder":"Быстрая мысль...",
+//     "home.note_public":"Публичная","home.save":"Сохранить","home.add_task":"Добавить задачу...",
+//     "home.tasks_remaining":"осталось","home.clear_done":"Очистить выполненные",
+//     "home.upload_material":"+ Загрузить материал","home.new_roadmap":"+ Новый роадмап",
+//     "home.your_content":"Ваш контент","home.books":"Книги",
+//     "home.videos":"Видео","home.podcasts":"Подкасты",
+//     "home.max_level":"Максимальный уровень","home.progress_to":"Прогресс до уровня",
+//     "home.director_panel":"Панель директора","home.pending_teachers":"Ожидающие учителя",
+//     "home.manage_roadmaps":"Управление роадмапами","home.uploaded":"Загружено",
+//     "home.likes":"Лайки","home.helped":"Помогли студентам",
+//     "home.verified_badge":"Верифицирован","home.pending_verify":"Ожидает верификации",
+//     "home.teachers_verified":"Верифицировано учителей",
+//     "home.open_material":"Открыть материал",
+//     "home.write_first":"Написать пост","home.create_note":"Создать заметку",
+//     "lib.title":"Библиотека","lib.all":"Все","lib.books":"Книги","lib.videos":"Видео",
+//     "lib.podcasts":"Подкасты","lib.search":"Поиск материалов...","lib.empty":"Материалов пока нет.",
+//     "lib.add_material":"+ Добавить материал","lib.level":"Уровень","lib.author":"Автор","lib.likes":"лайков",
+//     "note.title":"Мои заметки","note.new":"+ Новая заметка","note.new_folder":"Новая папка",
+//     "note.folder_name":"Название папки...","note.create":"Создать","note.cancel":"Отмена",
+//     "note.all":"Все","note.from_roadmap":"Из роадмапа","note.from_material":"Из материала",
+//     "note.simple":"Простые","note.folders":"Папки","note.all_notes":"Все заметки",
+//     "note.private":"приватная","note.public":"публичная","note.roadmap":"Роадмап",
+//     "note.material":"Материал","note.step":"Шаг","note.no_notes":"Заметок пока нет.",
+//     "note.create_first":"Создать первую заметку","note.no_roadmap":"Нет заметок из роадмапа.",
+//     "note.no_material":"Нет заметок из материалов.","note.no_simple":"Нет простых заметок.",
+//     "note.move_folder":"Переместить в папку","note.no_folder":"— Без папки",
+//     "post.title":"Сообщество","post.write":"Написать","post.all":"Все",
+//     "post.questions":"Вопросы","post.articles":"Статьи",
+//     "post.needs_answer":"Нужен ответ","post.answered":"✓ Отвечено",
+//     "post.save":"Сохранить","post.overview":"Статистика","post.top_students":"Топ студентов",
+//     "post.topics":"Темы","post.write_post":"+ Написать пост",
+//     "post.search_users":"Поиск пользователей...","post.ans":"отв.",
+//     "post.no_posts":"Постов пока нет.","post.be_first":"Будь первым",
+//     "post.no_questions":"Вопросов пока нет.","post.no_articles":"Статей пока нет.",
+//     "post.page":"Страница","post.of":"из","post.ago":"назад",
+//     "post.type_post":"Пост","post.type_question":"Вопрос","post.type_article":"Статья",
+//     "post.create.title":"Новый пост","post.create.type":"Тип",
+//     "post.create.text":"Что у вас на уме?","post.create.q_text":"Что вы хотите узнать?",
+//     "post.create.a_text":"Напишите вашу статью...","post.create.image":"Изображение (необязательно)",
+//     "post.create.video":"Видео (необязательно)","post.create.topics":"Темы (необязательно)",
+//     "post.create.publish":"Опубликовать","post.create.ask":"Задать вопрос",
+//     "post.create.publish_article":"Опубликовать статью","post.create.cancel":"Отмена",
+//     "road.title":"Роадмапы","road.create":"+ Новый роадмап","road.all":"Все темы",
+//     "road.steps":"шагов","road.your_progress":"Ваш прогресс",
+//     "road.completed":"✓ Роадмап завершён!","road.open_material":"Открыть материал",
+//     "road.no_steps":"Шагов пока нет.","road.add_steps":"Добавить шаги →",
+//     "road.login_cta":"Войдите чтобы отслеживать прогресс","road.log_in":"Войти",
+//     "road.edit":"Редактировать","road.done":"готово","road.step":"Шаг",
+//     "road.public":"Публичный","road.draft":"черновик",
+//     "road.no_roadmaps":"Роадмапов пока нет.","road.create_first":"Создать первый роадмап",
+//     "comm.title":"Сообщества","comm.subtitle":"Пространства созданные студентами, учителями и директорами",
+//     "comm.new":"Новое сообщество","comm.level_req_s":"Достигни 5 уровня чтобы создать сообщество",
+//     "comm.level_req_t":"Достигни 3 уровня учителя чтобы создать сообщество",
+//     "comm.search":"Поиск сообществ...","comm.all":"Все","comm.private":"Приватное",
+//     "comm.joined":"Вступил","comm.members":"участников","comm.posts":"постов","comm.ago":"назад",
+//     "comm.join":"Вступить","comm.join_request":"Запросить вступление","comm.leave":"Покинуть",
+//     "comm.delete":"Удалить","comm.pending":"ожидающий запрос",
+//     "comm.approve":"Принять","comm.reject":"Отклонить",
+//     "comm.add_post":"Добавить пост в сообщество","comm.post_id":"ID поста...",
+//     "comm.add":"Добавить","comm.add_note":"Можно добавлять только свои посты.",
+//     "comm.about":"О сообществе","comm.created":"Создано","comm.type":"Тип","comm.topic":"Тема",
+//     "comm.public":"Публичное","comm.pinned":"Закреплён","comm.no_posts":"Постов пока нет.",
+//     "comm.no_comm":"Сообществ пока нет.","comm.create_first":"Создать первое сообщество",
+//     "comm.create_title":"Новое сообщество","comm.name":"Название","comm.desc":"Описание (необязательно)",
+//     "comm.topic_opt":"Тема (необязательно)","comm.avatar":"Аватар сообщества (необязательно)",
+//     "comm.private_chk":"Приватное сообщество","comm.private_sub":"— участники требуют одобрения",
+//     "comm.create_btn":"Создать сообщество","comm.who_can":"Кто может создавать сообщества:",
+//     "comm.rules":"Студенты с уровня 5+ · Учителя с уровня 3+ · Директора всегда",
+//     "comm.view_post":"Смотреть пост →",
+//     "prof.edit":"Редактировать","prof.score":"Очки","prof.posts":"Посты","prof.notes":"Заметки",
+//     "prof.tab_posts":"Посты","prof.tab_notes":"Заметки","prof.tab_favs":"Избранное",
+//     "prof.tab_materials":"Материалы","prof.no_posts":"Постов пока нет.",
+//     "prof.no_notes":"Заметок пока нет.","prof.no_favs":"Избранного пока нет.",
+//     "prof.no_materials":"Материалов пока нет.",
+//     "prof.write_first":"Написать первый пост","prof.create_first":"Создать первую заметку",
+//     "prof.upload":"Загрузить материал","prof.verified":"Верифицирован",
+//     "prof.pending":"Ожидает верификации",
+//     "gen.save":"Сохранить","gen.cancel":"Отмена","gen.delete":"Удалить","gen.edit":"Редактировать",
+//     "gen.back":"Назад","gen.ago":"назад","gen.by":"от","gen.pts":"очков","gen.no_topic":"— Без темы —",
+//   },
+
+//   tg: {
+//     "nav.library":"Китобхона","nav.posts":"Паёмҳо","nav.notes":"Қайдҳо",
+//     "nav.dashboard":"Панел","nav.roadmaps":"Нақшаҳо","nav.communities":"Ҷамоаҳо",
+//     "nav.search":"Ҷустуҷӯ...","nav.login":"Даромадан","nav.register":"Бақайдгирӣ",
+//     "nav.profile":"Профил","nav.edit_profile":"Таҳрири профил","nav.logout":"Баромадан",
+//     "nav.leaderboard":"Рейтинг",
+//     "prof.director":"Директор","prof.teacher":"Омӯзгор",
+//     "footer.brand":"Платформаи таълимӣ","footer.library":"Китобхона",
+//     "footer.posts":"Паёмҳо","footer.leaderboard":"Рейтинг",
+//     "home.tagline":"Платформаи таълимӣ","home.hero":"Омӯз. Бинавис. Пеш рав.",
+//     "home.hero_sub":"HiradHub китобхонаи рақамӣ, қайдҳои зирак, паёмҳои ҷамоа ва системаи дараҷабандиро дар як ҷо барои хонандагон ва омӯзгорон муттаҳид мекунад.",
+//     "home.get_started":"Ройгон оғоз кунед","home.sign_in":"Даромадан",
+//     "home.feat_lib":"Китобхонаи рақамӣ","home.feat_notes":"Қайдҳои зирак","home.feat_game":"Бозӣ",
+//     "home.feat_lib_sub":"Китобҳо, видеоҳо ва подкастҳо аз омӯзгорон. Пешрафти хониш ва арзёбии маводро пайгирӣ кунед.",
+//     "home.feat_notes_sub":"Муҳаррири матн, тегҳо, пайванд ба маводи китобхона. Оммавӣ ё хусусӣ нигоҳ доред.",
+//     "home.feat_game_sub":"Барои ҳар амал хол ба даст оред. Аз 10 дараҷа аз Тозакор то Hiradcore боло равед.",
+//     "home.rank_title":"Системаи дараҷа","home.rank_sub":"Амалҳоро иҷро кунед, хол ба даст оред ва унвонҳои нав кушоед.",
+//     "home.ready":"Оғоз кардан омодаед?","home.join":"Ба HiradHub ҳамроҳ шавед",
+//     "home.hey":"Салом","home.teacher_hey":"Салом, омӯзгор","home.director_hey":"Хуш омадед, директор",
+//     "home.dashboard":"Панел →","home.continue":"Омӯзишро идома диҳед",
+//     "home.no_roadmap":"Нақшаи фаъол нест","home.no_roadmap_sub":"Нақшаеро интихоб кунед то пешрафтатонро пайгирӣ кунед.",
+//     "home.browse":"Дидан →","home.quick_access":"Дастрасии зуд",
+//     "home.books_videos":"Китобҳо ва видеоҳо","home.learning_paths":"Роҳҳои омӯзиш",
+//     "home.community":"Ҷамоа","home.recent_posts":"Паёмҳои охирон","home.view_all":"Ҳама →",
+//     "home.your_progress":"Пешрафти шумо","home.language":"Забон",
+//     "home.note_title":"Сарлавҳа...","home.note_placeholder":"Фикри зуд...",
+//     "home.note_public":"Оммавӣ","home.save":"Захира кардан","home.add_task":"Вазифа илова кунед...",
+//     "home.tasks_remaining":"боқимонда","home.clear_done":"Иҷрошударо тоза кунед",
+//     "home.upload_material":"+ Бор кардани мавод","home.new_roadmap":"+ Нақшаи нав",
+//     "home.your_content":"Мавзӯи шумо","home.books":"Китобҳо",
+//     "home.videos":"Видеоҳо","home.podcasts":"Подкастҳо",
+//     "home.max_level":"Дараҷаи максималӣ","home.progress_to":"Пешрафт то дараҷаи",
+//     "home.director_panel":"Панели директор","home.pending_teachers":"Омӯзгорони интизор",
+//     "home.manage_roadmaps":"Идоракунии нақшаҳо","home.uploaded":"Бор карда шуд",
+//     "home.likes":"Лайкҳо","home.helped":"Донишҷӯёни кӯмакшуда",
+//     "home.verified_badge":"Тасдиқшуда","home.pending_verify":"Дар интизори тасдиқ",
+//     "home.teachers_verified":"Омӯзгорони тасдиқшуда",
+//     "home.open_material":"Кушодани мавод",
+//     "home.write_first":"Паём навиштан","home.create_note":"Қайд сохтан",
+//     "lib.title":"Китобхона","lib.all":"Ҳама","lib.books":"Китобҳо","lib.videos":"Видеоҳо",
+//     "lib.podcasts":"Подкастҳо","lib.search":"Ҷустуҷӯи мавод...","lib.empty":"Ҳоло мавод нест.",
+//     "lib.add_material":"+ Мавод илова кунед","lib.level":"Дараҷа","lib.author":"Муаллиф","lib.likes":"лайк",
+//     "note.title":"Қайдҳои ман","note.new":"+ Қайди нав","note.new_folder":"Папкаи нав",
+//     "note.folder_name":"Номи папка...","note.create":"Сохтан","note.cancel":"Бекор кардан",
+//     "note.all":"Ҳама","note.from_roadmap":"Аз нақша","note.from_material":"Аз мавод",
+//     "note.simple":"Оддӣ","note.folders":"Папкаҳо","note.all_notes":"Ҳама қайдҳо",
+//     "note.private":"хусусӣ","note.public":"оммавӣ","note.roadmap":"Нақша",
+//     "note.material":"Мавод","note.step":"Қадам","note.no_notes":"Ҳоло қайд нест.",
+//     "note.create_first":"Қайди аввалро созед","note.no_roadmap":"Қайдҳо аз нақша нест.",
+//     "note.no_material":"Қайдҳо аз мавод нест.","note.no_simple":"Қайдҳои оддӣ нест.",
+//     "note.move_folder":"Ба папка кӯчонидан","note.no_folder":"— Папка нест",
+//     "post.title":"Ҷамоа","post.write":"Навиштан","post.all":"Ҳама",
+//     "post.questions":"Саволҳо","post.articles":"Мақолаҳо",
+//     "post.needs_answer":"Ҷавоб лозим","post.answered":"✓ Ҷавоб дода шуд",
+//     "post.save":"Захира кардан","post.overview":"Умумӣ","post.top_students":"Беҳтарин донишҷӯён",
+//     "post.topics":"Мавзӯъҳо","post.write_post":"+ Паём навиштан",
+//     "post.search_users":"Ҷустуҷӯи корбарон...","post.ans":"ҷ.",
+//     "post.no_posts":"Ҳоло паём нест.","post.be_first":"Аввалин бошед",
+//     "post.no_questions":"Ҳоло савол нест.","post.no_articles":"Ҳоло мақола нест.",
+//     "post.page":"Саҳифа","post.of":"аз","post.ago":"пеш",
+//     "post.type_post":"Паём","post.type_question":"Савол","post.type_article":"Мақола",
+//     "post.create.title":"Паёми нав","post.create.type":"Навъ",
+//     "post.create.text":"Чӣ дар фикратон аст?","post.create.q_text":"Чӣ донистан мехоҳед?",
+//     "post.create.a_text":"Мақолаатонро бинависед...","post.create.image":"Тасвир (ихтиёрӣ)",
+//     "post.create.video":"Видео (ихтиёрӣ)","post.create.topics":"Мавзӯъҳо (ихтиёрӣ)",
+//     "post.create.publish":"Нашр кардан","post.create.ask":"Савол пурсидан",
+//     "post.create.publish_article":"Мақола нашр кардан","post.create.cancel":"Бекор кардан",
+//     "road.title":"Нақшаҳо","road.create":"+ Нақшаи нав","road.all":"Ҳама мавзӯъҳо",
+//     "road.steps":"қадам","road.your_progress":"Пешрафти шумо",
+//     "road.completed":"✓ Нақша анҷом ёфт!","road.open_material":"Кушодани мавод",
+//     "road.no_steps":"Ҳоло қадам нест.","road.add_steps":"Қадам илова кунед →",
+//     "road.login_cta":"Барои пайгирии пешрафт ворид шавед","road.log_in":"Даромадан",
+//     "road.edit":"Таҳрир","road.done":"анҷом","road.step":"Қадам",
+//     "road.public":"Оммавӣ","road.draft":"пешнавис",
+//     "road.no_roadmaps":"Ҳоло нақша нест.","road.create_first":"Нақшаи аввалро созед",
+//     "comm.title":"Ҷамоаҳо","comm.subtitle":"Фазоҳое, ки донишҷӯён, омӯзгорон ва директорон сохтаанд",
+//     "comm.new":"Ҷамоаи нав","comm.level_req_s":"Барои сохтани ҷамоа дараҷаи 5 лозим аст",
+//     "comm.level_req_t":"Барои сохтани ҷамоа дараҷаи 3 омӯзгор лозим аст",
+//     "comm.search":"Ҷустуҷӯи ҷамоа...","comm.all":"Ҳама","comm.private":"Хусусӣ",
+//     "comm.joined":"Ҳамроҳ шуд","comm.members":"аъзо","comm.posts":"паём","comm.ago":"пеш",
+//     "comm.join":"Ҳамроҳ шудан","comm.join_request":"Дархост барои ҳамроҳ шудан",
+//     "comm.leave":"Баромадан","comm.delete":"Нест кардан","comm.pending":"дархости интизор",
+//     "comm.approve":"Қабул кардан","comm.reject":"Рад кардан",
+//     "comm.add_post":"Паём ба ҷамоа илова кунед","comm.post_id":"ID паём...",
+//     "comm.add":"Илова кардан","comm.add_note":"Танҳо паёмҳои худатонро илова карда метавонед.",
+//     "comm.about":"Дар бораи ҷамоа","comm.created":"Сохта шуд","comm.type":"Навъ","comm.topic":"Мавзӯъ",
+//     "comm.public":"Оммавӣ","comm.pinned":"Маҳкам шуд","comm.no_posts":"Ҳоло паём нест.",
+//     "comm.no_comm":"Ҳоло ҷамоа нест.","comm.create_first":"Ҷамоаи аввалро созед",
+//     "comm.create_title":"Ҷамоаи нав","comm.name":"Ном","comm.desc":"Тавсиф (ихтиёрӣ)",
+//     "comm.topic_opt":"Мавзӯъ (ихтиёрӣ)","comm.avatar":"Аватари ҷамоа (ихтиёрӣ)",
+//     "comm.private_chk":"Ҷамоаи хусусӣ","comm.private_sub":"— аъзоён тасдиқ лозим доранд",
+//     "comm.create_btn":"Ҷамоа сохтан","comm.who_can":"Кӣ метавонад ҷамоа созад:",
+//     "comm.rules":"Донишҷӯён аз дараҷаи 5+ · Омӯзгорон аз дараҷаи 3+ · Директорон ҳамеша",
+//     "comm.view_post":"Паёмро дидан →",
+//     "prof.edit":"Таҳрир","prof.score":"Хол","prof.posts":"Паёмҳо","prof.notes":"Қайдҳо",
+//     "prof.tab_posts":"Паёмҳо","prof.tab_notes":"Қайдҳо","prof.tab_favs":"Дӯстдошта",
+//     "prof.tab_materials":"Маводҳо","prof.no_posts":"Ҳоло паём нест.",
+//     "prof.no_notes":"Ҳоло қайд нест.","prof.no_favs":"Ҳоло дӯстдошта нест.",
+//     "prof.no_materials":"Ҳоло мавод нест.",
+//     "prof.write_first":"Аввалин паём нависед","prof.create_first":"Аввалин қайдро созед",
+//     "prof.upload":"Мавод бор кардан","prof.verified":"Тасдиқшуда",
+//     "prof.pending":"Дар интизори тасдиқ",
+//     "gen.save":"Захира кардан","gen.cancel":"Бекор кардан","gen.delete":"Нест кардан",
+//     "gen.edit":"Таҳрир","gen.back":"Бозгашт","gen.ago":"пеш","gen.by":"аз",
+//     "gen.pts":"хол","gen.no_topic":"— Мавзӯъ нест —",
+//   }
+// };
+
+// // ── i18n engine ──
+// const I18N = {
+//   lang: localStorage.getItem('hh-lang') || 'ru',
+
+//   t(key) {
+//     return (TRANSLATIONS[this.lang]?.[key])
+//         || (TRANSLATIONS['en']?.[key])
+//         || key;
+//   },
+
+//   apply() {
+//     document.querySelectorAll('[data-i18n]').forEach(el => {
+//       const key  = el.getAttribute('data-i18n');
+//       const attr = el.getAttribute('data-i18n-attr');
+//       const val  = this.t(key);
+//       if (attr) el.setAttribute(attr, val);
+//       else el.textContent = val;
+//     });
+//     document.documentElement.lang = this.lang;
+//     document.querySelectorAll('[data-lang]').forEach(btn => {
+//       btn.classList.toggle('active', btn.dataset.lang === this.lang);
+//     });
+//   },
+
+//   set(lang) {
+//     if (!TRANSLATIONS[lang]) return;
+//     this.lang = lang;
+//     localStorage.setItem('hh-lang', lang);
+//     this.apply();
+//   },
+
+//   init() { this.apply(); }
+// };
+
+// document.addEventListener('DOMContentLoaded', () => I18N.init());

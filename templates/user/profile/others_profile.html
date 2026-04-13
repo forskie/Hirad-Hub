@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}{{ user.get_full_name|default:user.username }} — HiradHub{% endblock %}
+{% block title %}{{ profile_user.get_full_name|default:profile_user.username }} — HiradHub{% endblock %}
 
 {% block content %}
 <div style="max-width:760px; margin:0 auto;">
@@ -9,42 +9,46 @@
         <div style="display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap;">
 
             <div style="width:64px; height:64px; border-radius:50%; background:#1e1d3a; border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:500; color:#a5b4fc; overflow:hidden; flex-shrink:0;">
-                {% if user.profile_picture %}
-                <img src="{{ user.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;" alt="avatar"/>
+                {% if profile_user.profile_picture %}
+                <img src="{{ profile_user.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;" alt="avatar"/>
                 {% else %}
-                {{ user.username|first|upper }}
+                {{ profile_user.username|first|upper }}
                 {% endif %}
             </div>
 
             <div style="flex:1; min-width:0;">
                 <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-                    <p style="font-size:17px; font-weight:600; color:var(--text);">{{ user.get_full_name|default:user.username }}</p>
-                    <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv. {{ user.level }}</span>
-                    <span style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{ user.title }}</span>
-                    {% if user.role == 'teacher' %}
+                    <p style="font-size:17px; font-weight:600; color:var(--text);">{{ profile_user.get_full_name|default:profile_user.username }}</p>
+                    {% if profile_user.role != 'director' %}
+                    <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv. {{ profile_user.level }}</span>
+                    <span style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{ profile_user.title }}</span>
+                    {% endif %}
+                    {% if profile_user.role == 'teacher' %}
                     <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;" data-i18n="prof.teacher">Teacher</span>
-                    {% elif user.role == 'director' %}
+                    {% elif profile_user.role == 'director' %}
                     <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;" data-i18n="prof.director">Director</span>
                     {% endif %}
                 </div>
-                <p style="font-size:13px; color:var(--muted);">@{{ user.username }}</p>
-                {% if user.bio %}
-                <p style="font-size:13px; color:var(--text); margin-top:8px; line-height:1.6;">{{ user.bio }}</p>
+                <p style="font-size:13px; color:var(--muted);">@{{ profile_user.username }}</p>
+                {% if profile_user.bio %}
+                <p style="font-size:13px; color:var(--text); margin-top:8px; line-height:1.6;">{{ profile_user.bio }}</p>
                 {% endif %}
             </div>
 
             <div style="display:flex; gap:1.5rem; text-align:center; flex-shrink:0;">
                 <div>
-                    <p style="font-size:16px; font-weight:500; color:var(--accent);">{{ user.score }}</p>
+                    {% if profile_user.role != 'director' %}
+                    <p style="font-size:16px; font-weight:500; color:var(--accent);">{{ profile_user.score }}</p>
                     <p style="font-size:11px; color:var(--muted);" data-i18n="prof.score">Score</p>
+                    {% endif %}
                 </div>
                 <div>
-                    <p style="font-size:16px; font-weight:500; color:var(--text);">{{ user.posts.count }}</p>
+                    <p style="font-size:16px; font-weight:500; color:var(--text);">{{ profile_user.posts.count }}</p>
                     <p style="font-size:11px; color:var(--muted);" data-i18n="prof.posts">Posts</p>
                 </div>
                 <div>
                     <!-- FIX: was user.note_set.count — related_name='notes' -->
-                    <p style="font-size:16px; font-weight:500; color:var(--text);">{{ user.notes.count }}</p>
+                    <p style="font-size:16px; font-weight:500; color:var(--text);">{{ profile_user.notes.count }}</p>
                     <p style="font-size:11px; color:var(--muted);" data-i18n="prof.notes">Notes</p>
                 </div>
             </div>
@@ -65,9 +69,9 @@
 
     <!-- Posts -->
     <div id="panel-posts">
-        {% if user.posts.all %}
+        {% if profile_user.posts.all %}
         <div style="display:flex; flex-direction:column; gap:8px;">
-            {% for post in user.posts.all|slice:":15" %}
+            {% for post in profile_user.posts.all|slice:":15" %}
             <a href="{% url 'post:detail' post.pk %}" style="text-decoration:none;">
                 <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s;"
                     onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -97,12 +101,12 @@
 
     <!-- Public notes -->
     <div id="panel-notes" style="display:none;">
-        {% with public_notes=user.notes.filter %}
+        {% with public_notes=profile_user.notes.filter %}
         {# Фильтруем публичные ноты #}
         {% endwith %}
-        {% if user.notes.all %}
+        {% if profile_user.notes.all %}
         <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px;">
-            {% for note in user.notes.all %}
+            {% for note in profile_user.notes.all %}
             {% if note.is_public %}
             <a href="{% url 'note:detail' note.pk %}" style="text-decoration:none;">
                 <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s;"

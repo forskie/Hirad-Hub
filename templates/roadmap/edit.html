@@ -12,30 +12,30 @@
       onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     </a>
-    <h1 style="font-size:18px; font-weight:500; color:var(--text);">Edit roadmap</h1>
+    <h1 style="font-size:18px; font-weight:500; color:var(--text);">Редактировать дорожную карту</h1>
     <a href="{% url 'roadmap:delete' roadmap.pk %}"
       style="margin-left:auto; font-size:13px; color:#ef4444; text-decoration:none; padding:6px 12px; border:0.5px solid #fecaca; border-radius:7px; transition:background 0.15s;"
       onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
-      Delete
+      Удалить
     </a>
   </div>
 
   <!-- Roadmap info -->
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.5rem; margin-bottom:1.25rem;">
-    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Roadmap info</p>
+    <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:1rem;">Информация о дорожной карте</p>
     <form method="POST">
       {% csrf_token %}
       <input type="hidden" name="action" value="update_roadmap"/>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Title</label>
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Заголовок</label>
         <input type="text" name="title" value="{{ roadmap.title }}"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
       </div>
 
       <div style="margin-bottom:1rem;">
-        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Description</label>
+        <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Описание</label>
         <textarea name="description" rows="2"
           style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:vertical; line-height:1.6; transition:border-color 0.15s;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">{{ roadmap.description }}</textarea>
@@ -45,7 +45,7 @@
         <select name="topic"
           style="padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; cursor:pointer; transition:border-color 0.15s;"
           onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-          <option value="">— No topic —</option>
+          <option value="">— Без темы —</option>
           {% for topic in topics %}
             <option value="{{ topic.pk }}" {% if roadmap.topic and roadmap.topic.pk == topic.pk %}selected{% endif %}>{{ topic.name }}</option>
           {% endfor %}
@@ -53,14 +53,14 @@
         <label style="display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;">
           <input type="checkbox" name="is_public" {% if roadmap.is_public %}checked{% endif %}
             style="accent-color:var(--accent); width:13px; height:13px;"/>
-          <span style="font-size:13px; color:var(--text);">Public</span>
+          <span style="font-size:13px; color:var(--text);">Публичная</span>
         </label>
       </div>
 
       <button type="submit"
         style="padding:8px 18px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-        Save changes
+        Сохранить изменения
       </button>
     </form>
   </div>
@@ -92,7 +92,7 @@
             <span style="font-size:11px; color:var(--muted);">{{ step.resources.count }} res.</span>
             <!-- Toggle URL editor -->
             <button type="button" onclick="toggleUrlEditor({{ step.pk }})"
-              title="{{ step.resource_url|default:'Add URL' }}"
+              title="{{ step.resource_url|default:'Добавить ссылку' }}"
               style="display:flex; align-items:center; justify-content:center; width:26px; height:26px; background:none; border:none; cursor:pointer; border-radius:6px; transition:all 0.15s;
                 color:{% if step.resource_url %}var(--accent){% else %}var(--muted){% endif %};"
               onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='none'">
@@ -102,7 +102,7 @@
               </svg>
             </button>
             <!-- Delete step -->
-            <form method="POST" style="margin:0;" onsubmit="return confirm('Delete this step?')">
+            <form method="POST" style="margin:0;" onsubmit="return confirm('Удалить этот шаг?')">
               {% csrf_token %}
               <input type="hidden" name="action" value="delete_step"/>
               <input type="hidden" name="step_pk" value="{{ step.pk }}"/>
@@ -139,14 +139,14 @@
             <button type="submit"
               style="padding:7px 14px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; white-space:nowrap; transition:background 0.15s;"
               onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-              Save URL
+              Сохранить ссылку
             </button>
             {% if step.resource_url %}
             <a href="{{ step.resource_url }}" target="_blank" rel="noopener"
               style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; color:var(--muted); text-decoration:none; flex-shrink:0; transition:all 0.15s;"
               onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
               onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'"
-              title="Open URL">
+              title="Открыть ссылку">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                 <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
@@ -161,25 +161,25 @@
     </div>
     {% else %}
     <div style="text-align:center; padding:2rem 0; margin-bottom:1.25rem;">
-      <p style="font-size:13px; color:var(--muted);">No steps yet. Add the first one below.</p>
+      <p style="font-size:13px; color:var(--muted);">Пока нет шагов. Добавьте первый ниже.</p>
     </div>
     {% endif %}
 
     <!-- Add step form -->
     <div style="border-top:0.5px solid var(--border); padding-top:1.25rem;">
-      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:12px;">Add step</p>
+      <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:12px;">Добавить шаг</p>
       <form method="POST">
         {% csrf_token %}
         <input type="hidden" name="action" value="add_step"/>
 
         <div style="margin-bottom:8px;">
-          <input type="text" name="step_title" placeholder="Step title" required
+          <input type="text" name="step_title" placeholder="Название шага" required
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
         </div>
 
         <div style="margin-bottom:8px;">
-          <textarea name="step_description" rows="2" placeholder="Step description (optional)"
+          <textarea name="step_description" rows="2" placeholder="Описание шага (необязательно)"
             style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; resize:none; line-height:1.6; transition:border-color 0.15s;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
         </div>
@@ -191,7 +191,7 @@
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
           </svg>
-          <input type="url" name="step_resource_url" placeholder="Link to material (optional)"
+          <input type="url" name="step_resource_url" placeholder="Ссылка на материал (необязательно)"
             style="flex:1; background:none; border:none; outline:none; font-size:13px; color:var(--text); font-family:'Sora',sans-serif;"/>
         </div>
 
@@ -199,7 +199,7 @@
           style="padding:8px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); cursor:pointer; font-family:'Sora',sans-serif; transition:all 0.15s;"
           onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'"
           onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
-          + Add step
+          + Добавить шаг
         </button>
       </form>
     </div>
@@ -207,7 +207,7 @@
 
   <a href="{% url 'roadmap:detail' roadmap.pk %}"
     style="display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--accent); text-decoration:none;">
-    View roadmap →
+    Посмотреть дорожную карту →
   </a>
 
 </div>

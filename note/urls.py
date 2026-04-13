@@ -12,6 +12,7 @@ urlpatterns = [
     path('toggle_like/<int:pk>', views.toggle_like, name='toggle_like'),
     path('<int:pk>/add_comment', views.add_comment, name='add_comment'),
     path('folders/create/', views.create_folder, name='create_folder'),
+    path('folders/<int:pk>/delete/', views.delete_folder, name='delete_folder'),
     path('<int:pk>/move/', views.move_to_folder, name='move_to_folder'),
 ]
 

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Communities — HiradHub{% endblock %}
+{% block title %}Сообщества — HiradHub{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -73,7 +73,7 @@
     <form method="GET" style="display:flex; align-items:center; gap:8px; background:var(--surface); border:0.5px solid var(--border); border-radius:9px; padding:7px 12px; flex:1; max-width:300px; transition:border-color 0.15s;"
       onfocusin="this.style.borderColor='var(--accent)'" onfocusout="this.style.borderColor='var(--border)'">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" name="q" value="{{ q }}" data-i18n="comm.list.search_ph" data-i18n-attr="placeholder" placeholder="Search communities..."
+      <input type="text" name="q" value="{{ q }}" data-i18n="comm.list.search_ph" data-i18n-attr="placeholder" placeholder="Поиск сообществ..."
         style="flex:1; background:none; border:none; outline:none; font-size:13px; color:var(--text); font-family:'Sora',sans-serif;"/>
     </form>
 

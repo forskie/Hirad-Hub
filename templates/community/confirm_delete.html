@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Delete Community — HiradHub{% endblock %}
+{% block title %}Удалить сообщество — HiradHub{% endblock %}
 {% block content %}
 <div style="max-width:480px; margin:0 auto; text-align:center; padding:4rem 0;">
   <div style="width:52px;height:52px;background:#1a0808;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;">
@@ -12,12 +12,12 @@
       {% csrf_token %}
       <button type="submit"
         style="padding:10px 22px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Sora',sans-serif;" data-i18n="comm.delete.yes_delete">
-        Yes, delete
+        Да, удалить
       </button>
     </form>
     <a href="{% url 'community:detail' community.slug %}"
       style="padding:10px 22px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:14px;color:var(--muted);text-decoration:none;" data-i18n="gen.cancel">
-      Cancel
+      Отмена
     </a>
   </div>
 </div>
