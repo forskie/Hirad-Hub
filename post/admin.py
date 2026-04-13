@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Post
-
+"""
+Выводение Инфы про постов
+"""
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('id', 'author', 'text', 'created_at',

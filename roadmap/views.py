@@ -7,6 +7,18 @@ from library.models import Topic
 from user.decorators import teacher_required
 
 
+
+"""
+Представления роадмапов roadmaps.
+
+1. список публичных роадмапов с фильтрацией по теме
+2. детальный просмотр роадмапа с шагами и прогрессом пользователя
+3. создание, редактирование и удаление роадмапов (для преподавателей)
+4. управление шагами роадмапа (добавление, удаление, обновление)
+5. переключение прогресса пользователя по шагам (completed / uncompleted)
+6. расчёт и отображение прогресса выполнения роадмапа
+"""
+
 def roadmap_list(request):
     topic_slug = request.GET.get('topic')
     roadmaps = Roadmap.objects.filter(is_public=True).select_related('topic', 'creator').prefetch_related('steps')
@@ -34,13 +46,13 @@ def roadmap_detail(request, pk):
         user_progress = {p.step_id: p for p in progress}
         completed_count = sum(1 for p in progress if p.completed)
 
-
     return render(request, 'roadmap/detail.html',{
         'roadmap': roadmap,
         'steps': steps,
         'user_progress': user_progress,
         'completed_count': completed_count,
     })
+
 
 @teacher_required
 def roadmap_create(request):
@@ -118,6 +130,7 @@ def roadmap_edit(request, pk):
         'topics': topics,
         'steps': steps,
     })
+
 
 @login_required
 def roadmap_delete(request, pk):

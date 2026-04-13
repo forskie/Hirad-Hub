@@ -1,7 +1,9 @@
 from django.contrib import admin
 from .models import Community, CommunityMembership, CommunityPost
 
-
+"""
+Показ Community в админке 
+"""
 @admin.register(Community)
 class CommunityAdmin(admin.ModelAdmin):
     list_display  = ('name', 'creator', 'topic', 'is_private', 'member_count', 'created_at')

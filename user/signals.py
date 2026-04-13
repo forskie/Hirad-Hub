@@ -2,6 +2,14 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import TeacherProfile, CustomUser, DirectorProfile
 
+"""
+Сигналы создания профилей пользователей.
+При создании CustomUser:
+1. если роль teacher → создаётся TeacherProfile
+2. если роль director → создаётся DirectorProfile и TeacherProfile
+
+"""
+
 @receiver(post_save, sender=CustomUser)
 def create_role_profile(sender, instance, created, **kwargs):
     if instance.role == 'teacher':

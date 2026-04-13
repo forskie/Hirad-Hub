@@ -4,6 +4,19 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
+"""
+Модели заметок notes.
+
+1. папки заметок пользователя (NoteFolder)
+2. основную модель заметки (Note)
+3. связь заметок с пользователем, шагами роадмапа и материалами
+4. универсальную привязку к объектам через GenericForeignKey (resource)
+5. систему лайков и комментариев через GenericRelation
+6. индексы для оптимизации фильтрации и сортировки
+7. метод проверки доступа к заметке (can_view)
+"""
+
+
 class NoteFolder(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, 
                               on_delete=models.CASCADE,

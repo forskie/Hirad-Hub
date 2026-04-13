@@ -2,6 +2,23 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from hirad_hub import settings
+"""
+Пользовательская модель и профили ролей системы.
+
+1. CustomUser: расширенная модель пользователя с ролями (student, teacher, director, admin),
+  системой баллов (score), уровней и титулов, а также дополнительными полями профиля-
+2. TeacherProfile: расширенный профиль преподавателя с метриками активности и верификацией
+3. DirectorProfile: профиль директора с правами управления и верификацией учителей
+4. School: модель учебного заведения для привязки пользователей и преподавателей
+
+Дополнительно:
+1. переопределение AbstractUser с email как уникальным идентификатором
+2. система ролей и разрешений
+3. поддержка геймификации (score, level, title)
+4. связи OneToOne между пользователем и специализированными профилями
+"""
+
+
 
 class CustomUser(AbstractUser):
     phone_regex = RegexValidator(

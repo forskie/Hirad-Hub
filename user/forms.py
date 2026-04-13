@@ -6,6 +6,22 @@ from django.core.validators import RegexValidator
 
 from .models import School, TeacherProfile
 
+"""
+Формы аутентификации и профиля пользователей.
+
+1. регистрация обычного пользователя (CustomUserCreationForm)
+2. вход по email с кастомной аутентификацией (CustomUserLoginForm)
+3. обновление профиля пользователя (CustomUserUpdateForm)
+4. регистрация преподавателя с привязкой к школе (TeacherRegistrationForm)
+
+Дополнительно:
+1. валидация email на уникальность
+2. проверка телефона по формату +992XXXXXXXXX
+3. назначение ролей пользователей (student, teacher)
+4. создание TeacherProfile при регистрации преподавателя
+5. очистка входных данных (strip_tags для phone_number)
+"""
+
 User = get_user_model()
 
 class CustomUserCreationForm(UserCreationForm):

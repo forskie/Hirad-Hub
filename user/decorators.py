@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import user_passes_test
-
+"""
+Декоратор проверки юзера и доступа учителю.
+"""
 
 teacher_required = user_passes_test(
     lambda u: (

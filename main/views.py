@@ -11,6 +11,16 @@ from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.db.models import Q
 
+"""
+Основные представления (views).
+
+1. dashboard пользователя (статистика, рейтинг, профиль директора)
+2. главная страница (лента, прогресс, статистика преподавателя)
+3. leaderboard (рейтинг студентов и преподавателей)
+4. search (универсальный поиск по пользователям, постам, книгам, заметкам и роадмапам)
+"""
+
+
 User = get_user_model()
 
 @login_required
@@ -98,6 +108,7 @@ def leaderboard(request):
         'user_rank': user_rank,
         'tab':       tab,
     })
+
 
 def search(request):
     q = request.GET.get('q', '').strip()

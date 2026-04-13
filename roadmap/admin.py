@@ -1,7 +1,16 @@
 from django.contrib import admin
 from .models import Roadmap, Step, UserProgress, StepResource
 from django.contrib.contenttypes.models import ContentType
+"""
+система админки для роадмапов.
 
+1. управление роадмапами (RoadmapAdmin)
+2. управление шагами (StepAdmin) с inline шагами
+3. управление ресурсами шагов (StepResourceAdmin) с ограничением типов контента
+4. отслеживание прогресса пользователей (UserProgressAdmin)
+5. inline редактирование шагов и ресурсов внутри админки
+6. фильтрация и поиск по ключевым полям для ускорения администрирования
+"""
 
 class StepResourceInline(admin.TabularInline):
     model = StepResource

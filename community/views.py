@@ -9,8 +9,15 @@ from .models import Community, CommunityMembership, CommunityPost
 from .decorators import community_create_required, can_create_community
 from post.models import Post
 from library.models import Topic
-
-# Must not match URL segments under /community/<slug>/ (join, leave, …) or the /community/create/ route.
+"""
+Главные view функции Community:
+1. community_list - Дает лист всез комюнити смотря на филтр
+2. community_detail - Дает детали Community
+3. community_create, community_delete - Создает Community, Удаляет Community
+4. community_join, community_leave - Вход и выход в Community
+5. community_post_add, community_post_remove - Добавление и удаление поста в Community
+6. community_approve_member, community_reject_member - Принятие и откланение запроса в Community
+"""
 RESERVED_COMMUNITY_SLUGS = frozenset({
     'create', 'join', 'leave', 'delete', 'post', 'new', 'edit', 'admin', 'api',
     'approve', 'reject', 'list',

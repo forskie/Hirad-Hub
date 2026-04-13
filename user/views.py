@@ -11,7 +11,20 @@ from user.decorators import teacher_required
 from library.models import Book, Podcast, Video
 from community.models import Community, CommunityMembership
 
+"""
+Представления системы пользователей.
 
+1. аутентификация (login, logout, register)
+2. выбор типа регистрации (student / teacher)
+3. профиль пользователя (с рейтингом, уровнем, избранными постами)
+4. просмотр профилей других пользователей (teacher/director/others)
+5. редактирование профиля
+6. teacher dashboard (контент преподавателя)
+7. система верификации учителей (director/admin)
+8. список ожидающих верификации учителей
+9. расчёт уровня пользователя через score thresholds
+10. интеграция с постами, библиотекой и сообществами
+"""
 
 def register(request):
     return redirect('user:register_choice')
@@ -70,7 +83,6 @@ def profile_view(request):
     pending_count = 0
 
     if user.role == 'director':
-        # Director should see school chat communities where they are an admin
         communities = (
             Community.objects
             .filter(
@@ -95,8 +107,10 @@ def profile_view(request):
             pass
         pending_teachers = pending_qs
         pending_count = pending_qs.count()
+
     from post.models import Post, Favorite
     from django.contrib.contenttypes.models import ContentType
+
     post_ct = ContentType.objects.get_for_model(Post)
     favorite_posts = Post.objects.filter(
         id__in=Favorite.objects.filter(
@@ -182,6 +196,7 @@ def logout_view(request):
 
 def register_choice(request):
     return render(request, 'user/register/register_choice.html')
+
 
 def register_student(request):
     if request.method == 'POST':
@@ -270,7 +285,6 @@ def verify_teacher(request, username):
     except TeacherProfile.DoesNotExist:
         return redirect('main:home')
 
-    # Directors can verify only teachers from their own school.
     if request.user.role == 'director':
         try:
             director_school = request.user.director_profile.school

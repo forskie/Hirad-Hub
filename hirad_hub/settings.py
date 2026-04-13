@@ -1,3 +1,7 @@
+"""
+Базовая settings. Не готова для продакшена.
+"""
+
 import os
 from pathlib import Path
 

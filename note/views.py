@@ -5,6 +5,17 @@ from library.models import Comment, Like
 from .models import Note, NoteFolder
 
 
+"""
+Представления для системы заметок (notes).
+
+1. список заметок пользователя с фильтрацией (тип, папка)
+2. детальный просмотр заметки с комментариями
+3. создание, редактирование и удаление заметок
+4. лайки и комментарии через GenericForeignKey
+5. управление папками заметок (создание, перемещение, удаление)
+6. обработка HTMX запросов для динамического обновления UI
+"""
+
 @login_required
 def note_list(request):
     note_type = request.GET.get('type', 'all')

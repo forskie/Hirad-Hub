@@ -8,7 +8,21 @@ from library.models import Topic
 from django.core.paginator import Paginator
 
 
+"""
+Представления постов posts.
+
+1. список постов с фильтрацией по теме и типу (post/question/article)
+2. детальный просмотр поста с комментариями и статистикой
+3. создание и удаление постов
+4. система лайков и избранного через GenericForeignKey
+5. комментарии с поддержкой вложенности
+6. AJAX/HTMX обработка лайков, избранного и комментариев
+7. поиск пользователей по username с partial rendering
+8. пагинация списка постов и подсчёт статистики контента
+"""
+
 VALID_POST_TYPES = {'post', 'question', 'article'}
+
 
 def post_list(request):
     topic_slug = request.GET.get('topic')
@@ -76,6 +90,7 @@ def post_detail(request, pk):
         'user_communities': user_communities,
     })
 
+
 @login_required
 def post_create(request):
     topics = Topic.objects.all()
@@ -98,7 +113,8 @@ def post_create(request):
     return render(request, 'post/create.html', {
         'topics': topics
     })
-    
+
+
 @login_required
 def post_delete(request, pk):
     post = get_object_or_404(Post, pk=pk, author=request.user)
@@ -106,6 +122,7 @@ def post_delete(request, pk):
         post.delete()
         return redirect('post:list')
     return render(request, 'post/confirm_delete.html', {'post': post})
+
 
 @login_required
 def toggle_like(request, pk):
@@ -137,6 +154,7 @@ def toggle_like(request, pk):
         )
     return redirect(request.META.get('HTTP_REFERER', 'post:list'))
 
+
 @login_required
 def add_comment(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -154,6 +172,8 @@ def add_comment(request, pk):
         comments = post.comments.select_related('user').filter(parent=None).prefetch_related('replies')
         return render(request, 'post/partials/comments.html', {'post': post, 'comments': comments})
     return redirect('post:detail', pk=pk)
+
+
 @login_required
 def toggle_favorite(request, pk):
     post = get_object_or_404(Post, pk=pk)
@@ -178,6 +198,7 @@ def toggle_favorite(request, pk):
             }
         )
     return redirect(request.META.get('HTTP_REFERER', 'post:list'))
+
 
 def search_users(request):
     q = request.GET.get('q', '').strip()

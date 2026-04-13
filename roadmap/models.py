@@ -5,6 +5,20 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db.models import Q, UniqueConstraint
+"""
+Модели системы роадмапов (learning paths).
+
+1. Roadmap: учебный маршрут с темой, описанием и автором
+2. Step: последовательные шаги внутри роадмапа с порядком выполнения
+3. StepResource: привязка шагов к материалам (Book, Video, Podcast) через GenericForeignKey
+4. UserProgress: отслеживание выполнения шагов пользователем
+
+Дополнительно:
+1. ограничения уникальности (порядок шагов, единственный primary ресурс)
+2. валидация допустимых типов ресурсов
+3. индексы для оптимизации выборок по пользователю, шагу и статусу выполнения
+"""
+
 
 class Roadmap(models.Model):
     title = models.CharField(max_length=255)
@@ -14,8 +28,11 @@ class Roadmap(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True)
 
+
     def __str__(self):
         return self.title
+    
+
     
     class Meta:
         indexes = [
@@ -30,12 +47,15 @@ class Step(models.Model):
     order = models.PositiveIntegerField()
     resource_url = models.URLField(blank=True, help_text='Optional direct link to material for this step')
     
+
     def __str__(self):
         return self.title
     
+
     class Meta:
         ordering = ['order']
         unique_together = ('roadmap', 'order')
+
 
 class StepResource(models.Model):
     step = models.ForeignKey(Step, related_name='resources', on_delete=models.CASCADE)
@@ -44,17 +64,21 @@ class StepResource(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     is_primary = models.BooleanField(default=False)
 
+
     def __str__(self):
         return str(self.content_object) if self.content_object else "No Title"
     
+
     def clean(self):
         allowed_models = ['book', 'video', 'podcast']
         if self.content_type.model not in allowed_models:
             raise ValidationError("Invalid resource type")
 
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs    )
+
 
     class Meta:
         constraints = [
@@ -65,11 +89,13 @@ class StepResource(models.Model):
             )
         ]
 
+
 class UserProgress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     step = models.ForeignKey(Step, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
+
 
     class Meta:
         

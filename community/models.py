@@ -1,3 +1,9 @@
+"""
+Community models:
+1. Community - базовая модел принимаюшая главных данных
+2. CommunityMembership - рол юзера в Community
+3. CommunityPost - посты отправшийся в Community от юзера
+"""
 from django.db import models
 from django.conf import settings
 from django.db import models

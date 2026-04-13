@@ -22,6 +22,9 @@ def _teacher_min_level(teacher_score):
 
 
 def community_create_required(view_func):
+    """
+    Чекает может ли юзер создать Community (для учителей с 3 уровня, ученики с 5)
+    """
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         user = request.user
@@ -46,6 +49,9 @@ def community_create_required(view_func):
 
 
 def can_create_community(user):
+    """
+    Проверяет не админ или директор ли юзер
+    """
     if not user.is_authenticated:
         return False
     if user.role in ('director', 'admin'):

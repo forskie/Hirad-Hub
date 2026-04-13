@@ -4,6 +4,19 @@ from library.models import Topic
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
+"""
+Модели постов posts.
+1. основную модель поста (Post) с типами: post, question, article
+2. медиа-поля (текст, изображение, видео)
+3. систему лайков, комментариев и избранного через GenericRelation
+4. счётчики просмотров и метаданные (created/updated)
+5. привязку к темам (Topic)
+6. модель избранного (Favorite) через GenericForeignKey
+7. индексы для оптимизации фильтрации по типу, автору и дате
+"""
+
+
+
 class Post(models.Model):
     POST_TYPES_CHOICES = [
         ('post', 'Post'),
@@ -42,16 +55,20 @@ class Post(models.Model):
             models.Index(fields=['author', 'post_type']),
         ]
 
+
     @property
     def count_likes(self):
         return self.likes.count()
+
 
     @property
     def count_comments(self):
         return self.comments.count()
 
+
     def increment_views(self):
         Post.objects.filter(pk=self.pk).update(view_count=models.F('view_count') + 1)
+
 
     def __str__(self):
         return f"[{self.get_post_type_display()}] {self.author} : {self.text[:30]}..."
@@ -64,6 +81,7 @@ class Favorite(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
     created_at = models.DateTimeField(auto_now_add=True)
     
+
     class Meta:
         unique_together = ('user', 'content_type', 'object_id')
         indexes = [

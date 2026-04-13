@@ -1,3 +1,9 @@
+""" 
+Число начисленных очков.
+Уровни учителей и учеников
+
+"""
+
 # STUDENTS 
 NOTE_CREATE_POINTS = 2
 POST_CREATE_POINTS = 5
@@ -11,6 +17,8 @@ STEP_COMPLETION_POINTS = 10
 MATERIAL_UPLOAD_POINTS = 20
 MATERIAL_LIKE_RECEIVED_POINTS = 5
 MATERIAL_COMMENT_RECEIVED_POINTS = 10
+
+
 
 LEVELS = [
         (0,   1, 'Newcomer'),   

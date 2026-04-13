@@ -1,6 +1,10 @@
 from django.contrib import admin
 from .models import Topic, Book, Video, Podcast, LibraryInteraction, Like, Comment, Category
-
+"""
+Админка для моделей библиотеки.
+Отображения, фильтров, тем,
+книг, видео, подкастов, и другие.
+"""
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):

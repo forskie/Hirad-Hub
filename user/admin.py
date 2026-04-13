@@ -1,6 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import CustomUser, TeacherProfile, DirectorProfile, School
+
+"""
+Административная конфигурация пользователей и профилей.
+
+1. CustomUserAdmin: расширенная админка пользователя с ролями и геймификацией
+2. TeacherProfileAdmin: управление профилем преподавателя (метрики, верификация)
+3. DirectorProfileAdmin: управление профилем директора и правами
+4. SchoolAdmin: управление школами
+
+Дополнительно:
+1. кастомные fieldsets для разделения логических блоков (permissions, gamification)
+2. фильтрация и поиск по ключевым атрибутам пользователей и школ
+"""
+
+
 @admin.register(CustomUser)
 class UserAdmin(UserAdmin):
     model = CustomUser
@@ -24,12 +39,14 @@ class UserAdmin(UserAdmin):
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
 
+
 @admin.register(TeacherProfile)
 class TeacherProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'school', 'teacher_level', 'teacher_score', 'teacher_title', 'is_verified', 'materials_uploaded')
     list_filter = ('school', 'teacher_level', 'is_verified')
     search_fields = ('user__username', 'school__name', 'user__email')
     readonly_fields = ('materials_uploaded', 'teacher_score', 'total_likes_received', 'created_at')
+
 
 @admin.register(DirectorProfile)
 class DirectorProfileAdmin(admin.ModelAdmin):

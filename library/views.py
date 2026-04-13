@@ -5,6 +5,19 @@ from django.contrib.contenttypes.models import ContentType
 from user.decorators import teacher_required
 from datetime import timedelta
 
+"""
+views для библиотеки.
+1. отображение главной страницы библиотеки с фильтрацией (категории, темы, тип, сортировка)
+2. страницы деталей материалов (книги, видео, подкасты)
+3. систему взаимодействия пользователя (progress, лайки, комментарии)
+4. CRUD-операции для преподавателей (добавление и редактирование материалов)
+5. обработку AJAX/HTMX запросов для лайков и комментариев
+6. использование GenericForeignKey для универсальных связей с контентом
+"""
+
+
+
+
 # ________________  Base View  _______________
 
 def library_home(request):
@@ -171,6 +184,7 @@ def toggle_like(request, model_name, pk):
 
 
 # _________________ User Teacher login View __________
+
 @teacher_required
 def add_book(request):
     categories = Category.objects.filter(parent=None).prefetch_related('children')

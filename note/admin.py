@@ -1,6 +1,8 @@
 from django.contrib import admin
 from .models import Note
-
+"""
+Базовые отоьражение админки
+"""
 @admin.register(Note)
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'get_author', 'is_public', 'created_at', 'updated_at')

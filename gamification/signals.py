@@ -5,11 +5,15 @@ from post.models import Post
 from library.models import Like, Book, Video, Podcast
 from roadmap.models import UserProgress
 from user.models import TeacherProfile
-
 from .constants import NOTE_CREATE_POINTS, POST_CREATE_POINTS, LIKE_RECEIVED_POINTS, STEP_COMPLETION_POINTS, TEACHER_LEVELS, MATERIAL_UPLOAD_POINTS, MATERIAL_LIKE_RECEIVED_POINTS, MATERIAL_COMMENT_RECEIVED_POINTS
 from .utils import add_score, add_teacher_score
 from django.utils import timezone
 
+
+
+"""
+Сиситема начисление очков за какую-то дуйствие
+"""
 
 @receiver(post_save, sender=Note)
 def reward_note(sender, instance, created, **kwargs):

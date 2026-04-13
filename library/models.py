@@ -5,6 +5,13 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.conf import settings
 
+"""
+Модели библиотеки:
+1. категории и темы контента
+2. базовая абстрактная модель материалов (книги, видео, подкасты)
+3. реализация лайков и комментариев через GenericForeignKey
+4. отслеживание взаимодействий пользователей с материалами (progress, rating, completion)
+"""
 
 class Category(models.Model):
     CATEGORY_TYPES = [
