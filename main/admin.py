@@ -4,6 +4,7 @@ from main.views import User
 from .models import Dashboard
 from django.contrib.auth import get_user_model
 
+
 @admin.register(Dashboard)
 class DashboardAdmin(admin.ModelAdmin):
     list_display = ('user', 'total_score', 'level', 'post_count', 'note_count', 'rank', 'last_update')

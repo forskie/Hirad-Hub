@@ -71,7 +71,7 @@
           {% if community.is_private %}
           <span style="font-size:11px;padding:2px 7px;background:var(--surface2);color:var(--muted);border-radius:5px;display:inline-flex;align-items:center;gap:3px;">
             <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span data-i18n="comm.list.private">Private</span>
+            <span data-i18n="comm.list.private">Приватное</span>
           </span>
           {% endif %}
           {% if community.topic %}
@@ -79,9 +79,9 @@
           {% endif %}
         </div>
         <p style="font-size:12px;color:var(--muted);">
-          <span data-i18n="gen.by">by</span> {{ community.creator.get_full_name|default:community.creator.username }} ·
-          {{ community.member_count }} {% if community.member_count == 1 %}<span data-i18n="comm.list.member_one">member</span>{% else %}<span data-i18n="comm.list.member_many">members</span>{% endif %} ·
-          {{ community.created_at|timesince }} <span data-i18n="gen.ago">ago</span>
+          <span data-i18n="gen.by">автор:</span> {{ community.creator.get_full_name|default:community.creator.username }} ·
+          {{ community.member_count }} {% if community.member_count == 1 %}<span data-i18n="comm.list.member_one">участник</span>{% else %}<span data-i18n="comm.list.member_many">участников</span>{% endif %} ·
+          {{ community.created_at|timesince }} <span data-i18n="gen.ago">назад</span>
         </p>
         {% if community.description %}
         <p style="font-size:13px;color:var(--text);margin-top:8px;line-height:1.6;">{{ community.description }}</p>
@@ -95,7 +95,7 @@
           <a href="{% url 'community:delete' community.slug %}"
             style="padding:6px 13px;font-size:12px;color:#ef4444;border:0.5px solid #fecaca;border-radius:7px;text-decoration:none;text-align:center;transition:background 0.15s;"
             onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='none'">
-            <span data-i18n="comm.detail.delete">Delete</span>
+            <span data-i18n="comm.detail.delete">Удалить</span>
           </a>
           {% elif is_member %}
           <form method="POST" action="{% url 'community:leave' community.slug %}">
@@ -112,7 +112,7 @@
             <button type="submit"
               style="padding:7px 16px;font-size:13px;font-weight:500;color:#fff;background:var(--accent);border:none;border-radius:8px;cursor:pointer;font-family:'Sora',sans-serif;transition:background 0.15s;"
               onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-              {% if community.is_private %}<span data-i18n="comm.detail.request_join">Request to join</span>{% else %}<span data-i18n="comm.detail.join">Join</span>{% endif %}
+              {% if community.is_private %}<span data-i18n="comm.detail.request_join">Запросить доступ</span>{% else %}<span data-i18n="comm.detail.join">Вступить</span>{% endif %}
             </button>
           </form>
           {% endif %}
@@ -124,7 +124,7 @@
   <!-- Pending approvals (admin only) -->
   {% if pending %}
   <div style="background:#1a1200;border:0.5px solid #78350f;border-radius:12px;padding:1rem;margin-bottom:1.25rem;">
-    <p style="font-size:12px;color:#fcd34d;font-weight:500;margin-bottom:8px;">{% if pending|length == 1 %}<span data-i18n="comm.detail.pending_one">1 pending request</span>{% else %}<span id="comm-pending-many" data-n="{{ pending|length }}"></span>{% endif %}</p>
+    <p style="font-size:12px;color:#fcd34d;font-weight:500;margin-bottom:8px;">{% if pending|length == 1 %}<span data-i18n="comm.detail.pending_one">1 запрос ожидает</span>{% else %}<span id="comm-pending-many" data-n="{{ pending|length }}"></span>{% endif %}</p>
     <div style="display:flex;flex-direction:column;gap:6px;">
       {% for m in pending %}
       <div style="display:flex;align-items:center;gap:10px;">
@@ -132,11 +132,11 @@
         <span style="flex:1;font-size:13px;color:var(--text);">{{ m.user.get_full_name|default:m.user.username }}</span>
         <form method="POST" action="{% url 'community:approve_member' community.slug m.user.pk %}" style="margin:0;">
           {% csrf_token %}
-          <button type="submit" style="padding:4px 10px;font-size:11px;background:#052e16;color:#86efac;border:none;border-radius:5px;cursor:pointer;font-family:'Sora',sans-serif;" data-i18n="comm.detail.approve">Approve</button>
+          <button type="submit" style="padding:4px 10px;font-size:11px;background:#052e16;color:#86efac;border:none;border-radius:5px;cursor:pointer;font-family:'Sora',sans-serif;" data-i18n="comm.detail.approve">Одобрить</button>
         </form>
         <form method="POST" action="{% url 'community:reject_member' community.slug m.user.pk %}" style="margin:0;">
           {% csrf_token %}
-          <button type="submit" style="padding:4px 10px;font-size:11px;background:#1a0808;color:#fca5a5;border:none;border-radius:5px;cursor:pointer;font-family:'Sora',sans-serif;" data-i18n="comm.detail.reject">Reject</button>
+          <button type="submit" style="padding:4px 10px;font-size:11px;background:#1a0808;color:#fca5a5;border:none;border-radius:5px;cursor:pointer;font-family:'Sora',sans-serif;" data-i18n="comm.detail.reject">Отклонить</button>
         </form>
       </div>
       {% endfor %}
@@ -151,19 +151,19 @@
       <!-- Add post to community (members only) -->
       {% if is_member or request.user == community.creator %}
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:1rem;margin-bottom:1rem;">
-        <p style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;" data-i18n="comm.detail.add_post_title">Add your post to this community</p>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:500;" data-i18n="comm.detail.add_post_title">Добавьте свой пост в это сообщество</p>
         <form method="POST" action="{% url 'community:post_add' community.slug %}" style="display:flex;gap:8px;">
           {% csrf_token %}
-          <input type="text" name="post_id" data-i18n="comm.detail.post_id_ph" data-i18n-attr="placeholder" placeholder="Post ID..."
+          <input type="text" name="post_id" data-i18n="comm.detail.post_id_ph" data-i18n-attr="placeholder" placeholder="ID поста..."
             style="flex:1;padding:8px 12px;background:var(--surface2);border:0.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);outline:none;font-family:'Sora',sans-serif;transition:border-color 0.15s;"
             onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"/>
           <button type="submit"
             style="padding:8px 14px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Sora',sans-serif;transition:background 0.15s;white-space:nowrap;"
             onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-            <span data-i18n="comm.detail.add_post_btn">Add post</span>
+            <span data-i18n="comm.detail.add_post_btn">Добавить</span>
           </button>
         </form>
-        <p style="font-size:11px;color:var(--muted);margin-top:6px;" data-i18n="comm.detail.add_post_hint">You can only add your own posts. Find the post ID on the post detail page.</p>
+        <p style="font-size:11px;color:var(--muted);margin-top:6px;" data-i18n="comm.detail.add_post_hint">Можно добавлять только свои посты. ID поста можно посмотреть на странице поста.</p>
       </div>
       {% endif %}
 
@@ -176,7 +176,7 @@
             {% if cp.pinned %}
             <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--accent);margin-bottom:6px;font-weight:500;">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17H19V13L17 9V4H7V9L5 13V17Z"/></svg>
-              <span data-i18n="comm.detail.pinned">Pinned</span>
+              <span data-i18n="comm.detail.pinned">Закреплено</span>
             </div>
             {% endif %}
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
@@ -184,7 +184,7 @@
                 <div class="member-avatar">
                   {% if cp.post.author.profile_picture %}<img src="{{ cp.post.author.profile_picture.url }}" style="width:100%;height:100%;object-fit:cover;"/>{% else %}{{ cp.post.author.username|first|upper }}{% endif %}
                 </div>
-                <span style="font-size:12px;color:var(--muted);">{{ cp.post.author.get_full_name|default:cp.post.author.username }} · {{ cp.post.created_at|timesince }} <span data-i18n="gen.ago">ago</span></span>
+                <span style="font-size:12px;color:var(--muted);">{{ cp.post.author.get_full_name|default:cp.post.author.username }} · {{ cp.post.created_at|timesince }} <span data-i18n="gen.ago">назад</span></span>
               </a>
               <!-- Remove button -->
               {% if cp.post.author == request.user or is_admin %}
@@ -218,7 +218,7 @@
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               {{ cp.post.count_comments }}
             </a>
-            <a href="{% url 'post:detail' cp.post.pk %}" style="font-size:11px;color:var(--accent);text-decoration:none;margin-left:auto;" data-i18n="comm.detail.view_post">View post →</a>
+            <a href="{% url 'post:detail' cp.post.pk %}" style="font-size:11px;color:var(--accent);text-decoration:none;margin-left:auto;" data-i18n="comm.detail.view_post">Открыть пост →</a>
           </div>
         </div>
         {% endfor %}
@@ -229,13 +229,13 @@
         <div style="width:48px;height:48px;background:var(--surface2);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         </div>
-        <p style="font-size:14px;color:var(--muted);" data-i18n="comm.detail.private_feed">This is a private community. Join to see posts.</p>
+        <p style="font-size:14px;color:var(--muted);" data-i18n="comm.detail.private_feed">Это приватное сообщество. Вступите, чтобы видеть посты.</p>
       </div>
       {% else %}
       <div style="text-align:center;padding:4rem 0;">
-        <p style="font-size:14px;color:var(--muted);" data-i18n="comm.detail.no_posts">No posts yet.</p>
+        <p style="font-size:14px;color:var(--muted);" data-i18n="comm.detail.no_posts">Пока нет постов.</p>
         {% if is_member %}
-        <p style="font-size:12px;color:var(--muted);margin-top:6px;" data-i18n="comm.detail.no_posts_hint">Add your posts to this community using the form above.</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:6px;" data-i18n="comm.detail.no_posts_hint">Добавьте свои посты в это сообщество через форму выше.</p>
         {% endif %}
       </div>
       {% endif %}
@@ -246,7 +246,7 @@
 
       <!-- Members -->
       <div class="side-card">
-        <p class="side-label"><span data-i18n="comm.detail.members_label">Members</span> ({{ community.member_count }})</p>
+        <p class="side-label"><span data-i18n="comm.detail.members_label">Участники</span> ({{ community.member_count }})</p>
         <div style="display:flex;flex-direction:column;gap:7px;">
           {% for m in members %}
           <a href="{% url 'user:profile_others' m.user.username %}" style="display:flex;align-items:center;gap:8px;text-decoration:none;">
@@ -256,10 +256,10 @@
             <div style="flex:1;min-width:0;">
               <p style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                 {{ m.user.get_full_name|default:m.user.username }}
-                {% if m.role == 'admin' %}<span style="font-size:10px;color:var(--accent);"> · <span data-i18n="comm.detail.role_admin">admin</span></span>{% endif %}
-                {% if m.role == 'moderator' %}<span style="font-size:10px;color:#f59e0b;"> · <span data-i18n="comm.detail.role_mod">mod</span></span>{% endif %}
+                {% if m.role == 'admin' %}<span style="font-size:10px;color:var(--accent);"> · <span data-i18n="comm.detail.role_admin">админ</span></span>{% endif %}
+                {% if m.role == 'moderator' %}<span style="font-size:10px;color:#f59e0b;"> · <span data-i18n="comm.detail.role_mod">мод</span></span>{% endif %}
               </p>
-              <p style="font-size:10px;color:var(--muted);">Lv.{{ m.user.level }} · {{ m.user.score }} <span data-i18n="gen.pts">pts</span></p>
+              <p style="font-size:10px;color:var(--muted);">Ур.{{ m.user.level }} · {{ m.user.score }} <span data-i18n="gen.pts">баллов</span></p>
             </div>
           </a>
           {% endfor %}
@@ -268,23 +268,23 @@
 
       <!-- Info -->
       <div class="side-card">
-        <p class="side-label" data-i18n="comm.detail.about">About</p>
+        <p class="side-label" data-i18n="comm.detail.about">О сообществе</p>
         <div style="display:flex;flex-direction:column;gap:6px;">
           <div style="display:flex;justify-content:space-between;">
-            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.created">Created</span>
-            <span style="font-size:12px;color:var(--text);">{{ community.created_at|timesince }} <span data-i18n="gen.ago">ago</span></span>
+            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.created">Создано</span>
+            <span style="font-size:12px;color:var(--text);">{{ community.created_at|timesince }} <span data-i18n="gen.ago">назад</span></span>
           </div>
           <div style="display:flex;justify-content:space-between;">
-            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.posts">Posts</span>
+            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.posts">Посты</span>
             <span style="font-size:12px;color:var(--text);">{{ community.community_posts.count }}</span>
           </div>
           <div style="display:flex;justify-content:space-between;">
-            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.type">Type</span>
-            <span style="font-size:12px;color:var(--text);">{% if community.is_private %}<span data-i18n="comm.detail.type_private">Private</span>{% else %}<span data-i18n="comm.detail.type_public">Public</span>{% endif %}</span>
+            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.type">Тип</span>
+            <span style="font-size:12px;color:var(--text);">{% if community.is_private %}<span data-i18n="comm.detail.type_private">Приватное</span>{% else %}<span data-i18n="comm.detail.type_public">Публичное</span>{% endif %}</span>
           </div>
           {% if community.topic %}
           <div style="display:flex;justify-content:space-between;">
-            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.topic">Topic</span>
+            <span style="font-size:12px;color:var(--muted);" data-i18n="comm.detail.topic">Тема</span>
             <span style="font-size:12px;color:#a5b4fc;">{{ community.topic.name }}</span>
           </div>
           {% endif %}

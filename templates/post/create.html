@@ -62,7 +62,7 @@
             onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         </a>
-        <p style="font-size:16px; font-weight:500; color:var(--text);" data-i18n="post.new_h1">New post</p>
+        <p style="font-size:16px; font-weight:500; color:var(--text);" data-i18n="post.new_h1">Новый пост</p>
     </div>
 
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
@@ -77,27 +77,27 @@
 
             <!-- Post type selector -->
             <div style="margin-bottom:1.25rem;">
-                <p style="font-size:12px; color:var(--muted); margin-bottom:8px;" data-i18n="post.type_label">Type</p>
+                <p style="font-size:12px; color:var(--muted); margin-bottom:8px;" data-i18n="post.type_label">Тип</p>
                 <div style="display:flex; gap:8px;">
                     <input type="radio" name="post_type" id="type-post" value="post" class="type-option" checked/>
                     <label for="type-post" class="type-label">
                         <span class="type-dot"></span>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        <span data-i18n="post.label_post">Post</span>
+                        <span data-i18n="post.label_post">Пост</span>
                     </label>
 
                     <input type="radio" name="post_type" id="type-question" value="question" class="type-option"/>
                     <label for="type-question" class="type-label">
                         <span class="type-dot"></span>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span data-i18n="post.label_question">Question</span>
+                        <span data-i18n="post.label_question">Вопрос</span>
                     </label>
 
                     <input type="radio" name="post_type" id="type-article" value="article" class="type-option"/>
                     <label for="type-article" class="type-label">
                         <span class="type-dot"></span>
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        <span data-i18n="post.label_article">Article</span>
+                        <span data-i18n="post.label_article">Статья</span>
                     </label>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                         onchange="updateLabel(this,'image-label')"/>
                 </div>
                 <div>
-                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="post.create.video">Video (optional)</label>
+                    <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="post.create.video">Видео (необязательно)</label>
                     <label for="id_video"
                         style="display:flex; align-items:center; gap:8px; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); transition:border-color 0.15s;"
                         onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -145,7 +145,7 @@
             <!-- Topics -->
             {% if topics %}
             <div style="margin-bottom:1.25rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:8px;" data-i18n="post.create.topics">Topics (optional)</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:8px;" data-i18n="post.create.topics">Темы (необязательно)</label>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;">
                     {% for topic in topics %}
                     <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
@@ -163,7 +163,7 @@
                     style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                     onmouseover="this.style.background='var(--accent-h)'"
                     onmouseout="this.style.background='var(--accent)'">
-                    <span id="submit-btn-label" data-i18n="post.create.publish">Publish</span>
+                    <span id="submit-btn-label" data-i18n="post.create.publish">Опубликовать</span>
                 </button>
                 <a href="{% url 'post:list' %}"
                     style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;" data-i18n="post.create.cancel">

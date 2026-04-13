@@ -14,9 +14,9 @@
         </svg>
     </div>
 
-    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;" data-i18n="post.del.title">Delete this post?</p>
-    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;" data-i18n="post.del.warn">This action cannot be undone.
-        The post and all its comments will be permanently removed.</p>
+    <p style="font-size:17px; font-weight:500; color:var(--text); margin-bottom:8px;" data-i18n="post.del.title">Удалить этот пост?</p>
+    <p style="font-size:13px; color:var(--muted); line-height:1.6; margin-bottom:1.75rem;" data-i18n="post.del.warn">Это действие нельзя отменить.
+        Пост и все его комментарии будут удалены навсегда.</p>
 
     {% if post.text %}
     <div
@@ -31,7 +31,7 @@
             <button type="submit"
                 style="padding:9px 20px; background:#ef4444; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                 onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
-                <span data-i18n="post.del.yes">Yes, delete</span>
+                <span data-i18n="post.del.yes">Да, удалить</span>
             </button>
         </form>
         <a href="{% url 'post:list' %}"

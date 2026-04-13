@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}Login — HiradHub{% endblock %}
+{% block title %}Вход — HiradHub{% endblock %}
 
 {% block content %}
 <div style="max-width:400px; margin:3rem auto;">
 
     <div style="text-align:center; margin-bottom:2rem;">
-        <p style="font-size:22px; font-weight:600; color:var(--text);" data-i18n="auth.welcome_back">Welcome back</p>
-        <p style="font-size:13px; color:var(--muted); margin-top:6px;" data-i18n="auth.sign_in_sub">Sign in to your HiradHub account</p>
+        <p style="font-size:22px; font-weight:600; color:var(--text);" data-i18n="auth.welcome_back">С возвращением</p>
+        <p style="font-size:13px; color:var(--muted); margin-top:6px;" data-i18n="auth.sign_in_sub">Войдите в свой аккаунт HiradHub</p>
     </div>
 
     <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:14px; padding:1.75rem;">
@@ -21,9 +21,9 @@
             {% endif %}
 
             <div style="margin-bottom:1rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.email">Email</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.email">Эл. почта</label>
                 <input type="text" name="username" value="{{ form.username.value|default:'' }}"
-                    data-i18n="auth.email_ph" data-i18n-attr="placeholder" placeholder="your@email.com"
+                    data-i18n="auth.email_ph" data-i18n-attr="placeholder" placeholder="ваш@email.com"
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
                     onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
                 {% if form.username.errors %}
@@ -32,7 +32,7 @@
             </div>
 
             <div style="margin-bottom:1.5rem;">
-                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.password">Password</label>
+                <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;" data-i18n="auth.password">Пароль</label>
                 <input type="password" name="password" data-i18n="auth.pass_dots" data-i18n-attr="placeholder" placeholder="••••••••"
                     style="width:100%; padding:9px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--text); outline:none; font-family:'Sora',sans-serif; transition:border-color 0.15s;"
                     onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
@@ -45,15 +45,15 @@
                 style="width:100%; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                 onmouseover="this.style.background='var(--accent-h)'"
                 onmouseout="this.style.background='var(--accent)'">
-                <span data-i18n="auth.sign_in_btn">Sign in</span>
+                <span data-i18n="auth.sign_in_btn">Войти</span>
             </button>
         </form>
     </div>
 
     <p style="text-align:center; font-size:13px; color:var(--muted); margin-top:1.25rem;">
-        <span data-i18n="auth.no_account">Don't have an account?</span>
+        <span data-i18n="auth.no_account">Нет аккаунта?</span>
         <a href="{% url 'user:register' %}"
-            style="color:var(--accent); text-decoration:none; font-weight:500;" data-i18n="auth.register">Register</a>
+            style="color:var(--accent); text-decoration:none; font-weight:500;" data-i18n="auth.register">Регистрация</a>
     </p>
 </div>
 {% endblock %}

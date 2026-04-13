@@ -45,9 +45,9 @@
   <!-- Header -->
   <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
     <div>
-      <h1 style="font-size:20px; font-weight:500; color:var(--text);" data-i18n="nav.communities">Communities</h1>
+      <h1 style="font-size:20px; font-weight:500; color:var(--text);" data-i18n="nav.communities">Сообщества</h1>
       <p style="font-size:12px; color:var(--muted); margin-top:2px;" data-i18n="comm.list.subtitle">
-        Spaces created by students, teachers and directors
+        Пространства, созданные студентами, учителями и директорами
       </p>
     </div>
     {% if can_create %}
@@ -55,14 +55,14 @@
       style="display:flex; align-items:center; gap:6px; padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
       onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      <span data-i18n="comm.list.new_community">New community</span>
+      <span data-i18n="comm.list.new_community">Новое сообщество</span>
     </a>
     {% elif request.user.is_authenticated %}
     <div style="font-size:12px; color:var(--muted); padding:7px 14px; background:var(--surface); border:0.5px solid var(--border); border-radius:8px;">
       {% if request.user.role == 'student' %}
-        <span data-i18n="comm.list.need_lvl_student">Reach level 5 to create a community</span>
+        <span data-i18n="comm.list.need_lvl_student">Достигните 5 уровня, чтобы создать сообщество</span>
       {% elif request.user.role == 'teacher' %}
-        <span data-i18n="comm.list.need_lvl_teacher">Reach Teacher level 3 to create a community</span>
+        <span data-i18n="comm.list.need_lvl_teacher">Достигните 3 уровня учителя, чтобы создать сообщество</span>
       {% endif %}
     </div>
     {% endif %}
@@ -77,7 +77,7 @@
         style="flex:1; background:none; border:none; outline:none; font-size:13px; color:var(--text); font-family:'Sora',sans-serif;"/>
     </form>
 
-    <a href="{% url 'community:list' %}" class="filter-pill {% if not request.GET.topic %}active{% endif %}" data-i18n="comm.list.all">All</a>
+    <a href="{% url 'community:list' %}" class="filter-pill {% if not request.GET.topic %}active{% endif %}" data-i18n="comm.list.all">Все</a>
     {% for topic in topics %}
     <a href="?topic={{ topic.slug }}{% if q %}&q={{ q }}{% endif %}"
       class="filter-pill {% if request.GET.topic == topic.slug %}active{% endif %}">
@@ -107,15 +107,15 @@
             {% if comm.is_private %}
             <span class="lock-badge">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span data-i18n="comm.list.private">Private</span>
+              <span data-i18n="comm.list.private">Приватное</span>
             </span>
             {% endif %}
             {% if comm.pk in user_community_ids %}
-            <span style="font-size:10px;padding:2px 6px;background:#052e16;color:#86efac;border-radius:5px;" data-i18n="comm.list.joined">Joined</span>
+            <span style="font-size:10px;padding:2px 6px;background:#052e16;color:#86efac;border-radius:5px;" data-i18n="comm.list.joined">Вы участник</span>
             {% endif %}
           </div>
           <p style="font-size:11px;color:var(--muted);">
-            <span data-i18n="gen.by">by</span> {{ comm.creator.get_full_name|default:comm.creator.username }}
+            <span data-i18n="gen.by">автор:</span> {{ comm.creator.get_full_name|default:comm.creator.username }}
             {% if comm.topic %} · {{ comm.topic.name }}{% endif %}
           </p>
         </div>
@@ -130,13 +130,13 @@
       <div style="display:flex;align-items:center;gap:12px;padding-top:8px;border-top:0.5px solid var(--border);">
         <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          {{ comm.member_count }} {% if comm.member_count == 1 %}<span data-i18n="comm.list.member_one">member</span>{% else %}<span data-i18n="comm.list.member_many">members</span>{% endif %}
+          {{ comm.member_count }} {% if comm.member_count == 1 %}<span data-i18n="comm.list.member_one">участник</span>{% else %}<span data-i18n="comm.list.member_many">участников</span>{% endif %}
         </span>
         <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          {{ comm.community_posts.count }} {% if comm.community_posts.count == 1 %}<span data-i18n="comm.list.post_one">post</span>{% else %}<span data-i18n="comm.list.post_many">posts</span>{% endif %}
+          {{ comm.community_posts.count }} {% if comm.community_posts.count == 1 %}<span data-i18n="comm.list.post_one">пост</span>{% else %}<span data-i18n="comm.list.post_many">постов</span>{% endif %}
         </span>
-        <span style="font-size:11px;color:var(--muted);margin-left:auto;">{{ comm.created_at|timesince }} <span data-i18n="gen.ago">ago</span></span>
+        <span style="font-size:11px;color:var(--muted);margin-left:auto;">{{ comm.created_at|timesince }} <span data-i18n="gen.ago">назад</span></span>
       </div>
     </a>
     {% endfor %}
@@ -148,11 +148,11 @@
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
     </div>
     <p id="comm-list-empty-msg" style="font-size:14px;color:var(--muted);margin-bottom:12px;" {% if q %}data-empty-q="{{ q|escape }}"{% endif %}>
-      {% if not q %}<span data-i18n="comm.list.empty">No communities yet</span>{% endif %}
+      {% if not q %}<span data-i18n="comm.list.empty">Пока нет сообществ</span>{% endif %}
     </p>
     {% if can_create %}
     <a href="{% url 'community:create' %}" style="padding:8px 18px;background:var(--accent);color:#fff;border-radius:8px;font-size:13px;text-decoration:none;" data-i18n="comm.list.create_first">
-      Create first community
+      Создать первое сообщество
     </a>
     {% endif %}
   </div>

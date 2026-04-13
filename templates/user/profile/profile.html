@@ -34,13 +34,13 @@
         <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap; margin-bottom:4px;">
           <p style="font-size:17px; font-weight:600; color:var(--text);">{{ user.get_full_name|default:user.username }}</p>
           {% if user.role == 'director' %}
-            <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;" data-i18n="prof.director">Director</span>
+            <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px;" data-i18n="prof.director">Директор</span>
           {% elif user.role == 'teacher' %}
-            <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;" data-i18n="prof.teacher">Teacher</span>
-            <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv.{{ user.level }}</span>
+            <span style="font-size:11px; padding:2px 8px; background:#1a2a1a; color:#86efac; border-radius:6px;" data-i18n="prof.teacher">Учитель</span>
+            <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Ур.{{ user.level }}</span>
             <span style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{ user.title }}</span>
           {% else %}
-            <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Lv.{{ user.level }}</span>
+            <span style="font-size:11px; padding:2px 8px; background:#1e1d3a; color:#a5b4fc; border-radius:6px; font-weight:500;">Ур.{{ user.level }}</span>
             <span style="font-size:11px; padding:2px 8px; background:var(--surface2); color:var(--muted); border-radius:6px;">{{ user.title }}</span>
           {% endif %}
         </div>
@@ -51,17 +51,17 @@
         {% if teacher_profile and teacher_profile.school %}
           <p style="font-size:12px; color:var(--muted); margin-top:5px; display:flex; align-items:center; gap:5px;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-            {% if teacher_profile.school.number %}<span data-i18n="others.school_num">School #</span>{{ teacher_profile.school.number }} — {% endif %}{{ teacher_profile.school.name }}{% if teacher_profile.school.city %}, {{ teacher_profile.school.city }}{% endif %}
+            {% if teacher_profile.school.number %}<span data-i18n="others.school_num">Школа №</span>{{ teacher_profile.school.number }} — {% endif %}{{ teacher_profile.school.name }}{% if teacher_profile.school.city %}, {{ teacher_profile.school.city }}{% endif %}
           </p>
         {% endif %}
         {% if user.role == 'director' and director_profile %}
           <p style="font-size:12px; color:var(--muted); margin-top:5px; display:flex; align-items:center; gap:5px;">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-            <span data-i18n="gen.school">School</span>:
+            <span data-i18n="gen.school">Школа</span>:
             {% if director_profile.school %}
-              {% if director_profile.school.number %}<span data-i18n="others.school_num">School #</span>{{ director_profile.school.number }} — {% endif %}{{ director_profile.school.name }}{% if director_profile.school.city %}, {{ director_profile.school.city }}{% endif %}
+              {% if director_profile.school.number %}<span data-i18n="others.school_num">Школа №</span>{{ director_profile.school.number }} — {% endif %}{{ director_profile.school.name }}{% if director_profile.school.city %}, {{ director_profile.school.city }}{% endif %}
             {% else %}
-              <span data-i18n="gen.not_set">Not set</span>
+              <span data-i18n="gen.not_set">Не задано</span>
             {% endif %}
           </p>
         {% endif %}
@@ -73,15 +73,15 @@
         <div style="display:flex; gap:1.25rem; text-align:center;">
           <div>
             <p style="font-size:15px; font-weight:500; color:var(--accent);">{{ user.score }}</p>
-            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.score">Score</p>
+            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.score">Счёт</p>
           </div>
           <div>
             <p style="font-size:15px; font-weight:500; color:var(--text);">{{ user.posts.count }}</p>
-            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.posts">Posts</p>
+            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.posts">Посты</p>
           </div>
           <div>
             <p style="font-size:15px; font-weight:500; color:var(--text);">{{ user.notes.count }}</p>
-            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.notes">Notes</p>
+            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.notes">Заметки</p>
           </div>
         </div>
         {% else %}
@@ -90,7 +90,7 @@
           {% if director_profile %}
           <div>
             <p style="font-size:15px; font-weight:500; color:var(--accent);">{{ director_profile.teachers_verified }}</p>
-            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.director_verified_stat">Verified</p>
+            <p style="font-size:11px; color:var(--muted);" data-i18n="prof.director_verified_stat">Подтверждено</p>
           </div>
           {% endif %}
           <div>
@@ -102,7 +102,7 @@
         <a href="{% url 'user:edit_profile' %}"
           style="padding:5px 13px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--text); text-decoration:none; transition:background 0.15s;"
           onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='var(--surface2)'">
-          <span data-i18n="prof.edit">Edit profile</span>
+          <span data-i18n="prof.edit">Редактировать профиль</span>
         </a>
       </div>
     </div>
@@ -114,17 +114,17 @@
         style="padding:7px 14px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none; font-weight:500; display:flex; align-items:center; gap:6px; transition:background 0.15s;"
         onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        <span data-i18n="prof.verify_teachers_btn">Verify Teachers</span>
+        <span data-i18n="prof.verify_teachers_btn">Подтвердить учителей</span>
       </a>
       <a href="{% url 'roadmap:list' %}"
         style="padding:7px 14px; background:var(--surface2); border:0.5px solid var(--border); color:var(--text); border-radius:8px; font-size:13px; text-decoration:none; transition:border-color 0.15s;"
         onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-        <span data-i18n="prof.manage_roadmaps">Manage Roadmaps</span>
+        <span data-i18n="prof.manage_roadmaps">Управлять дорожными картами</span>
       </a>
       <a href="{% url 'community:create' %}"
         style="padding:7px 14px; background:var(--surface2); border:0.5px solid var(--border); color:var(--text); border-radius:8px; font-size:13px; text-decoration:none; transition:border-color 0.15s;"
         onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
-        <span data-i18n="prof.new_community">+ New Community</span>
+        <span data-i18n="prof.new_community">+ Новое сообщество</span>
       </a>
     </div>
     {% endif %}
@@ -134,7 +134,7 @@
     <div style="margin-top:1.25rem; padding-top:1.25rem; border-top:0.5px solid var(--border);">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
         <span style="font-size:12px; color:var(--muted);">
-          {% if user.level < 10 %}<span id="prof-prog-next" data-next="{{ user.level|add:1 }}"></span>{% else %}<span data-i18n="prof.max_level">Max level reached</span>{% endif %}
+          {% if user.level < 10 %}<span id="prof-prog-next" data-next="{{ user.level|add:1 }}"></span>{% else %}<span data-i18n="prof.max_level">Максимальный уровень</span>{% endif %}
         </span>
         <span style="font-size:12px; color:var(--muted);">{{ level_current_min|default:0 }} → {{ level_next_min|default:20000 }}</span>
       </div>
@@ -150,17 +150,17 @@
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
         <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
           <p style="font-size:13px; font-weight:500; color:var(--text);">{{ teacher_profile.teacher_title }}</p>
-          <span style="font-size:11px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:10px;">Lv.{{ teacher_profile.teacher_level }}</span>
+          <span style="font-size:11px; padding:2px 7px; background:#1e1d3a; color:#a5b4fc; border-radius:10px;">Ур.{{ teacher_profile.teacher_level }}</span>
           {% if teacher_profile.is_verified %}
             <span style="display:inline-flex; align-items:center; gap:3px; font-size:11px; padding:2px 7px; background:#052e16; color:#86efac; border-radius:10px;">
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-              <span data-i18n="prof.verified">Verified</span>
+              <span data-i18n="prof.verified">Подтверждено</span>
             </span>
           {% else %}
-            <span style="font-size:11px; padding:2px 7px; background:#1a1100; color:#fcd34d; border-radius:10px;" data-i18n="prof.pending">Pending verification</span>
+            <span style="font-size:11px; padding:2px 7px; background:#1a1100; color:#fcd34d; border-radius:10px;" data-i18n="prof.pending">Ожидает подтверждения</span>
           {% endif %}
         </div>
-        <span style="font-size:13px; font-weight:500; color:var(--accent);">{{ teacher_profile.teacher_score }} <span data-i18n="gen.pts">pts</span></span>
+            <span style="font-size:13px; font-weight:500; color:var(--accent);">{{ teacher_profile.teacher_score }} <span data-i18n="gen.pts">баллов</span></span>
       </div>
       <div style="height:3px; background:var(--surface2); border-radius:2px; overflow:hidden; margin-bottom:10px;">
         <div style="height:100%; width:{% widthratio teacher_profile.teacher_score 10000 100 %}%; background:var(--accent); border-radius:2px; max-width:100%;"></div>
@@ -168,15 +168,15 @@
       <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
         <div style="text-align:center;">
           <p style="font-size:14px; font-weight:500; color:var(--text);">{{ teacher_profile.materials_uploaded }}</p>
-          <p style="font-size:10px; color:var(--muted);" data-i18n="prof.stat_uploaded">Uploaded</p>
+          <p style="font-size:10px; color:var(--muted);" data-i18n="prof.stat_uploaded">Загружено</p>
         </div>
         <div style="text-align:center;">
           <p style="font-size:14px; font-weight:500; color:var(--text);">{{ teacher_profile.total_likes_received }}</p>
-          <p style="font-size:10px; color:var(--muted);" data-i18n="prof.stat_likes">Likes</p>
+          <p style="font-size:10px; color:var(--muted);" data-i18n="prof.stat_likes">Лайки</p>
         </div>
         <div style="text-align:center;">
           <p style="font-size:14px; font-weight:500; color:var(--text);">{{ teacher_profile.total_students_helped }}</p>
-          <p style="font-size:10px; color:var(--muted);" data-i18n="prof.stat_helped">Helped</p>
+          <p style="font-size:10px; color:var(--muted);" data-i18n="prof.stat_helped">Помог</p>
         </div>
       </div>
     </div>
@@ -187,18 +187,18 @@
 
   <!-- Tabs -->
   <div style="display:flex; border-bottom:0.5px solid var(--border); margin-bottom:1.25rem; overflow-x:auto;">
-    <button onclick="showTab('posts')" id="tab-posts" class="profile-tab active" data-i18n="prof.tab_posts">Posts</button>
+    <button onclick="showTab('posts')" id="tab-posts" class="profile-tab active" data-i18n="prof.tab_posts">Посты</button>
     {% if user.role != 'director' %}
-      <button onclick="showTab('notes')" id="tab-notes" class="profile-tab" data-i18n="prof.tab_notes">Notes</button>
-      <button onclick="showTab('favorites')" id="tab-favorites" class="profile-tab" data-i18n="prof.tab_favs">Favorites</button>
+      <button onclick="showTab('notes')" id="tab-notes" class="profile-tab" data-i18n="prof.tab_notes">Заметки</button>
+      <button onclick="showTab('favorites')" id="tab-favorites" class="profile-tab" data-i18n="prof.tab_favs">Избранное</button>
     {% endif %}
     {% if user.role == 'teacher' %}
-      <button onclick="showTab('materials')" id="tab-materials" class="profile-tab" data-i18n="prof.tab_materials">Materials</button>
+      <button onclick="showTab('materials')" id="tab-materials" class="profile-tab" data-i18n="prof.tab_materials">Материалы</button>
     {% endif %}
     {% if user.role == 'director' %}
-      <button onclick="showTab('communities')" id="tab-communities" class="profile-tab" data-i18n="prof.tab_communities">Communities</button>
+      <button onclick="showTab('communities')" id="tab-communities" class="profile-tab" data-i18n="prof.tab_communities">Сообщества</button>
       <button onclick="showTab('pending')" id="tab-pending" class="profile-tab">
-        <span data-i18n="prof.tab_pending">Pending Teachers</span>
+        <span data-i18n="prof.tab_pending">Ожидают подтверждения</span>
         {% if pending_count %}<span style="font-size:10px; padding:1px 5px; background:#ef4444; color:#fff; border-radius:10px; margin-left:3px;">{{ pending_count }}</span>{% endif %}
       </button>
     {% endif %}
@@ -220,9 +220,9 @@
           {% endif %}
           <p style="font-size:13px; color:var(--text); line-height:1.6; margin-bottom:7px;">{{ post.text|truncatechars:120 }}</p>
           <div style="display:flex; align-items:center; gap:12px;">
-            <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} <span data-i18n="gen.ago">ago</span></span>
+            <span style="font-size:11px; color:var(--muted);">{{ post.created_at|timesince }} <span data-i18n="gen.ago">назад</span></span>
             <span style="font-size:11px; color:var(--muted);">♥ {{ post.count_likes }}</span>
-            <span style="font-size:11px; color:var(--muted);">{{ post.count_comments }} <span data-i18n="prof.comments_word">comments</span></span>
+            <span style="font-size:11px; color:var(--muted);">{{ post.count_comments }} <span data-i18n="prof.comments_word">комментариев</span></span>
           </div>
         </div>
       </a>
@@ -230,8 +230,8 @@
     </div>
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_posts">No posts yet.</p>
-      <a href="{% url 'post:create' %}" style="display:inline-block; margin-top:10px; padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.write_first">Write first post</a>
+      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_posts">Пока нет постов.</p>
+      <a href="{% url 'post:create' %}" style="display:inline-block; margin-top:10px; padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.write_first">Написать первый пост</a>
     </div>
     {% endif %}
   </div>
@@ -246,21 +246,21 @@
         <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1rem; transition:border-color 0.15s; height:100%;"
           onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
           <div style="display:flex; align-items:center; gap:5px; margin-bottom:6px; flex-wrap:wrap;">
-            {% if not note.is_public %}<span style="font-size:10px; padding:2px 6px; background:var(--surface2); color:var(--muted); border-radius:4px;" data-i18n="gen.private">private</span>{% endif %}
-            {% if note.step %}<span style="font-size:10px; padding:2px 6px; background:#1e1d3a; color:#a5b4fc; border-radius:4px;" data-i18n="prof.badge_roadmap">roadmap</span>
-            {% elif note.resource_object_id %}<span style="font-size:10px; padding:2px 6px; background:#052e16; color:#86efac; border-radius:4px;" data-i18n="prof.badge_material">material</span>{% endif %}
+            {% if not note.is_public %}<span style="font-size:10px; padding:2px 6px; background:var(--surface2); color:var(--muted); border-radius:4px;" data-i18n="gen.private">приватно</span>{% endif %}
+            {% if note.step %}<span style="font-size:10px; padding:2px 6px; background:#1e1d3a; color:#a5b4fc; border-radius:4px;" data-i18n="prof.badge_roadmap">дорожная карта</span>
+            {% elif note.resource_object_id %}<span style="font-size:10px; padding:2px 6px; background:#052e16; color:#86efac; border-radius:4px;" data-i18n="prof.badge_material">материал</span>{% endif %}
           </div>
           <p style="font-size:13px; font-weight:500; color:var(--text); margin-bottom:5px; line-height:1.4;">{{ note.title|truncatechars:40 }}</p>
           <p style="font-size:12px; color:var(--muted); line-height:1.5;">{{ note.content|striptags|truncatechars:75 }}</p>
-          <p style="font-size:11px; color:var(--muted); margin-top:8px;">{{ note.updated_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
+          <p style="font-size:11px; color:var(--muted); margin-top:8px;">{{ note.updated_at|timesince }} <span data-i18n="gen.ago">назад</span></p>
         </div>
       </a>
       {% endfor %}
     </div>
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_notes">No notes yet.</p>
-      <a href="{% url 'note:create' %}" style="display:inline-block; margin-top:10px; padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.create_first">Create first note</a>
+      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_notes">Пока нет заметок.</p>
+      <a href="{% url 'note:create' %}" style="display:inline-block; margin-top:10px; padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.create_first">Создать первую заметку</a>
     </div>
     {% endif %}
   </div>
@@ -285,7 +285,7 @@
     </div>
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_favs">No favorites yet.</p>
+      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.no_favs">Пока нет избранного.</p>
     </div>
     {% endif %}
   </div>
@@ -298,15 +298,15 @@
     <div style="display:flex; gap:6px; margin-bottom:1rem; flex-wrap:wrap;">
       <button onclick="showMat('books')" id="mat-books"
         style="padding:5px 12px; font-size:12px; border-radius:7px; border:0.5px solid var(--accent); background:#1e1d3a; color:#a5b4fc; cursor:pointer; font-family:'Sora',sans-serif;">
-        <span data-i18n="lib.books">Books</span> ({{ teacher_books|length }})
+        <span data-i18n="lib.books">Книги</span> ({{ teacher_books|length }})
       </button>
       <button onclick="showMat('videos')" id="mat-videos"
         style="padding:5px 12px; font-size:12px; border-radius:7px; border:0.5px solid var(--border); background:var(--surface2); color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif;">
-        <span data-i18n="lib.videos">Videos</span> ({{ teacher_videos|length }})
+        <span data-i18n="lib.videos">Видео</span> ({{ teacher_videos|length }})
       </button>
       <button onclick="showMat('podcasts')" id="mat-podcasts"
         style="padding:5px 12px; font-size:12px; border-radius:7px; border:0.5px solid var(--border); background:var(--surface2); color:var(--muted); cursor:pointer; font-family:'Sora',sans-serif;">
-        <span data-i18n="lib.podcasts">Podcasts</span> ({{ teacher_podcasts|length }})
+        <span data-i18n="lib.podcasts">Подкасты</span> ({{ teacher_podcasts|length }})
       </button>
     </div>
     <div id="mat-panel-books">
@@ -325,7 +325,7 @@
         </a>
         {% endfor %}
       </div>
-      {% else %}<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="prof.mat_no_books">No books yet.</p>{% endif %}
+      {% else %}<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="prof.mat_no_books">Пока нет книг.</p>{% endif %}
     </div>
     <div id="mat-panel-videos" style="display:none;">
       {% if teacher_videos %}
@@ -346,7 +346,7 @@
         </a>
         {% endfor %}
       </div>
-      {% else %}<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="prof.mat_no_videos">No videos yet.</p>{% endif %}
+      {% else %}<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="prof.mat_no_videos">Пока нет видео.</p>{% endif %}
     </div>
     <div id="mat-panel-podcasts" style="display:none;">
       {% if teacher_podcasts %}
@@ -367,12 +367,12 @@
         </a>
         {% endfor %}
       </div>
-      {% else %}<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="prof.mat_no_podcasts">No podcasts yet.</p>{% endif %}
+      {% else %}<p style="font-size:13px; color:var(--muted); text-align:center; padding:2rem 0;" data-i18n="prof.mat_no_podcasts">Пока нет подкастов.</p>{% endif %}
     </div>
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;" data-i18n="prof.no_materials">No materials uploaded yet.</p>
-      <a href="{% url 'library:home' %}" style="padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.upload">Upload material</a>
+      <p style="font-size:13px; color:var(--muted); margin-bottom:10px;" data-i18n="prof.no_materials">Пока нет загруженных материалов.</p>
+      <a href="{% url 'library:home' %}" style="padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.upload">Загрузить материал</a>
     </div>
     {% endif %}
   </div>
@@ -393,9 +393,9 @@
           <div style="flex:1; min-width:0;">
             <p style="font-size:14px; font-weight:500; color:var(--text); margin-bottom:2px;">{{ community.name }}</p>
             <p style="font-size:12px; color:var(--muted);">
-              {{ community.memberships.count }} <span data-i18n="prof.comm_members">members</span>
+              {{ community.memberships.count }} <span data-i18n="prof.comm_members">участников</span>
               {% if community.topic %} · {{ community.topic.name }}{% endif %}
-              {% if community.is_private %} · <span data-i18n="comm.list.private">Private</span>{% endif %}
+              {% if community.is_private %} · <span data-i18n="comm.list.private">Приватное</span>{% endif %}
             </p>
           </div>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -406,7 +406,7 @@
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
       <p style="font-size:13px; color:var(--muted); margin-bottom:10px;">Нет школьного чата (сообщества) где вы администратор.</p>
-      <a href="{% url 'community:create' %}" style="padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.create_community">Create community</a>
+      <a href="{% url 'community:create' %}" style="padding:7px 16px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; text-decoration:none;" data-i18n="prof.create_community">Создать сообщество</a>
     </div>
     {% endif %}
   </div>
@@ -420,19 +420,19 @@
         <div style="width:36px; height:36px; border-radius:50%; background:#1e1d3a; border:1.5px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:500; color:#a5b4fc; flex-shrink:0;">{{ tp.user.username|first|upper }}</div>
         <div style="flex:1; min-width:0;">
           <p style="font-size:13px; font-weight:500; color:var(--text);">{{ tp.user.get_full_name|default:tp.user.username }}</p>
-          <p style="font-size:11px; color:var(--muted);">@{{ tp.user.username }}{% if tp.school %} · {{ tp.school.name }}{% endif %} · {{ tp.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
+          <p style="font-size:11px; color:var(--muted);">@{{ tp.user.username }}{% if tp.school %} · {{ tp.school.name }}{% endif %} · {{ tp.created_at|timesince }} <span data-i18n="gen.ago">назад</span></p>
         </div>
         <a href="{% url 'user:verify_teacher' tp.user.username %}"
           style="padding:6px 13px; background:var(--accent); color:#fff; border-radius:7px; font-size:12px; font-weight:500; text-decoration:none; flex-shrink:0; transition:background 0.15s;"
           onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-          <span data-i18n="pending.verify">Verify</span>
+          <span data-i18n="pending.verify">Подтвердить</span>
         </a>
       </div>
       {% endfor %}
     </div>
     {% else %}
     <div style="text-align:center; padding:3rem 0;">
-      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.pending_empty">No pending teachers.</p>
+      <p style="font-size:13px; color:var(--muted);" data-i18n="prof.pending_empty">Нет ожидающих подтверждения.</p>
     </div>
     {% endif %}
   </div>

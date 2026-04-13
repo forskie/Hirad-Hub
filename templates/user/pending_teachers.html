@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Pending Teachers — HiradHub{% endblock %}
+{% block title %}Ожидают подтверждения — HiradHub{% endblock %}
 
 {% block content %}
 <div style="max-width:760px; margin:0 auto;">
 
   <div style="margin-bottom:1.5rem;">
-    <h1 style="font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.02em;" data-i18n="pending.page_h1">Pending verification</h1>
+    <h1 style="font-size:22px; font-weight:600; color:var(--text); letter-spacing:-0.02em;" data-i18n="pending.page_h1">Ожидают подтверждения</h1>
     <p id="pending-teachers-sub" style="font-size:13px; color:var(--muted); margin-top:4px;" data-n="{{ teachers|length }}"></p>
   </div>
 
@@ -27,22 +27,22 @@
           <p style="font-size:12px; color:var(--muted);">@{{ profile.user.username }} · {{ profile.user.email }}</p>
           {% if profile.school %}
             <p style="font-size:12px; color:var(--muted); margin-top:2px;">
-              {% if profile.school.number %}<span data-i18n="others.school_num">School #</span>{{ profile.school.number }} — {% endif %}{{ profile.school.name }}{% if profile.school.city %}, {{ profile.school.city }}{% endif %}
+              {% if profile.school.number %}<span data-i18n="others.school_num">Школа №</span>{{ profile.school.number }} — {% endif %}{{ profile.school.name }}{% if profile.school.city %}, {{ profile.school.city }}{% endif %}
             </p>
           {% endif %}
-          <p style="font-size:11px; color:var(--muted); margin-top:2px;"><span data-i18n="pending.registered">Registered</span> {{ profile.created_at|timesince }} <span data-i18n="gen.ago">ago</span></p>
+          <p style="font-size:11px; color:var(--muted); margin-top:2px;"><span data-i18n="pending.registered">Зарегистрирован</span> {{ profile.created_at|timesince }} <span data-i18n="gen.ago">назад</span></p>
         </div>
 
         <div style="display:flex; gap:8px; flex-shrink:0;">
           <a href="{% url 'user:teacher_profile' profile.user.username %}"
             style="padding:7px 12px; background:var(--surface2); border:0.5px solid var(--border); border-radius:7px; font-size:12px; color:var(--muted); text-decoration:none; transition:color 0.15s;"
             onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'" data-i18n="pending.view_profile">
-            View profile
+            Открыть профиль
           </a>
           <a href="{% url 'user:verify_teacher' profile.user.username %}"
             style="padding:7px 14px; background:var(--accent); color:#fff; border-radius:7px; font-size:12px; font-weight:500; text-decoration:none; transition:background 0.15s;"
             onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'" data-i18n="pending.verify">
-            Verify
+            Подтвердить
           </a>
         </div>
 
@@ -54,8 +54,8 @@
       <div style="width:52px; height:52px; background:var(--surface2); border-radius:12px; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">All clear</p>
-      <p style="font-size:13px; color:var(--muted);">No teachers waiting for verification.</p>
+      <p style="font-size:15px; font-weight:500; color:var(--text); margin-bottom:6px;">Всё чисто</p>
+      <p style="font-size:13px; color:var(--muted);">Нет учителей, ожидающих подтверждения.</p>
     </div>
   {% endif %}
 

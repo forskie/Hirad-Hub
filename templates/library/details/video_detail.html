@@ -96,7 +96,7 @@
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div style="display:flex;justify-content:space-between;font-size:12px;">
             <span style="color:var(--muted);">Добавлено</span>
-            <span style="color:var(--text);">{{ video.created_at|date:"M d, Y" }}</span>
+            <span style="color:var(--text);">{{ video.created_at|date:"d.m.Y" }}</span>
           </div>
           {% if video.category %}
           <div style="display:flex;justify-content:space-between;font-size:12px;">

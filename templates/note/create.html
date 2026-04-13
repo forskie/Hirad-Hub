@@ -40,7 +40,7 @@
                 <polyline points="15 18 9 12 15 6" />
             </svg>
         </a>
-        <p style="font-size:16px; font-weight:500; color:var(--text);" data-i18n="note.new_h1">New note</p>
+        <p style="font-size:16px; font-weight:500; color:var(--text);" data-i18n="note.new_h1">Новая заметка</p>
     </div>
 
     <form method="POST" enctype="multipart/form-data" novalidate>
@@ -91,15 +91,15 @@
                     <circle cx="8.5" cy="8.5" r="1.5" />
                     <polyline points="21 15 16 10 5 21" />
                 </svg>
-                <span id="img-label" data-i18n="note.add_cover">Add cover image</span>
+                <span id="img-label" data-i18n="note.add_cover">Добавить обложку</span>
             </label>
             <input type="file" name="img" id="id_img" accept="image/*" style="display:none;"
-                onchange="document.getElementById('img-label').textContent=this.files[0]?this.files[0].name:(typeof I18N!=='undefined'?I18N.t('note.add_cover'):'Add cover image')" />
+                onchange="document.getElementById('img-label').textContent=this.files[0]?this.files[0].name:(typeof I18N!=='undefined'?I18N.t('note.add_cover'):'Добавить обложку')" />
 
             <!-- Topics -->
             {% if topics %}
             <div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center;">
-                <span style="font-size:12px; color:var(--muted);" data-i18n="note.topics_label">Topics:</span>
+                <span style="font-size:12px; color:var(--muted);" data-i18n="note.topics_label">Темы:</span>
                 {% for topic in topics %}
                 <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
                     <input type="checkbox" name="topics" value="{{ topic.pk }}"
@@ -116,7 +116,7 @@
                 style="flex:1; padding:10px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:'Sora',sans-serif; transition:background 0.15s;"
                 onmouseover="this.style.background='var(--accent-h)'"
                 onmouseout="this.style.background='var(--accent)'">
-                <span data-i18n="note.save_note">Save note</span>
+                <span data-i18n="note.save_note">Сохранить заметку</span>
             </button>
             <a href="{% url 'note:list' %}"
                 style="padding:10px 16px; background:var(--surface2); border:0.5px solid var(--border); border-radius:8px; font-size:13px; color:var(--muted); text-decoration:none;" data-i18n="gen.cancel">Отмена</a>

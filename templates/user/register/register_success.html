@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Welcome — HiradHub{% endblock %}
+{% block title %}Добро пожаловать — HiradHub{% endblock %}
 
 {% block content %}
 <div style="max-width:400px; margin:5rem auto; text-align:center;">
@@ -11,23 +11,23 @@
         </svg>
     </div>
 
-    <p style="font-size:20px; font-weight:600; color:var(--text); margin-bottom:8px;"><span data-i18n="auth.reg_welcome_prefix">You're in,</span>
+    <p style="font-size:20px; font-weight:600; color:var(--text); margin-bottom:8px;"><span data-i18n="auth.reg_welcome_prefix">Готово,</span>
         {{ user.first_name|default:user.username }}!</p>
     <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:2rem;">
-        <span data-i18n="auth.reg_success_line1">Your account has been created.</span>
-        <span data-i18n="auth.reg_success_line2">You start as</span> <strong style="color:var(--text); font-weight:500;">
-            {{ user.title }}</strong> <span data-i18n="auth.reg_success_line3">— keep reading, posting, and taking notes to level up.</span>
+        <span data-i18n="auth.reg_success_line1">Ваш аккаунт создан.</span>
+        <span data-i18n="auth.reg_success_line2">Вы начинаете как</span> <strong style="color:var(--text); font-weight:500;">
+            {{ user.title }}</strong> <span data-i18n="auth.reg_success_line3">— читайте, публикуйте посты и делайте заметки, чтобы повышать уровень.</span>
     </p>
 
     <div
         style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; text-align:left;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span style="font-size:12px; color:var(--muted);" data-i18n="gen.level">Level</span>
+            <span style="font-size:12px; color:var(--muted);" data-i18n="gen.level">Уровень</span>
             <span style="font-size:13px; font-weight:500; color:var(--accent);">{{ user.level }} ·
                 {{ user.title}}</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:12px; color:var(--muted);">Score</span>
+            <span style="font-size:12px; color:var(--muted);" data-i18n="prof.score">Счёт</span>
             <span style="font-size:13px; font-weight:500; color:var(--text);">{{ user.score }}</span>
         </div>
     </div>
@@ -36,11 +36,11 @@
         <a href="{% url 'main:dashboard' %}"
             style="display:block; padding:10px; background:var(--accent); color:#fff; border-radius:8px; font-size:13px; font-weight:500; text-decoration:none; transition:background 0.15s;"
             onmouseover="this.style.background='var(--accent-h)'" onmouseout="this.style.background='var(--accent)'">
-            <span data-i18n="auth.go_dashboard">Go to Dashboard</span>
+            <span data-i18n="auth.go_dashboard">Перейти в дашборд</span>
         </a>
         <a href="{% url 'library:home' %}"
             style="display:block; padding:10px; background:var(--surface2); color:var(--text); border:0.5px solid var(--border); border-radius:8px; font-size:13px; text-decoration:none; transition:background 0.15s;">
-            <span data-i18n="auth.explore_library">Explore Library</span>
+            <span data-i18n="auth.explore_library">Открыть библиотеку</span>
         </a>
     </div>
 </div>

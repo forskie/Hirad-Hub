@@ -11,9 +11,9 @@
     </svg>
   </div>
 
-  <h1 style="font-size:20px; font-weight:600; color:var(--text); margin-bottom:8px;" data-i18n="verify.h1">Verify teacher account</h1>
+  <h1 style="font-size:20px; font-weight:600; color:var(--text); margin-bottom:8px;" data-i18n="verify.h1">Подтвердить аккаунт учителя</h1>
   <p style="font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:1.75rem;" data-i18n="verify.intro">
-    You are about to verify this teacher. They will gain full upload access immediately.
+    Вы собираетесь подтвердить этого учителя. После подтверждения он сразу получит полный доступ к загрузке материалов.
   </p>
 
   <div style="background:var(--surface); border:0.5px solid var(--border); border-radius:12px; padding:1.25rem; margin-bottom:1.75rem; text-align:left;">
@@ -28,13 +28,13 @@
     </div>
     {% if profile.school %}
       <div style="display:flex; justify-content:space-between; font-size:12px; padding-top:10px; border-top:0.5px solid var(--border);">
-        <span style="color:var(--muted);" data-i18n="gen.school">School</span>
+        <span style="color:var(--muted);" data-i18n="gen.school">Школа</span>
         <span style="color:var(--text);">{{ profile.school.name }}</span>
       </div>
     {% endif %}
     <div style="display:flex; justify-content:space-between; font-size:12px; padding-top:8px;">
-      <span style="color:var(--muted);" data-i18n="pending.registered">Registered</span>
-      <span style="color:var(--text);">{{ profile.created_at|timesince }} <span data-i18n="gen.ago">ago</span></span>
+      <span style="color:var(--muted);" data-i18n="pending.registered">Зарегистрирован</span>
+      <span style="color:var(--text);">{{ profile.created_at|timesince }} <span data-i18n="gen.ago">назад</span></span>
     </div>
   </div>
 
